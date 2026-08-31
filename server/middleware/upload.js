@@ -47,8 +47,8 @@ const processAndUploadFile = async (req, res, next) => {
 
   try {
     // 1. Validate magic bytes (actual file signature)
-    const { fileTypeFromBuffer } = await import('file-type')
-    const type = await fileTypeFromBuffer(req.file.buffer)
+    const fileType = await import('file-type')
+    const type = await fileType.default.fromBuffer(req.file.buffer)
     
     const ext = path.extname(req.file.originalname).toLowerCase()
     const isPlainText3D = ['.obj', '.stl', '.step'].includes(ext)
