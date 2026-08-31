@@ -16,15 +16,15 @@ export default function ContactSubmissions() {
   const fetchSubmissions = async () => {
     setLoading(true)
     const { data, error } = await supabase
-      .from('contact_submissions')
+      .from('ContactMessage')
       .select('*')
-      .order('created_at', { ascending: false })
+      .order('createdAt', { ascending: false })
       
     if (!error && data) {
       // Extract file URL from message if present
       const processedData = data.map(sub => {
         let message = sub.message || ''
-        let file_url = sub.file_url || null // Fallback if they ever add the column
+        let file_url = sub.fileUrl || null // Fallback if they ever add the column
         
         const attachmentMatch = message.match(/\[ATTACHMENT\]:\s*(https?:\/\/[^\s]+)/)
         if (attachmentMatch) {
@@ -43,7 +43,7 @@ export default function ContactSubmissions() {
   const filtered = submissions.filter(sub => 
     (sub.name || '').toLowerCase().includes(search.toLowerCase()) ||
     (sub.email || '').toLowerCase().includes(search.toLowerCase()) ||
-    (sub.tracking_id || '').toLowerCase().includes(search.toLowerCase())
+    (sub.trackingId || '').toLowerCase().includes(search.toLowerCase())
   )
 
   const openView = (submission) => {
@@ -53,7 +53,7 @@ export default function ContactSubmissions() {
 
   const updateStatus = async (id, status) => {
     const { error } = await supabase
-      .from('contact_submissions')
+      .from('ContactMessage')
       .update({ status })
       .eq('id', id)
       
@@ -67,7 +67,7 @@ export default function ContactSubmissions() {
 
   const handleDelete = async (id) => {
     if(!window.confirm('Are you sure you want to delete this submission?')) return;
-    const { error } = await supabase.from('contact_submissions').delete().eq('id', id)
+    const { error } = await supabase.from('ContactMessage').delete().eq('id', id)
     if (!error) {
       setSubmissions(prev => prev.filter(s => s.id !== id))
       if (viewing?.id === id) setModalOpen(false)
@@ -105,8 +105,8 @@ export default function ContactSubmissions() {
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-white/5">
@@ -123,7 +123,7 @@ export default function ContactSubmissions() {
               {filtered.map((sub) => (
                 <tr key={sub.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
                   <td className="px-6 py-4">
-                    <span className="font-mono text-xs font-bold text-white bg-white/5 px-2 py-1 rounded">{sub.tracking_id}</span>
+                    <span className="font-mono text-xs font-bold text-white bg-white/5 px-2 py-1 rounded">{sub.trackingId}</span>
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
@@ -137,7 +137,7 @@ export default function ContactSubmissions() {
                     </div>
                   </td>
                   <td className="px-6 py-4 text-sm text-k-silver-dim">
-                    {new Date(sub.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(sub.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
                   <td className="px-6 py-4">
                     <span className={`px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded-full border ${getStatusColor(sub.status)}`}>
@@ -178,6 +178,65 @@ export default function ContactSubmissions() {
         </div>
       </div>
 
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {filtered.map((sub) => (
+          <div key={sub.id} className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-k-silver/20 to-k-border flex items-center justify-center shrink-0">
+                  <span className="text-xs font-bold text-k-silver">{sub.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{sub.name}</p>
+                  <p className="text-xs text-k-silver-dim">{sub.email}</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center mt-2">
+               <div>
+                  <span className="font-mono text-[10px] font-bold text-white bg-white/5 px-2 py-1 rounded">{sub.trackingId}</span>
+               </div>
+               <span className={`px-2.5 py-1 text-[10px] uppercase tracking-wider font-bold rounded-full border ${getStatusColor(sub.status)}`}>
+                 {sub.status || 'new'}
+               </span>
+            </div>
+            
+            <div className="flex justify-between items-center pt-4 border-t border-white/10">
+              <div>
+                <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Attachment</p>
+                {sub.file_url ? (
+                  <div className="flex items-center gap-1.5 text-emerald-400 text-xs">
+                    <ImageIcon size={14} /> <span>Included</span>
+                  </div>
+                ) : (
+                  <span className="text-xs text-k-silver-dim">—</span>
+                )}
+              </div>
+              <div className="text-right">
+                <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Date</p>
+                <p className="text-sm text-white">{new Date(sub.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
+              <button onClick={() => openView(sub)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                <Eye size={14} /> <span className="hidden sm:inline">View</span>
+              </button>
+              <button onClick={() => handleDelete(sub.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
+                <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
+              </button>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <div className="py-12 text-center text-k-silver-dim text-sm bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+            No submissions found
+          </div>
+        )}
+      </div>
+
       {/* View Modal */}
       {modalOpen && viewing && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
@@ -186,7 +245,7 @@ export default function ContactSubmissions() {
               <h2 className="font-display text-lg font-bold text-white flex items-center gap-3">
                 Submission Details
                 <span className="font-mono text-xs font-bold text-white bg-white/5 px-2 py-1 rounded tracking-wider">
-                  {viewing.tracking_id}
+                  {viewing.trackingId}
                 </span>
               </h2>
               <button onClick={() => setModalOpen(false)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06]">
@@ -226,7 +285,7 @@ export default function ContactSubmissions() {
                         <Calendar size={16} className="text-k-silver-dim mt-0.5" />
                         <div>
                           <p className="text-xs text-k-silver-dim uppercase">Date Submitted</p>
-                          <p className="text-sm text-white">{new Date(viewing.created_at).toLocaleString('en-IN')}</p>
+                          <p className="text-sm text-white">{new Date(viewing.createdAt).toLocaleString('en-IN')}</p>
                         </div>
                       </div>
                     </div>

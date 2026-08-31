@@ -239,26 +239,6 @@ export default function Quotations() {
     }
   }
 
-  if (isLoadingQuotations || isLoadingClients) {
-    return (
-      <div className="flex h-[calc(100vh-80px)] items-center justify-center">
-        <div className="flex gap-2">
-          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
-          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
-          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
-        </div>
-      </div>
-    )
-  }
-
-  if (isErrorQuotations || isErrorClients) {
-    return (
-      <div className="flex h-[calc(100vh-80px)] flex-col items-center justify-center text-red-400 gap-4">
-        <AlertCircle size={32} />
-        <p className="text-sm">Failed to load quotations. Please try refreshing.</p>
-      </div>
-    )
-  }
 
   return (
     <div>
@@ -303,8 +283,8 @@ export default function Quotations() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-white/5">
@@ -319,58 +299,150 @@ export default function Quotations() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((qt) => (
-                <tr key={qt.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
-                  <td className="px-6 py-4 text-sm font-medium text-white font-display tracking-wide">{qt.quoteNo}</td>
-                  <td className="px-6 py-4 text-sm text-white">{qt.customer?.name}</td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="text-sm font-semibold text-white">₹{(qt.totalAmount || 0).toLocaleString('en-IN')}</span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <select
-                      value={qt.status || 'DRAFT'}
-                      onChange={(e) => updateStatusMutation.mutate({ id: qt.id, status: e.target.value })}
-                      className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[qt.status] || STATUS_COLORS.DRAFT}`}
-                      style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
-                    >
-                      {Object.keys(STATUS_COLORS).map(status => (
-                        <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
-                          {status}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-k-silver-dim">
-                    {new Date(qt.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </td>
-                  <td className="px-6 py-4 text-sm text-k-silver-dim">
-                    {qt.validUntil ? new Date(qt.validUntil).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Download PDF">
-                        <Download size={14} />
-                      </button>
-                      <button onClick={() => openEdit(qt)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Edit">
-                        <Edit3 size={14} />
-                      </button>
-                      <button onClick={() => handleDelete(qt.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-red-400 hover:bg-red-400/[0.06] transition-all" title="Delete">
-                        <Trash2 size={14} />
-                      </button>
+              {isLoadingQuotations || isLoadingClients ? (
+                <tr>
+                  <td colSpan={7} className="px-6 py-12">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
+                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
                     </div>
                   </td>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
+              ) : isErrorQuotations || isErrorClients ? (
                 <tr>
-                  <td colSpan={7} className="px-6 py-12 text-center text-k-silver-dim text-sm">
-                    No quotations found
+                  <td colSpan={7} className="px-6 py-12 text-center text-red-400">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <AlertCircle size={24} />
+                      <p className="text-sm">Failed to load quotations. Please try refreshing.</p>
+                    </div>
                   </td>
                 </tr>
+              ) : (
+                <>
+                  {filtered.map((qt) => (
+                    <tr key={qt.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
+                      <td className="px-6 py-4 text-sm font-medium text-white font-display tracking-wide">{qt.quoteNo}</td>
+                      <td className="px-6 py-4 text-sm text-white">{qt.customer?.name}</td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="text-sm font-semibold text-white">₹{(qt.totalAmount || 0).toLocaleString('en-IN')}</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <select
+                          value={qt.status || 'DRAFT'}
+                          onChange={(e) => updateStatusMutation.mutate({ id: qt.id, status: e.target.value })}
+                          className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[qt.status] || STATUS_COLORS.DRAFT}`}
+                          style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                        >
+                          {Object.keys(STATUS_COLORS).map(status => (
+                            <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-k-silver-dim">
+                        {new Date(qt.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </td>
+                      <td className="px-6 py-4 text-sm text-k-silver-dim">
+                        {qt.validUntil ? new Date(qt.validUntil).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : '—'}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Download PDF">
+                            <Download size={14} />
+                          </button>
+                          <button onClick={() => openEdit(qt)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Edit">
+                            <Edit3 size={14} />
+                          </button>
+                          <button onClick={() => handleDelete(qt.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-red-400 hover:bg-red-400/[0.06] transition-all" title="Delete">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center text-k-silver-dim text-sm">
+                        No quotations found
+                      </td>
+                    </tr>
+                  )}
+                </>
               )}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {isLoadingQuotations || isLoadingClients ? (
+          <div className="py-12 flex items-center justify-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
+          </div>
+        ) : isErrorQuotations || isErrorClients ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-red-400">
+            <AlertCircle size={24} />
+            <p className="text-sm">Failed to load quotations.</p>
+          </div>
+        ) : (
+          <>
+            {filtered.map((qt) => (
+              <div key={qt.id} className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-sm font-medium text-white font-display tracking-wide">{qt.quoteNo}</span>
+                    <p className="text-sm text-k-silver-dim mt-1">{qt.customer?.name}</p>
+                  </div>
+                  <select
+                    value={qt.status || 'DRAFT'}
+                    onChange={(e) => updateStatusMutation.mutate({ id: qt.id, status: e.target.value })}
+                    className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[qt.status] || STATUS_COLORS.DRAFT}`}
+                    style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                  >
+                    {Object.keys(STATUS_COLORS).map(status => (
+                      <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                  <div>
+                    <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Total</p>
+                    <span className="text-sm font-semibold text-white">₹{(qt.totalAmount || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Date</p>
+                    <p className="text-sm text-white">{new Date(qt.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
+                  <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                    <Download size={14} /> <span className="hidden sm:inline">PDF</span>
+                  </button>
+                  <button onClick={() => openEdit(qt)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                    <Edit3 size={14} /> <span className="hidden sm:inline">Edit</span>
+                  </button>
+                  <button onClick={() => handleDelete(qt.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
+                    <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div className="py-12 text-center text-k-silver-dim text-sm bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+                No quotations found
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Modal */}

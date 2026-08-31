@@ -5,7 +5,7 @@ import { Search, Plus, FileDown, Upload, Edit3, Trash2, Download, X, Filter, Ale
 
 const STATUS_COLORS = {
   PAID: 'text-emerald-300 bg-emerald-500/20 ring-1 ring-emerald-500/30',
-  PENDING: 'text-amber-300 bg-amber-500/20 ring-1 ring-amber-500/30',
+  UNPAID: 'text-amber-300 bg-amber-500/20 ring-1 ring-amber-500/30',
   OVERDUE: 'text-red-300 bg-red-500/20 ring-1 ring-red-500/30',
   CANCELLED: 'text-gray-300 bg-white/10 ring-1 ring-white/20',
 }
@@ -132,7 +132,24 @@ export default function Invoices() {
       if (!res.ok) throw new Error('Failed to update status');
       return res.json();
     },
-    onSuccess: () => {
+    onMutate: async (newStatus) => {
+      // Optimistically update the UI instantly
+      await queryClient.cancelQueries({ queryKey: ['invoices'] })
+      const previousInvoices = queryClient.getQueryData(['invoices'])
+      queryClient.setQueryData(['invoices'], old => 
+        old ? old.map(inv => inv.id === newStatus.id ? { ...inv, status: newStatus.status } : inv) : []
+      )
+      return { previousInvoices }
+    },
+    onError: (err, newStatus, context) => {
+      // Roll back on error
+      if (context?.previousInvoices) {
+        queryClient.setQueryData(['invoices'], context.previousInvoices)
+      }
+      alert("Failed to update status: " + err.message)
+    },
+    onSettled: () => {
+      // Re-fetch in background to sync
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
@@ -224,26 +241,6 @@ export default function Invoices() {
     deleteMutation.mutate(id)
   }
 
-  if (isLoadingInvoices || isLoadingClients) {
-    return (
-      <div className="flex h-[calc(100vh-80px)] items-center justify-center">
-        <div className="flex gap-2">
-          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
-          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
-          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
-        </div>
-      </div>
-    )
-  }
-
-  if (isErrorInvoices || isErrorClients) {
-    return (
-      <div className="flex h-[calc(100vh-80px)] flex-col items-center justify-center text-red-400 gap-4">
-        <AlertCircle size={32} />
-        <p className="text-sm">Failed to load invoices. Please try refreshing.</p>
-      </div>
-    )
-  }
 
   const handleDownloadPdf = async (id) => {
     try {
@@ -315,8 +312,8 @@ export default function Invoices() {
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
+      {/* Desktop Table View */}
+      <div className="hidden md:block bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-white/5">
@@ -330,59 +327,151 @@ export default function Invoices() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((inv) => (
-                <tr key={inv.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
-                  <td className="px-6 py-4">
-                    <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
-                  </td>
-                  <td className="px-6 py-4">
-                    <p className="text-sm text-white">{inv.client?.name}</p>
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <span className="text-sm font-semibold text-white">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
-                  </td>
-                  <td className="px-6 py-4 text-center">
-                    <select
-                      value={inv.status}
-                      onChange={(e) => updateStatusMutation.mutate({ id: inv.id, status: e.target.value })}
-                      className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[inv.status] || STATUS_COLORS.PENDING}`}
-                      style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
-                    >
-                      {Object.keys(STATUS_COLORS).map(status => (
-                        <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
-                          {status}
-                        </option>
-                      ))}
-                    </select>
-                  </td>
-                  <td className="px-6 py-4 text-sm text-k-silver-dim">
-                    {new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
-                  </td>
-                  <td className="px-6 py-4">
-                    <div className="flex items-center justify-end gap-1">
-                      <button onClick={() => handleDownloadPdf(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Download PDF">
-                        <Download size={14} />
-                      </button>
-                      <button onClick={() => openEdit(inv)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Edit">
-                        <Edit3 size={14} />
-                      </button>
-                      <button onClick={() => handleDelete(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-red-400 hover:bg-red-400/[0.06] transition-all" title="Delete">
-                        <Trash2 size={14} />
-                      </button>
+              {isLoadingInvoices || isLoadingClients ? (
+                <tr>
+                  <td colSpan={6} className="px-6 py-12">
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
+                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
                     </div>
                   </td>
                 </tr>
-              ))}
-              {filtered.length === 0 && (
+              ) : isErrorInvoices || isErrorClients ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-k-silver-dim text-sm">
-                    No invoices found
+                  <td colSpan={6} className="px-6 py-12 text-center text-red-400">
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <AlertCircle size={24} />
+                      <p className="text-sm">Failed to load invoices. Please try refreshing.</p>
+                    </div>
                   </td>
                 </tr>
+              ) : (
+                <>
+                  {filtered.map((inv) => (
+                    <tr key={inv.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
+                      <td className="px-6 py-4">
+                        <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
+                      </td>
+                      <td className="px-6 py-4">
+                        <p className="text-sm text-white">{inv.client?.name}</p>
+                      </td>
+                      <td className="px-6 py-4 text-right">
+                        <span className="text-sm font-semibold text-white">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
+                      </td>
+                      <td className="px-6 py-4 text-center">
+                        <select
+                          value={inv.status}
+                          onChange={(e) => updateStatusMutation.mutate({ id: inv.id, status: e.target.value })}
+                          className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[inv.status] || STATUS_COLORS.UNPAID}`}
+                          style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                        >
+                          {Object.keys(STATUS_COLORS).map(status => (
+                            <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                      </td>
+                      <td className="px-6 py-4 text-sm text-k-silver-dim">
+                        {new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                      </td>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => handleDownloadPdf(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Download PDF">
+                            <Download size={14} />
+                          </button>
+                          <button onClick={() => openEdit(inv)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Edit">
+                            <Edit3 size={14} />
+                          </button>
+                          <button onClick={() => handleDelete(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-red-400 hover:bg-red-400/[0.06] transition-all" title="Delete">
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                  {filtered.length === 0 && (
+                    <tr>
+                      <td colSpan={6} className="px-6 py-12 text-center text-k-silver-dim text-sm">
+                        No invoices found
+                      </td>
+                    </tr>
+                  )}
+                </>
               )}
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {isLoadingInvoices || isLoadingClients ? (
+          <div className="py-12 flex items-center justify-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
+          </div>
+        ) : isErrorInvoices || isErrorClients ? (
+          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-red-400">
+            <AlertCircle size={24} />
+            <p className="text-sm">Failed to load invoices.</p>
+          </div>
+        ) : (
+          <>
+            {filtered.map((inv) => (
+              <div key={inv.id} className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+                <div className="flex justify-between items-start">
+                  <div>
+                    <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
+                    <p className="text-sm text-k-silver-dim mt-1">{inv.client?.name}</p>
+                  </div>
+                  <select
+                    value={inv.status}
+                    onChange={(e) => updateStatusMutation.mutate({ id: inv.id, status: e.target.value })}
+                    className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[inv.status] || STATUS_COLORS.UNPAID}`}
+                    style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
+                  >
+                    {Object.keys(STATUS_COLORS).map(status => (
+                      <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
+                        {status}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                
+                <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                  <div>
+                    <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Amount</p>
+                    <span className="text-sm font-semibold text-white">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Date</p>
+                    <p className="text-sm text-white">{new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
+                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                    <Download size={14} /> <span className="hidden sm:inline">PDF</span>
+                  </button>
+                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                    <Edit3 size={14} /> <span className="hidden sm:inline">Edit</span>
+                  </button>
+                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
+                    <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
+                  </button>
+                </div>
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div className="py-12 text-center text-k-silver-dim text-sm bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+                No invoices found
+              </div>
+            )}
+          </>
+        )}
       </div>
 
       {/* Create/Edit Modal */}
@@ -397,7 +486,7 @@ export default function Invoices() {
             </h2>
 
             <div className="space-y-4">
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="col-span-1">
                   <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Invoice #</label>
                   <input value={form.invoiceNumber} onChange={e => setForm({...form, invoiceNumber: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
@@ -427,7 +516,7 @@ export default function Invoices() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                 <div className="col-span-1">
                   <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Terms</label>
                   <input value={form.terms} onChange={e => setForm({...form, terms: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
@@ -447,8 +536,9 @@ export default function Invoices() {
               </div>
 
               {/* Line items */}
-              <div>
-                <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-3">Line Items</label>
+              <div className="overflow-x-auto pb-4">
+                <div className="min-w-[800px]">
+                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-3">Line Items</label>
                 {/* Headers */}
                 <div className="grid grid-cols-12 gap-3 mb-2 text-[10px] text-k-silver-dim uppercase tracking-wider font-semibold px-2">
                   <div className="col-span-3">Description</div>
@@ -514,10 +604,11 @@ export default function Invoices() {
                 <button onClick={addItem} className="text-xs text-k-silver-dim hover:text-white border border-dashed border-k-border rounded-lg px-4 py-2 hover:border-k-silver/40 transition-all">
                   + Add Item
                 </button>
+                </div>
               </div>
 
               {/* Status and Notes */}
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="col-span-1">
                   <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Status</label>
                   <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 appearance-none">
