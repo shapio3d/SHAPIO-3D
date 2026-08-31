@@ -33,7 +33,7 @@ export default function Navbar() {
           : 'bg-transparent'
         }`}
     >
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative">
+      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative z-10">
         
         {/* Left: Image Logo */}
         <Link to="/" className="flex items-center group">
@@ -79,7 +79,7 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`md:hidden absolute top-20 left-0 right-0 flex flex-col gap-4 p-6 bg-k-dark border-b border-k-border transition-all duration-400 overflow-hidden shadow-2xl shadow-black ${mobileOpen ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+        className={`md:hidden absolute top-0 left-0 right-0 flex flex-col gap-4 pt-24 pb-6 px-6 bg-k-dark border-b border-k-border transition-all duration-400 overflow-hidden shadow-2xl shadow-black ${mobileOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           }`}
       >
         <div className="px-6 py-4 flex flex-col gap-1">

@@ -55,12 +55,6 @@ export default function App() {
       {/* Global Modals/Banners */}
       <CookieBanner />
 
-      {/* Sticky Mobile CTA */}
-      <div className="md:hidden fixed bottom-0 left-0 right-0 p-4 bg-k-dark/90 backdrop-blur-md border-t border-k-border z-[9900]">
-        <a href="/contact" className="btn-primary w-full justify-center text-center">
-          Get a Free Quote
-        </a>
-      </div>
     </>
   )
 }
