@@ -36,7 +36,7 @@ export default function AdminLayout({ children }) {
       <Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
       
       {/* Main content area — offset by sidebar width on desktop, padding top on mobile */}
-      <main className="md:ml-[260px] min-h-screen transition-all duration-300 pt-16 md:pt-0">
+      <main className="relative z-10 md:ml-[260px] min-h-screen transition-all duration-300 pt-16 md:pt-0">
         <div className="p-4 md:p-8">
           {children}
         </div>
