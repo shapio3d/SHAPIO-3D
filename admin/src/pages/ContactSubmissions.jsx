@@ -36,10 +36,14 @@ export default function ContactSubmissions() {
         let message = sub.message || ''
         let file_url = sub.fileUrl || null // Fallback if they ever add the column
         
-        const attachmentMatch = message.match(/\[ATTACHMENT\]:\s*(https?:\/\/[^\s]+)/)
+        const attachmentMatch = message.match(/\[ATTACHMENT\]:\s*(https?:\/\/[^\s]+|\/uploads\/[^\s]+)/)
         if (attachmentMatch) {
           file_url = attachmentMatch[1]
-          message = message.replace(/\n\n\[ATTACHMENT\]:\s*https?:\/\/[^\s]+/, '')
+          if (file_url.startsWith('/uploads')) {
+            const baseUrl = API_URL.endsWith('/api') ? API_URL.slice(0, -4) : API_URL;
+            file_url = `${baseUrl}${file_url}`;
+          }
+          message = message.replace(/\n\n\[ATTACHMENT\]:\s*(https?:\/\/[^\s]+|\/uploads\/[^\s]+)/, '')
         }
         
         return { ...sub, message, file_url }

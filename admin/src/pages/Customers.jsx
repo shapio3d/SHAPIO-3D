@@ -167,8 +167,8 @@ export default function Customers() {
         />
       </div>
 
-      {/* Table */}
-      <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
+      {/* Table - Desktop View */}
+      <div className="hidden md:block bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-white/5">
@@ -223,6 +223,53 @@ export default function Customers() {
             </tbody>
           </table>
         </div>
+      </div>
+
+      {/* Mobile Card View */}
+      <div className="block md:hidden space-y-4">
+        {filtered.map((cust) => (
+          <div key={cust.id} className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+            <div className="flex justify-between items-start">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-full bg-gradient-to-br from-k-silver/20 to-k-border flex items-center justify-center shrink-0">
+                  <span className="text-xs font-bold text-k-silver">{cust.name.charAt(0)}</span>
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-white">{cust.name}</p>
+                  <p className="text-xs text-k-silver-dim">{cust.email}</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <button onClick={() => openEdit(cust)} className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 text-k-silver-dim hover:text-white transition-all">
+                  <Edit3 size={14} />
+                </button>
+                <button onClick={() => handleDelete(cust.id)} className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5 text-k-silver-dim hover:text-red-400 transition-all">
+                  <Trash2 size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-y-3 pt-3 border-t border-white/10">
+              <div>
+                <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Phone</p>
+                <p className="text-sm text-k-silver">{cust.phone}</p>
+              </div>
+              <div>
+                <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Company</p>
+                <p className="text-sm text-k-silver">{cust.company || '—'}</p>
+              </div>
+              <div className="col-span-2">
+                <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Location</p>
+                <p className="text-sm text-k-silver-dim">{cust.billAddress || cust.address || '—'}</p>
+              </div>
+            </div>
+          </div>
+        ))}
+        {filtered.length === 0 && (
+          <div className="text-center p-6 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-k-silver-dim text-sm">
+            No customers found
+          </div>
+        )}
       </div>
 
       {/* Modal */}
