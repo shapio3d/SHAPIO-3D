@@ -65,7 +65,7 @@ body {
   height: 100vh;
   background-color: #050a08;
   overflow: hidden;
-  z-index: 0;
+  z-index: -1;
   pointer-events: none;
 }
 
