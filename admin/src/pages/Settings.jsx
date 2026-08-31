@@ -5,7 +5,7 @@ import { supabase } from '../supabaseClient'
 
 export default function Settings() {
   const { admin } = useAuth()
-  const [form, setForm] = useState({ currentPassword: '', newPassword: '', confirmPassword: '' })
+  const [form, setForm] = useState({ newPassword: '', confirmPassword: '' })
   
   // PDF Settings State
   const [pdfSettings, setPdfSettings] = useState({
@@ -74,8 +74,8 @@ export default function Settings() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError('')
-    if (!form.currentPassword || !form.newPassword || !form.confirmPassword) {
-      setError('All fields are required')
+    if (!form.newPassword || !form.confirmPassword) {
+      setError('Both password fields are required')
       return
     }
     if (form.newPassword !== form.confirmPassword) {
@@ -86,10 +86,19 @@ export default function Settings() {
       setError('Password must be at least 8 characters')
       return
     }
-    // Mock save
-    await new Promise(resolve => setTimeout(resolve, 800))
+    
+    // Call Supabase update user
+    const { error: updateError } = await supabase.auth.updateUser({
+      password: form.newPassword
+    })
+    
+    if (updateError) {
+      setError(updateError.message)
+      return
+    }
+    
     setSaved(true)
-    setForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+    setForm({ newPassword: '', confirmPassword: '' })
     setTimeout(() => setSaved(false), 3000)
   }
 
@@ -106,8 +115,8 @@ export default function Settings() {
         <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-6 mb-6">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-k-silver/20 to-k-border flex items-center justify-center">
-              <span className="font-display text-lg font-bold text-k-silver">
-                {admin?.username?.charAt(0)?.toUpperCase() || 'A'}
+              <span className="font-display text-lg font-bold text-k-silver uppercase">
+                {admin?.email?.charAt(0) || 'A'}
               </span>
             </div>
             <div>
@@ -117,7 +126,42 @@ export default function Settings() {
           </div>
         </div>
 
+        {/* Password Reset */}
+        <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-6">
+            <div className="w-10 h-10 rounded-xl bg-k-card border border-white/10 flex items-center justify-center">
+              <Key size={18} className="text-k-silver" />
+            </div>
+            <div>
+              <h3 className="text-sm font-semibold text-white">Change Password</h3>
+              <p className="text-xs text-k-silver-dim">Update your administrator password</p>
+            </div>
+          </div>
 
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div>
+              <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">New Password</label>
+              <input type="password" value={form.newPassword} onChange={e => setForm({...form, newPassword: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+            </div>
+            <div>
+              <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Confirm New Password</label>
+              <input type="password" value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+            </div>
+            
+            {error && <p className="text-xs text-red-400">{error}</p>}
+            
+            {saved && (
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/20 text-sm text-emerald-400">
+                <CheckCircle size={16} />
+                Password updated successfully
+              </div>
+            )}
+
+            <button type="submit" className="px-6 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all">
+              Update Password
+            </button>
+          </form>
+        </div>
 
         {/* PDF Defaults config */}
         <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-6 mt-6">

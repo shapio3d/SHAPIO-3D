@@ -64,9 +64,9 @@ export default function Footer() {
             </p>
             
             <div className="space-y-4">
-              <a href="tel:+919876543210" className="flex items-center gap-3 text-k-silver-dim hover:text-emerald-400 transition-colors group">
+              <a href="tel:+916384014546" className="flex items-center gap-3 text-k-silver-dim hover:text-emerald-400 transition-colors group">
                 <Phone size={16} className="group-hover:text-emerald-400" />
-                <span className="text-sm">+91 98765 43210</span>
+                <span className="text-sm">+91 63840 14546</span>
               </a>
               <a href="mailto:shapio3dtech@gmail.com" className="flex items-center gap-3 text-k-silver-dim hover:text-emerald-400 transition-colors group">
                 <Mail size={16} className="group-hover:text-emerald-400" />

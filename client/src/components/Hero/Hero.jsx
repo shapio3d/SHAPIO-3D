@@ -185,7 +185,7 @@ const DetailsSection1 = () => {
   const tabs = [
     {
       title: "Engineering & Industrial",
-      image: "/images/services/engineering.png",
+      image: "/images/services/engineering_hero_1788213540020.png",
       items: [
         "Engineering & Industrial Components",
         "Custom Machine Parts",
@@ -194,7 +194,7 @@ const DetailsSection1 = () => {
     },
     {
       title: "Prototyping",
-      image: "/images/services/prototyping.png",
+      image: "/images/services/prototyping_hero_1788213591197.png",
       items: [
         "Functional Prototypes",
         "Product Development Prototypes",
@@ -203,7 +203,7 @@ const DetailsSection1 = () => {
     },
     {
       title: "Mechanical & Assembly",
-      image: "/images/services/mechanical.png",
+      image: "/images/services/mechanical_hero_1788213643670.png",
       items: [
         "Mechanical Components & Parts",
         "Jigs, Fixtures & Assembly Aids",
@@ -258,7 +258,7 @@ const DetailsSection2 = () => {
     },
     {
       title: "Electronics & IoT",
-      image: "/images/services/electronics.png",
+      image: "/images/services/electronics_hero_1788213704809.png",
       items: [
         "PCB & Electronics Enclosures",
         "Device Housings & Protective Enclosures",
