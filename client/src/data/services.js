@@ -23,12 +23,12 @@ export const SERVICE_DATA = {
       'Orientation: Design parts to minimize overhanging angles beyond 45 degrees.'
     ],
     gallery: [
-      '/engineering_hero_1788213540020.png',
-      '/engineering_gallery1_1788213552000.png',
-      '/engineering_gallery2_1788213562722.png',
-      '/engineering_gallery3_1788213580339.png'
+      '/images/services/engineering_hero_1788213540020.png',
+      '/images/services/engineering_gallery1_1788213552000.png',
+      '/images/services/engineering_gallery2_1788213562722.png',
+      '/images/services/engineering_gallery3_1788213580339.png'
     ],
-    image: '/engineering_hero_1788213540020.png'
+    image: '/images/services/engineering_hero_1788213540020.png'
   },
   'rapid-prototyping': {
     title: 'Rapid Prototyping',
@@ -54,12 +54,12 @@ export const SERVICE_DATA = {
       'Assembly: Consider snap-fits or threaded inserts for functional testing.'
     ],
     gallery: [
-      '/prototyping_hero_1788213591197.png',
-      '/prototyping_gallery1_1788213602795.png',
-      '/prototyping_gallery2_1788213621464.png',
-      '/prototyping_gallery3_1788213632596.png'
+      '/images/services/prototyping_hero_1788213591197.png',
+      '/images/services/prototyping_gallery1_1788213602795.png',
+      '/images/services/prototyping_gallery2_1788213621464.png',
+      '/images/services/prototyping_gallery3_1788213632596.png'
     ],
-    image: '/prototyping_hero_1788213591197.png'
+    image: '/images/services/prototyping_hero_1788213591197.png'
   },
   'mechanical-assembly': {
     title: 'Mechanical & Assembly',
@@ -85,12 +85,12 @@ export const SERVICE_DATA = {
       'Inserts: Use heat-set threaded inserts instead of printed threads.'
     ],
     gallery: [
-      '/mechanical_hero_1788213643670.png',
-      '/mechanical_gallery1_1788213662134.png',
-      '/mechanical_gallery2_1788213673091.png',
-      '/mechanical_gallery3_1788213686427.png'
+      '/images/services/mechanical_hero_1788213643670.png',
+      '/images/services/mechanical_gallery1_1788213662134.png',
+      '/images/services/mechanical_gallery2_1788213673091.png',
+      '/images/services/mechanical_gallery3_1788213686427.png'
     ],
-    image: '/mechanical_hero_1788213643670.png'
+    image: '/images/services/mechanical_hero_1788213643670.png'
   },
   'electronics-iot': {
     title: 'Electronics & IoT',
@@ -116,12 +116,12 @@ export const SERVICE_DATA = {
       'Ventilation: Ensure sufficient airflow paths to prevent heat buildup.'
     ],
     gallery: [
-      '/electronics_hero_1788213704809.png',
+      '/images/services/electronics_hero_1788213704809.png',
       'https://images.unsplash.com/photo-1518770660439-4636190af475?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1555664424-778a1e5e1b48?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80',
       'https://images.unsplash.com/photo-1592503254549-ceb5c3e7f9ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'
     ],
-    image: '/electronics_hero_1788213704809.png'
+    image: '/images/services/electronics_hero_1788213704809.png'
   },
   'tooling-molding': {
     title: 'Tooling & Molding',
