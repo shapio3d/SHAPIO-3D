@@ -88,7 +88,11 @@ const processAndUploadFile = async (req, res, next) => {
     } else {
       // Fallback for local development if R2 isn't configured yet
       const fs = require('fs')
-      const localPath = path.join(__dirname, '..', process.env.UPLOAD_DIR || 'uploads', newFilename)
+      const uploadDir = path.join(__dirname, '..', process.env.UPLOAD_DIR || 'uploads')
+      if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true })
+      }
+      const localPath = path.join(uploadDir, newFilename)
       fs.writeFileSync(localPath, req.file.buffer)
       req.file.fileUrl = `/uploads/${newFilename}`
     }
