@@ -6,6 +6,7 @@ const multer = require('multer')
 const upload = multer({ storage: multer.memoryStorage() }) // Temporarily handle multipart for form parsing
 const { PrismaClient } = require('@prisma/client')
 const prisma = new PrismaClient()
+const { requireSupabaseAuth } = require('../middleware/auth')
 
 // Zod schema for strict input validation
 const contactSchema = z.object({
@@ -93,6 +94,49 @@ router.get('/track/:trackingId', async (req, res, next) => {
   } catch (error) {
     console.error('Tracking lookup error:', error);
     next(error);
+  }
+})
+
+// ─── ADMIN ROUTES ───
+
+// GET /api/contact/admin
+// Fetch all contact submissions
+router.get('/admin', requireSupabaseAuth, async (req, res, next) => {
+  try {
+    const submissions = await prisma.contactMessage.findMany({
+      orderBy: { createdAt: 'desc' }
+    })
+    res.json(submissions)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// PATCH /api/contact/admin/:id/status
+// Update status of a submission
+router.patch('/admin/:id/status', requireSupabaseAuth, async (req, res, next) => {
+  try {
+    const { status } = req.body
+    const updated = await prisma.contactMessage.update({
+      where: { id: req.params.id },
+      data: { status }
+    })
+    res.json(updated)
+  } catch (error) {
+    next(error)
+  }
+})
+
+// DELETE /api/contact/admin/:id
+// Delete a submission
+router.delete('/admin/:id', requireSupabaseAuth, async (req, res, next) => {
+  try {
+    await prisma.contactMessage.delete({
+      where: { id: req.params.id }
+    })
+    res.json({ success: true })
+  } catch (error) {
+    next(error)
   }
 })
 

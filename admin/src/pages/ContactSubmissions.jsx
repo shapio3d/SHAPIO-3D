@@ -2,6 +2,16 @@ import { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Search, Eye, X, Image as ImageIcon, CheckCircle, Trash2, Calendar, User, Mail, Phone, Hash } from 'lucide-react'
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const getAuthHeader = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  return {
+    'Authorization': `Bearer ${session?.access_token}`,
+    'Content-Type': 'application/json'
+  };
+}
+
 export default function ContactSubmissions() {
   const [submissions, setSubmissions] = useState([])
   const [search, setSearch] = useState('')
@@ -15,12 +25,12 @@ export default function ContactSubmissions() {
 
   const fetchSubmissions = async () => {
     setLoading(true)
-    const { data, error } = await supabase
-      .from('ContactMessage')
-      .select('*')
-      .order('createdAt', { ascending: false })
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/contact/admin`, { headers });
+      if (!res.ok) throw new Error('Failed to fetch submissions');
+      const data = await res.json();
       
-    if (!error && data) {
       // Extract file URL from message if present
       const processedData = data.map(sub => {
         let message = sub.message || ''
@@ -36,6 +46,8 @@ export default function ContactSubmissions() {
       })
       
       setSubmissions(processedData)
+    } catch (error) {
+      console.error(error);
     }
     setLoading(false)
   }
@@ -52,25 +64,38 @@ export default function ContactSubmissions() {
   }
 
   const updateStatus = async (id, status) => {
-    const { error } = await supabase
-      .from('ContactMessage')
-      .update({ status })
-      .eq('id', id)
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/contact/admin/${id}/status`, {
+        method: 'PATCH',
+        headers,
+        body: JSON.stringify({ status })
+      });
+      if (!res.ok) throw new Error('Failed to update status');
       
-    if (!error) {
       setSubmissions(prev => prev.map(s => s.id === id ? { ...s, status } : s))
       if (viewing?.id === id) {
         setViewing({ ...viewing, status })
       }
+    } catch (error) {
+      console.error(error);
     }
   }
 
   const handleDelete = async (id) => {
     if(!window.confirm('Are you sure you want to delete this submission?')) return;
-    const { error } = await supabase.from('ContactMessage').delete().eq('id', id)
-    if (!error) {
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/contact/admin/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      if (!res.ok) throw new Error('Failed to delete submission');
+      
       setSubmissions(prev => prev.filter(s => s.id !== id))
       if (viewing?.id === id) setModalOpen(false)
+    } catch (error) {
+      console.error(error);
     }
   }
 
