@@ -6,7 +6,7 @@ import SEO from '../components/SEO/SEO'
 const SERVICES_DETAIL = [
   {
     icon: Wrench,
-    image: '/images/services/engineering.png',
+    image: '/engineering_hero_1788213540020.png',
     title: 'Engineering & Industrial',
     slug: 'engineering-industrial',
     subtitle: 'Custom Machine Parts',
@@ -19,7 +19,7 @@ const SERVICES_DETAIL = [
   },
   {
     icon: Lightbulb,
-    image: '/images/services/prototyping.png',
+    image: '/prototyping_hero_1788213591197.png',
     title: 'Rapid Prototyping',
     slug: 'rapid-prototyping',
     subtitle: 'Functional & Development',
@@ -32,7 +32,7 @@ const SERVICES_DETAIL = [
   },
   {
     icon: Settings,
-    image: '/images/services/mechanical.png',
+    image: '/mechanical_hero_1788213643670.png',
     title: 'Mechanical & Assembly',
     slug: 'mechanical-assembly',
     subtitle: 'Fixtures & Supports',
@@ -45,7 +45,7 @@ const SERVICES_DETAIL = [
   },
   {
     icon: Cpu,
-    image: '/images/services/electronics.png',
+    image: '/electronics_hero_1788213704809.png',
     title: 'Electronics & IoT',
     slug: 'electronics-iot',
     subtitle: 'Enclosures & Housings',
