@@ -1,29 +1,78 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
-import { Search, Plus, Edit3, Trash2, X } from 'lucide-react'
+import { Search, Plus, Edit3, Trash2, X, AlertCircle } from 'lucide-react'
+
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
+const getAuthHeader = async () => {
+  const { data: { session } } = await supabase.auth.getSession();
+  return {
+    'Authorization': `Bearer ${session?.access_token}`,
+    'Content-Type': 'application/json'
+  };
+}
 
 export default function Customers() {
-  const [customers, setCustomers] = useState([])
+  const queryClient = useQueryClient()
   const [search, setSearch] = useState('')
   const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
-  const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', address: '', notes: '' })
-  const [loading, setLoading] = useState(false)
+  const [form, setForm] = useState({ name: '', email: '', phone: '', company: '', address: '', notes: '', panNumber: '', gstNumber: '' })
 
-  useEffect(() => {
-    fetchCustomers()
-  }, [])
-
-  const fetchCustomers = async () => {
-    const { data, error } = await supabase
-      .from('customers')
-      .select('*')
-      .order('created_at', { ascending: false })
-      
-    if (!error && data) {
-      setCustomers(data)
+  const { data: customers = [], isLoading, isError } = useQuery({
+    queryKey: ['customers'],
+    queryFn: async () => {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/customers`, { headers });
+      if (!res.ok) throw new Error('Failed to fetch customers')
+      return res.json();
     }
-  }
+  })
+
+  const saveMutation = useMutation({
+    mutationFn: async (payload) => {
+      const headers = await getAuthHeader();
+      if (editing) {
+        const res = await fetch(`${API_URL}/customers/${editing.id}`, {
+          method: 'PUT',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to update customer');
+        return res.json();
+      } else {
+        const res = await fetch(`${API_URL}/customers`, {
+          method: 'POST',
+          headers,
+          body: JSON.stringify(payload)
+        });
+        if (!res.ok) throw new Error('Failed to create customer');
+        return res.json();
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+      setModalOpen(false)
+    }
+  })
+
+  const deleteMutation = useMutation({
+    mutationFn: async (id) => {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/customers/${id}`, {
+        method: 'DELETE',
+        headers
+      });
+      if (!res.ok) throw new Error('Failed to delete customer');
+      return id;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['customers'] })
+      queryClient.invalidateQueries({ queryKey: ['dashboard'] })
+    }
+  })
 
   const filtered = customers.filter(c =>
     (c.name || '').toLowerCase().includes(search.toLowerCase()) ||
@@ -33,7 +82,7 @@ export default function Customers() {
 
   const openNew = () => {
     setEditing(null)
-    setForm({ name: '', email: '', phone: '', company: '', address: '', notes: '' })
+    setForm({ name: '', email: '', phone: '', company: '', address: '', notes: '', panNumber: '', gstNumber: '' })
     setModalOpen(true)
   }
 
@@ -44,53 +93,53 @@ export default function Customers() {
       email: customer.email || '', 
       phone: customer.phone || '', 
       company: customer.company || '', 
-      address: customer.address || '', 
-      notes: customer.notes || '' 
+      address: customer.billAddress || customer.address || '', 
+      notes: customer.notes || '',
+      panNumber: customer.panNo || customer.panNumber || '',
+      gstNumber: customer.gstNumber || ''
     })
     setModalOpen(true)
   }
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!form.name || !form.phone) return
-    setLoading(true)
-
     const payload = {
       name: form.name,
       email: form.email,
       phone: form.phone,
       company: form.company,
-      address: form.address,
-      notes: form.notes
+      billAddress: form.address,
+      notes: form.notes,
+      panNumber: form.panNumber,
+      gstNumber: form.gstNumber
     }
-
-    if (editing) {
-      const { error } = await supabase
-        .from('customers')
-        .update(payload)
-        .eq('id', editing.id)
-        
-      if (!error) {
-        setCustomers(prev => prev.map(c => c.id === editing.id ? { ...c, ...payload } : c))
-      }
-    } else {
-      const { data, error } = await supabase
-        .from('customers')
-        .insert([payload])
-        .select()
-        
-      if (!error && data) {
-        setCustomers(prev => [data[0], ...prev])
-      }
-    }
-    setLoading(false)
-    setModalOpen(false)
+    saveMutation.mutate(payload)
   }
 
-  const handleDelete = async (id) => {
-    const { error } = await supabase.from('customers').delete().eq('id', id)
-    if (!error) {
-      setCustomers(prev => prev.filter(c => c.id !== id))
-    }
+  const handleDelete = (id) => {
+    if (!confirm('Are you sure you want to delete this customer?')) return;
+    deleteMutation.mutate(id)
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex h-[calc(100vh-80px)] items-center justify-center">
+        <div className="flex gap-2">
+          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
+          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
+          <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="flex h-[calc(100vh-80px)] flex-col items-center justify-center text-red-400 gap-4">
+        <AlertCircle size={32} />
+        <p className="text-sm">Failed to load customers. Please try refreshing.</p>
+      </div>
+    )
   }
 
   return (
@@ -114,16 +163,16 @@ export default function Customers() {
           placeholder="Search by name, company, or phone..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md pl-11 pr-4 py-3 bg-k-dark border border-k-border rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+          className="w-full max-w-md pl-11 pr-4 py-3 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-k-dark border border-k-border rounded-xl overflow-hidden">
+      <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead>
-              <tr className="border-b border-k-border">
+            <thead className="bg-white/5">
+              <tr className="border-b border-white/10">
                 <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Customer</th>
                 <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Phone</th>
                 <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Company</th>
@@ -134,7 +183,7 @@ export default function Customers() {
             </thead>
             <tbody>
               {filtered.map((cust) => (
-                <tr key={cust.id} className="border-b border-k-border/50 hover:bg-white/[0.02] transition-colors">
+                <tr key={cust.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-gradient-to-br from-k-silver/20 to-k-border flex items-center justify-center shrink-0">
@@ -148,9 +197,9 @@ export default function Customers() {
                   </td>
                   <td className="px-6 py-4 text-sm text-k-silver">{cust.phone}</td>
                   <td className="px-6 py-4 text-sm text-k-silver">{cust.company || '—'}</td>
-                  <td className="px-6 py-4 text-sm text-k-silver-dim">{cust.address || '—'}</td>
+                  <td className="px-6 py-4 text-sm text-k-silver-dim">{cust.billAddress || cust.address || '—'}</td>
                   <td className="px-6 py-4 text-sm text-k-silver-dim">
-                    {new Date(cust.created_at).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    {new Date(cust.createdAt || new Date()).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                   </td>
                   <td className="px-6 py-4">
                     <div className="flex items-center justify-end gap-2">
@@ -179,7 +228,7 @@ export default function Customers() {
       {/* Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-k-dark border border-k-border rounded-2xl w-full max-w-lg p-8 relative">
+          <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl w-full max-w-lg p-8 relative">
             <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06]">
               <X size={16} />
             </button>
@@ -190,37 +239,46 @@ export default function Customers() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Name *</label>
-                  <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-4 py-2.5 bg-k-black border border-k-border rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+                  <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
                 </div>
                 <div>
                   <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Phone *</label>
-                  <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full px-4 py-2.5 bg-k-black border border-k-border rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+                  <input value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Email</label>
-                <input value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full px-4 py-2.5 bg-k-black border border-k-border rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+                <input value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Company</label>
+                <input value={form.company} onChange={e => setForm({...form, company: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Bill To Address</label>
+                <textarea value={form.address} onChange={e => setForm({...form, address: e.target.value})} rows={3} placeholder="Street, City, State, ZIP..." className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors resize-none" />
               </div>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Company</label>
-                  <input value={form.company} onChange={e => setForm({...form, company: e.target.value})} className="w-full px-4 py-2.5 bg-k-black border border-k-border rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">PAN No</label>
+                  <input value={form.panNumber} onChange={e => setForm({...form, panNumber: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
                 </div>
                 <div>
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Location</label>
-                  <input value={form.address} onChange={e => setForm({...form, address: e.target.value})} className="w-full px-4 py-2.5 bg-k-black border border-k-border rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
+                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">GSTIN</label>
+                  <input value={form.gstNumber} onChange={e => setForm({...form, gstNumber: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors" />
                 </div>
               </div>
               <div>
                 <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Notes</label>
-                <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} rows={2} className="w-full px-4 py-2.5 bg-k-black border border-k-border rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors resize-none" />
+                <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} rows={2} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 transition-colors resize-none" />
+
               </div>
             </div>
             <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setModalOpen(false)} className="px-5 py-2.5 text-sm text-k-silver-dim border border-k-border rounded-xl hover:text-white hover:border-k-silver/40 transition-all">
+              <button onClick={() => setModalOpen(false)} className="px-5 py-2.5 text-sm text-k-silver-dim border border-white/10 rounded-xl hover:text-white hover:border-k-silver/40 transition-all">
                 Cancel
               </button>
-              <button disabled={loading} onClick={handleSave} className="px-5 py-2.5 text-sm bg-gradient-to-r from-white to-k-silver text-k-black font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all disabled:opacity-50">
+              <button disabled={saveMutation.isPending} onClick={handleSave} className="px-5 py-2.5 text-sm bg-gradient-to-r from-white to-k-silver text-k-black font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all disabled:opacity-50">
                 {editing ? 'Save Changes' : 'Add Customer'}
               </button>
             </div>

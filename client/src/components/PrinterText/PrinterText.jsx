@@ -5,8 +5,8 @@ import * as THREE from 'three'
 import { FontLoader } from 'three/addons/loaders/FontLoader.js'
 import { TextGeometry } from 'three/addons/geometries/TextGeometry.js'
 
-const LETTERS = 'KRIXTRON'
-const FONT_URL = 'https://cdn.jsdelivr.net/npm/three@0.165.0/examples/fonts/helvetiker_bold.typeface.json'
+const LETTERS = 'SHAPIO 3D'
+const FONT_URL = '/fonts/helvetiker_bold.typeface.json'
 
 /* ═══════════════════════════════════════════
    Realistic 3D Printer Nozzle

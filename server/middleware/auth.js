@@ -1,12 +1,9 @@
 const jwt = require('jsonwebtoken')
+const { createClient } = require('@supabase/supabase-js')
 
-/**
- * Authentication middleware — verifies JWT access token
- * Token is read from Authorization header (Bearer) or httpOnly cookie
- */
+// ─── JWT Auth (legacy) ───
 function authMiddleware(req, res, next) {
   try {
-    // Check Authorization header first, then cookie
     let token = null
     const authHeader = req.headers.authorization
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -30,4 +27,41 @@ function authMiddleware(req, res, next) {
   }
 }
 
+// ─── Supabase Auth ───
+const supabaseAuthClient = createClient(
+  process.env.SUPABASE_URL,
+  process.env.SUPABASE_ANON_KEY
+)
+
+const tokenCache = new Map()
+
+async function requireSupabaseAuth(req, res, next) {
+  const authHeader = req.headers.authorization
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ error: 'Authentication required' })
+  }
+  const token = authHeader.split(' ')[1]
+
+  if (tokenCache.has(token)) {
+    req.user = tokenCache.get(token)
+    return next()
+  }
+
+  try {
+    const { data: { user }, error } = await supabaseAuthClient.auth.getUser(token)
+    if (error || !user) {
+      return res.status(401).json({ error: 'Invalid or expired token' })
+    }
+
+    tokenCache.set(token, user)
+    setTimeout(() => tokenCache.delete(token), 60 * 1000) // 1m cache
+
+    req.user = user
+    next()
+  } catch (err) {
+    return res.status(401).json({ error: 'Authentication failed' })
+  }
+}
+
 module.exports = authMiddleware
+module.exports.requireSupabaseAuth = requireSupabaseAuth

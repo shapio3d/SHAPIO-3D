@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Search, Loader2, ArrowLeft, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { supabase } from '../supabaseClient'
 
 const STATUS_INFO = {
   new: { label: 'Received', color: 'text-emerald-400', icon: CheckCircle2 },
@@ -25,17 +24,21 @@ export default function TrackProcess() {
     setError(null)
     setProcessData(null)
 
-    // Use a secure RPC call so we don't need to open up the whole table to anonymous users
-    const { data, error: dbError } = await supabase
-      .rpc('get_process_by_tracking_id', { p_tracking_id: trackingId.trim() })
+    // Use Express backend to retrieve status securely
+    try {
+      const res = await fetch(`http://localhost:5000/api/contact/track/${encodeURIComponent(trackingId.trim())}`)
+      const json = await res.json()
 
-    if (dbError || !data || data.length === 0) {
+      if (!res.ok || !json.success) {
+        throw new Error(json.error || "We couldn't find a process with that ID.")
+      }
+      
+      setProcessData(json.data)
+    } catch (err) {
       setError("We couldn't find a process with that ID. Please check and try again.")
+    } finally {
       setLoading(false)
-      return
     }
-
-    setProcessData(data[0])
     setLoading(false)
   }
 
@@ -93,7 +96,7 @@ export default function TrackProcess() {
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                 <div>
                   <h2 className="text-xl font-display font-bold text-white mb-2">Project Request</h2>
-                  <p className="text-sm text-k-silver-dim font-mono tracking-wide">ID: {processData.tracking_id || processData.id}</p>
+                  <p className="text-sm text-k-silver-dim font-mono tracking-wide">ID: {processData.trackingId}</p>
                 </div>
                 
                 {(() => {
@@ -112,7 +115,7 @@ export default function TrackProcess() {
                 <div className="bg-k-dark rounded-xl p-5 border border-k-border">
                   <p className="text-xs text-k-silver-dim uppercase tracking-wider mb-2">Date Submitted</p>
                   <p className="text-white text-sm">
-                    {new Date(processData.created_at).toLocaleDateString('en-US', {
+                    {new Date(processData.createdAt).toLocaleDateString('en-US', {
                       weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
                     })}
                   </p>

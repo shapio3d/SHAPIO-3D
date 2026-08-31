@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Send, User, Mail, Phone, MessageSquare, Upload, CheckCircle, Printer, ArrowRight } from 'lucide-react'
-import { supabase } from '../../supabaseClient'
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
@@ -19,61 +18,36 @@ export default function Contact() {
     e.preventDefault()
     setLoading(true)
     setError(null)
-    
-    // Generate a unique tracking ID
-    const newTrackingId = `KRX-${Math.random().toString(36).substring(2, 8).toUpperCase()}`
-
-    let fileUrl = null
-    
-    // Upload file if it exists
+    // Instead of direct Supabase upload/insert, send everything to the Express backend via FormData
+    const formData = new FormData()
+    formData.append('name', form.name)
+    formData.append('email', form.email)
+    formData.append('phone', form.phone)
+    formData.append('message', form.message)
     if (file) {
-      const fileExt = file.name.split('.').pop()
-      const fileName = `${newTrackingId}-${Date.now()}.${fileExt}`
+      formData.append('file', file)
+    }
+
+    try {
+      const response = await fetch('http://localhost:5000/api/contact', {
+        method: 'POST',
+        body: formData
+      })
+
+      const result = await response.json()
       
-      const { data: uploadData, error: uploadError } = await supabase.storage
-        .from('submissions')
-        .upload(fileName, file)
-        
-      if (!uploadError && uploadData) {
-        const { data: publicUrlData } = supabase.storage
-          .from('submissions')
-          .getPublicUrl(fileName)
-          
-        fileUrl = publicUrlData.publicUrl
-      } else {
-        console.error('File upload error:', uploadError)
-        // We continue with submission even if file fails, just log it.
+      if (!response.ok) {
+        throw new Error(result.error || 'Failed to send message')
       }
-    }
 
-    // Insert into Supabase (Appending fileUrl to message to avoid schema errors if file_url column doesn't exist)
-    const finalMessage = fileUrl 
-      ? `${form.message}\n\n[ATTACHMENT]: ${fileUrl}` 
-      : form.message;
-
-    const { data, error: dbError } = await supabase
-      .from('contact_submissions')
-      .insert([
-        { 
-          tracking_id: newTrackingId,
-          name: form.name, 
-          email: form.email, 
-          phone: form.phone, 
-          message: finalMessage,
-          status: 'new'
-        }
-      ])
-      
-    if (dbError) {
-      console.error('Error submitting form:', dbError)
+      setTrackingId(result.trackingId)
+      setSubmitted(true)
+    } catch (err) {
+      console.error('Error submitting form:', err)
       setError('There was an error sending your message. Please try again.')
+    } finally {
       setLoading(false)
-      return
     }
-
-    setTrackingId(newTrackingId)
-    setSubmitted(true)
-    setLoading(false)
   }
 
   if (submitted) {
@@ -86,7 +60,7 @@ export default function Contact() {
             </div>
             <h3 className="font-display text-2xl font-bold text-white">Message Sent!</h3>
             <p className="text-k-silver-dim mt-3 font-body">
-              We'll get back to you within 24 hours. Thank you for choosing KRIXTRON.
+              We'll get back to you within 24 hours. Thank you for choosing Shapio 3D Technologies.
             </p>
             
             {/* Tracking ID Section */}
@@ -141,7 +115,9 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="text-xs text-k-silver-dim uppercase tracking-wider">Email</p>
-                    <p className="text-sm text-white mt-0.5">hello@krixtron.com</p>
+                    <a href="mailto:shapio3dtech@gmail.com" className="text-sm text-white mt-0.5 block hover:text-emerald-400 transition-colors">
+                      shapio3dtech@gmail.com
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -150,7 +126,9 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="text-xs text-k-silver-dim uppercase tracking-wider">Phone</p>
-                    <p className="text-sm text-white mt-0.5">+91 98765 43210</p>
+                    <a href="tel:+919876543210" className="text-sm text-white mt-0.5 block hover:text-emerald-400 transition-colors">
+                      +91 98765 43210
+                    </a>
                   </div>
                 </div>
                 <div className="flex items-start gap-4">
@@ -159,7 +137,11 @@ export default function Contact() {
                   </div>
                   <div>
                     <p className="text-xs text-k-silver-dim uppercase tracking-wider">Studio</p>
-                    <p className="text-sm text-white mt-0.5">Mumbai, Maharashtra, India</p>
+                    <p className="text-sm text-white mt-1 leading-relaxed">
+                      No.216, Indira Nagar, <br />
+                      Ammanapakkam, Chengalpattu – 603003 <br />
+                      Tamil Nadu, India.
+                    </p>
                   </div>
                 </div>
               </div>

@@ -5,13 +5,13 @@ import {
   Settings, LogOut, Printer, ChevronLeft, ChevronRight, Activity, MessageSquare
 } from 'lucide-react'
 import { useState } from 'react'
+import logoUrl from '../../assets/logo.png'
 
 const NAV_ITEMS = [
   { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
   { label: 'Customers', path: '/customers', icon: Users },
   { label: 'Invoices', path: '/invoices', icon: FileText },
   { label: 'Quotations', path: '/quotations', icon: FilePlus },
-  { label: 'Processes', path: '/processes', icon: Activity },
   { label: 'Products', path: '/products', icon: Package },
   { label: 'Submissions', path: '/submissions', icon: MessageSquare },
   { label: 'Settings', path: '/settings', icon: Settings },
@@ -24,19 +24,16 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
 
   return (
     <aside
-      className={`fixed top-0 left-0 h-screen bg-k-dark border-r border-k-border flex flex-col transition-all duration-300 z-40 
+      className={`fixed top-0 left-0 h-screen bg-black/40 backdrop-blur-xl border-r border-white/10 flex flex-col transition-all duration-300 z-40 
         ${collapsed ? 'w-[72px]' : 'w-[260px]'}
         ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
       `}
     >
       {/* Logo */}
-      <div className="h-16 flex items-center px-5 border-b border-k-border shrink-0">
-        <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-white to-k-silver flex items-center justify-center shrink-0">
-          <Printer size={18} className="text-k-black" />
-        </div>
+      <div className="h-20 flex items-center justify-center border-b border-white/10 shrink-0 px-6">
         {!collapsed && (
-          <span className="ml-3 font-display font-bold text-sm tracking-wider text-k-white">
-            KRIX<span className="text-k-silver">TRON</span>
+          <span className="font-display font-bold text-xl tracking-wider text-white">
+            SHAPIO<span className="text-k-silver"> 3D</span>
           </span>
         )}
       </div>
@@ -73,11 +70,11 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
         </div>
       </nav>
 
-      {/* Bottom section */}
-      <div className="border-t border-k-border p-3 space-y-2">
+      {/* User / Collapse */}
+      <div className="shrink-0 p-3 border-t border-white/10 flex flex-col gap-2">
         {/* User info */}
         {!collapsed && admin && (
-          <div className="px-3 py-2 rounded-lg bg-k-card/50">
+          <div className="px-3 py-2 rounded-lg bg-white/5 border border-white/5">
             <p className="text-xs text-k-silver-dim">Logged in as</p>
             <p className="text-sm font-medium text-white">{admin.username}</p>
           </div>

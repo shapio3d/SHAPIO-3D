@@ -5,7 +5,7 @@ const TESTIMONIALS = [
   {
     name: 'Rahul Sharma',
     company: 'TechBuild Labs',
-    text: 'KRIXTRON delivered our prototype in 48 hours with incredible precision. The surface finish was better than we expected from any FDM print.',
+    text: 'Shapio 3D Technologies delivered our prototype in 48 hours with incredible precision. The surface finish was better than we expected from any FDM print.',
     rating: 5,
   },
   {
@@ -17,7 +17,7 @@ const TESTIMONIALS = [
   {
     name: 'Vikram Patel',
     company: 'RoboWorks India',
-    text: 'We\'ve been using KRIXTRON for all our robot housing needs. Fast turnaround, consistent quality, and the Nylon parts are incredibly durable.',
+    text: 'We\'ve been using Shapio 3D Technologies for all our robot housing needs. Fast turnaround, consistent quality, and the Nylon parts are incredibly durable.',
     rating: 5,
   },
   {
@@ -29,7 +29,7 @@ const TESTIMONIALS = [
   {
     name: 'Karthik Reddy',
     company: 'DroneForce',
-    text: 'Lightweight carbon-nylon drone frames with perfect dimensional accuracy. KRIXTRON is our go-to for all aerospace-grade prototyping.',
+    text: 'Lightweight carbon-nylon drone frames with perfect dimensional accuracy. Shapio 3D Technologies is our go-to for all aerospace-grade prototyping.',
     rating: 5,
   },
 ]

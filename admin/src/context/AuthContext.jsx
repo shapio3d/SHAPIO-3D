@@ -10,55 +10,60 @@ export function AuthProvider({ children }) {
   const navigate = useNavigate()
 
   useEffect(() => {
-    const demoAdmin = localStorage.getItem('krixtron_demo_admin')
-    if (demoAdmin) {
-      setAdmin(JSON.parse(demoAdmin))
-      setLoading(false)
-      return
-    }
+    let mounted = true
 
-    // Check active sessions and sets the user
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setAdmin(session?.user ?? null)
-      setLoading(false)
-    })
+    // Fast 300ms fallback timer to ensure zero delay on load
+    const timer = setTimeout(() => {
+      if (mounted) setLoading(false)
+    }, 300)
+
+    // Check active sessions and set the user
+    supabase.auth
+      .getSession()
+      .then(({ data }) => {
+        if (mounted) {
+          const session = data?.session
+          setAdmin((prev) => prev || (session?.user ?? null))
+        }
+      })
+      .catch((err) => {
+        console.error('Auth getSession error:', err)
+      })
+      .finally(() => {
+        if (mounted) {
+          setLoading(false)
+          clearTimeout(timer)
+        }
+      })
 
     // Listen for changes on auth state (logged in, signed out, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (!localStorage.getItem('krixtron_demo_admin')) {
-        setAdmin(session?.user ?? null)
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (mounted) {
+        setAdmin((prev) => prev || (session?.user ?? null))
       }
     })
 
-    return () => subscription.unsubscribe()
+    return () => {
+      mounted = false
+      clearTimeout(timer)
+      subscription?.unsubscribe()
+    }
   }, [])
 
   const login = async (email, password) => {
-    setLoading(true)
-
-    // Bypass for demo purposes
-    if (email === 'admin@gmail.com' && password === 'admin1234') {
-      const mockAdmin = { id: 'demo', email: 'admin@gmail.com', username: 'Demo Admin' }
-      setAdmin(mockAdmin)
-      // Save to local storage to keep them logged in during refresh
-      localStorage.setItem('krixtron_demo_admin', JSON.stringify(mockAdmin))
-      setLoading(false)
-      navigate('/dashboard')
-      return true
-    }
-
     const { data, error } = await supabase.auth.signInWithPassword({
       email,
       password,
     })
-
-    setLoading(false)
 
     if (error) {
       throw error
     }
 
     if (data.user) {
+      setAdmin(data.user)
       navigate('/dashboard')
       return true
     }
@@ -66,7 +71,6 @@ export function AuthProvider({ children }) {
 
   const logout = async () => {
     setLoading(true)
-    localStorage.removeItem('krixtron_demo_admin')
     await supabase.auth.signOut()
     setAdmin(null)
     setLoading(false)
@@ -75,7 +79,7 @@ export function AuthProvider({ children }) {
 
   return (
     <AuthContext.Provider value={{ admin, login, logout, loading }}>
-      {!loading && children}
+      {children}
     </AuthContext.Provider>
   )
 }

@@ -81,10 +81,10 @@ export default function Products() {
 
   const fetchProducts = async () => {
     const { data, error } = await supabase
-      .from('products')
+      .from('Product')
       .select('*')
-      .eq('is_active', true)
-      .order('created_at', { ascending: false })
+      .eq('isActive', true)
+      .order('createdAt', { ascending: false })
       
     if (data && data.length > 0) {
       setProducts(data.map(p => ({

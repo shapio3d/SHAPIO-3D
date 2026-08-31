@@ -1,62 +1,108 @@
 import { useScrollAnimations } from '../hooks/useScrollAnimations'
-import { Printer, Wrench, Palette, Layers, ArrowRight, CheckCircle } from 'lucide-react'
+import { Printer, Wrench, Layers, ArrowRight, CheckCircle, Cpu, Settings, Box, Lightbulb, Shield, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import SEO from '../components/SEO/SEO'
 
 const SERVICES_DETAIL = [
   {
-    icon: Printer,
-    title: '3D Printing',
-    subtitle: 'FDM · SLA · SLS',
-    description: 'From rapid prototypes to production-grade components, our multi-technology printing capabilities deliver the perfect balance of speed, precision, and cost-effectiveness.',
-    features: [
-      'Fused Deposition Modeling (FDM) — ideal for functional prototypes',
-      'Stereolithography (SLA) — ultra-smooth surface finishes',
-      'Selective Laser Sintering (SLS) — complex geometries, no supports',
-      'Tolerances as fine as ±0.1mm',
-      'Build volumes up to 300×300×400mm',
-      'Batch production up to 1000+ units',
-    ],
-  },
-  {
     icon: Wrench,
-    title: 'Repair & Rebuild',
-    subtitle: 'Reverse Engineering',
-    description: 'Broken, discontinued, or hard-to-find parts? We 3D scan, reverse-engineer, and rebuild components to exact specifications — often stronger than the original.',
+    image: '/images/services/engineering.png',
+    title: 'Engineering & Industrial',
+    slug: 'engineering-industrial',
+    subtitle: 'Custom Machine Parts',
+    description: 'We design and manufacture robust engineering and industrial components tailored to your exact specifications for heavy-duty performance.',
     features: [
-      'High-precision 3D scanning (0.05mm accuracy)',
-      'CAD reconstruction from physical parts',
-      'Material matching for OEM compatibility',
-      'Structural reinforcement and optimization',
-      'Legacy part reproduction',
-      'Assembly fitting verification',
+      'Engineering & Industrial Components',
+      'Custom Machine Parts',
+      'Custom Industrial Parts',
     ],
   },
   {
-    icon: Palette,
-    title: 'Design Service',
-    subtitle: 'Concept to CAD',
-    description: 'Don\'t have a 3D model? No problem. Our industrial designers transform your sketches, photos, or verbal descriptions into print-ready 3D files.',
+    icon: Lightbulb,
+    image: '/images/services/prototyping.png',
+    title: 'Rapid Prototyping',
+    slug: 'rapid-prototyping',
+    subtitle: 'Functional & Development',
+    description: 'Accelerate your product development cycle with our high-fidelity rapid prototyping services, from automotive to consumer goods.',
     features: [
-      'Parametric CAD modeling (SolidWorks, Fusion 360)',
-      'Design for Manufacturability (DFM) optimization',
-      'Multiple design iterations included',
-      'File preparation and print orientation',
-      'Organic and freeform surface modeling',
-      'Technical drawings and specifications',
+      'Functional Prototypes',
+      'Product Development Prototypes',
+      'Automotive Prototype Components',
+    ],
+  },
+  {
+    icon: Settings,
+    image: '/images/services/mechanical.png',
+    title: 'Mechanical & Assembly',
+    slug: 'mechanical-assembly',
+    subtitle: 'Fixtures & Supports',
+    description: 'Precision-engineered mechanical parts and assembly aids designed for flawless integration and performance on the factory floor.',
+    features: [
+      'Mechanical Components & Parts',
+      'Jigs, Fixtures & Assembly Aids',
+      'Brackets, Mounts & Supports',
+    ],
+  },
+  {
+    icon: Cpu,
+    image: '/images/services/electronics.png',
+    title: 'Electronics & IoT',
+    slug: 'electronics-iot',
+    subtitle: 'Enclosures & Housings',
+    description: 'Custom protective housings and enclosures tailored specifically for PCBs, delicate electronics, and connected IoT devices.',
+    features: [
+      'PCB & Electronics Enclosures',
+      'Device Housings & Protective Enclosures',
+      'Electronics & IoT Enclosures',
     ],
   },
   {
     icon: Layers,
-    title: 'Materials Library',
-    subtitle: '50+ Options',
-    description: 'Choose from our extensive materials catalog. Each material is tested and profiled for optimal print settings, ensuring consistent results every time.',
+    image: '/images/services/tooling.png',
+    title: 'Tooling & Molding',
+    slug: 'tooling-molding',
+    subtitle: 'Patterns & Master Models',
+    description: 'High-accuracy mold patterns and master models for casting and specialized manufacturing processes.',
     features: [
-      'PLA, ABS, PETG — standard engineering plastics',
-      'Nylon PA12 — high strength and flexibility',
-      'TPU — flexible and impact-resistant',
-      'Resins — standard, tough, castable, dental',
-      'Specialty — carbon fiber, wood-fill, metal-fill',
-      'Custom color matching (RAL/Pantone)',
+      'Mold Patterns & Mould Components',
+      'Casting Patterns & Master Models',
+    ],
+  },
+  {
+    icon: Shield,
+    image: '/images/services/robotics.png',
+    title: 'Robotics & Automation',
+    slug: 'robotics-automation',
+    subtitle: 'Precision Parts',
+    description: 'Durable and lightweight parts optimized for robotics, automation systems, and continuous rigorous operation.',
+    features: [
+      'Robotic Parts & Automation Components',
+      'Replacement & Spare Parts',
+    ],
+  },
+  {
+    icon: Box,
+    image: '/images/services/education.png',
+    title: 'Education & Research',
+    slug: 'education-research',
+    subtitle: 'Models & Projects',
+    description: 'Supporting academic excellence and cutting-edge R&D with precise educational models and detailed student project prototypes.',
+    features: [
+      'College & Student Project Prototypes',
+      'Research & Development Prototypes',
+      'Educational Models & Demonstration Parts',
+    ],
+  },
+  {
+    icon: Printer,
+    image: '/images/services/production.png',
+    title: 'Scale & Production',
+    slug: 'scale-production',
+    subtitle: 'Batch & Custom Orders',
+    description: 'From Concept to Production — We Turn Ideas into Functional Products. We scale our manufacturing to seamlessly meet your demands.',
+    features: [
+      'Batch & Bulk 3D Production',
+      'Customized Products & Made-to-Order Parts',
     ],
   },
 ]
@@ -65,18 +111,36 @@ export default function ServicesPage() {
   useScrollAnimations()
 
   return (
-    <div className="pt-24">
-      {/* Hero */}
-      <section className="section-padding text-center">
-        <div className="max-w-3xl mx-auto">
+    <>
+      <SEO 
+        title="Products & Applications | Shapio 3D Technologies"
+        description="Shapio 3D Technologies is an additive manufacturing and product development company offering FDM & SLA 3D printing, bulk production, and rapid prototyping."
+      />
+      <div className="pt-32">
+        <div className="max-w-4xl mx-auto px-6 mb-8 text-left">
+          <Link to="/#footer" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors">
+            <ArrowLeft size={16} />
+            Back to Home
+          </Link>
+        </div>
+        {/* Hero */}
+      <section className="section-padding text-center pt-0">
+        <div className="max-w-4xl mx-auto">
           <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">What We Offer</span>
           <h1 className="font-display text-4xl md:text-5xl font-bold mt-4 text-gradient">
-            Our Services
+            Products & Applications
           </h1>
-          <p className="mt-6 text-lg text-k-silver-dim font-body font-light leading-relaxed">
-            End-to-end additive manufacturing solutions — from initial concept to final delivery. 
-            We handle everything so you can focus on innovation.
-          </p>
+          <div className="mt-8 space-y-4 text-lg text-k-silver-dim font-body font-light leading-relaxed text-center">
+            <p className="text-white text-xl mb-8">
+              We design and manufacture custom 3D-printed products and functional components for a wide range of industries and applications.
+            </p>
+            <p className="text-left text-base">
+              <strong className="text-white font-normal">Shapio 3D Technologies</strong> is an additive manufacturing and product development company offering FDM & SLA 3D printing, bulk production, rapid prototyping, engineering and mechanical products, robotic parts, medical applications, and customized manufacturing solutions.
+            </p>
+            <p className="text-left text-base">
+              We support businesses and industries from idea to final product — step by step, including concept development, 3D modelling, prototyping, testing, manufacturing, and production.
+            </p>
+          </div>
         </div>
       </section>
 
@@ -92,14 +156,14 @@ export default function ServicesPage() {
             >
               {/* Visual */}
               <div className={`${i % 2 === 1 ? 'lg:order-2' : ''}`}>
-                <div className="glass-card glow-border p-12 flex items-center justify-center min-h-[320px] relative overflow-hidden">
+                <div className="glass-card glow-border p-2 flex items-center justify-center min-h-[320px] relative overflow-hidden">
                   {/* Geometric pattern */}
                   <div className="absolute inset-0 opacity-10"
                        style={{
                          backgroundImage: 'linear-gradient(rgba(192,192,192,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(192,192,192,0.15) 1px, transparent 1px)',
                          backgroundSize: '30px 30px'
                        }} />
-                  <service.icon size={80} className="text-k-silver/40 relative z-10" strokeWidth={1} />
+                  <img src={service.image} alt={service.title} className="w-full h-[320px] object-cover rounded-lg relative z-10 opacity-90 hover:opacity-100 transition-opacity duration-300" />
                   {/* Corner accents */}
                   <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-k-silver/20" />
                   <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-k-silver/20" />
@@ -123,11 +187,17 @@ export default function ServicesPage() {
                 <ul className="space-y-3">
                   {service.features.map((feat, j) => (
                     <li key={j} className="flex items-start gap-3 text-sm text-k-silver">
-                      <CheckCircle size={16} className="text-k-silver-dim mt-0.5 shrink-0" />
+                      <CheckCircle size={16} className="text-green-500 mt-0.5 shrink-0" />
                       {feat}
                     </li>
                   ))}
                 </ul>
+                <div className="mt-8">
+                  <Link to={`/services/${service.slug}`} className="inline-flex items-center gap-2 text-sm font-display text-white hover:text-emerald-400 transition-colors">
+                    Learn More
+                    <ArrowRight size={14} />
+                  </Link>
+                </div>
               </div>
             </div>
           ))}
@@ -149,6 +219,7 @@ export default function ServicesPage() {
           </Link>
         </div>
       </section>
-    </div>
+      </div>
+    </>
   )
 }

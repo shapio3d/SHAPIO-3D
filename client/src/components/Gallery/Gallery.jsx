@@ -2,14 +2,14 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 
 const GALLERY_ITEMS = [
-  { id: 1, title: 'Precision Gear Set', category: 'Mechanical', color: '#1a1a2e' },
-  { id: 2, title: 'Architectural Scale Model', category: 'Architecture', color: '#16213e' },
-  { id: 3, title: 'Custom Robot Parts', category: 'Robotics', color: '#0f3460' },
-  { id: 4, title: 'Medical Prosthetic', category: 'Healthcare', color: '#1a1a2e' },
-  { id: 5, title: 'Drone Frame', category: 'Aerospace', color: '#16213e' },
-  { id: 6, title: 'Art Installation Piece', category: 'Art', color: '#0f3460' },
-  { id: 7, title: 'Electronics Enclosure', category: 'Electronics', color: '#1a1a2e' },
-  { id: 8, title: 'Automotive Prototype', category: 'Automotive', color: '#16213e' },
+  { id: 1, title: 'Precision Gear Set', category: 'Mechanical', color: '#1a1a2e', image: '/images/gallery/gear.png' },
+  { id: 2, title: 'Architectural Scale Model', category: 'Architecture', color: '#16213e', image: '/images/gallery/architecture.png' },
+  { id: 3, title: 'Custom Robot Parts', category: 'Robotics', color: '#0f3460', image: '/images/gallery/robotics.png' },
+  { id: 4, title: 'Medical Prosthetic', category: 'Healthcare', color: '#1a1a2e', image: '/images/gallery/medical.png' },
+  { id: 5, title: 'Drone Frame', category: 'Aerospace', color: '#16213e', image: '/images/gallery/drone.png' },
+  { id: 6, title: 'Art Installation Piece', category: 'Art', color: '#0f3460', image: '/images/gallery/art.png' },
+  { id: 7, title: 'Electronics Enclosure', category: 'Electronics', color: '#1a1a2e', image: '/images/gallery/enclosure.png' },
+  { id: 8, title: 'Automotive Prototype', category: 'Automotive', color: '#16213e', image: '/images/gallery/automotive.png' },
 ]
 
 export default function Gallery() {
@@ -39,23 +39,18 @@ export default function Gallery() {
                 i % 3 === 0 ? 'h-72' : i % 3 === 1 ? 'h-56' : 'h-64'
               }`}
             >
-              {/* Placeholder with geometric design */}
+              {/* Image with geometric design fallback */}
               <div className="w-full h-full relative flex items-center justify-center"
                    style={{ background: `linear-gradient(135deg, ${item.color}, #0a0a0a)` }}>
+                {/* Image */}
+                <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                
                 {/* Grid pattern overlay */}
                 <div className="absolute inset-0 opacity-20"
                      style={{
                        backgroundImage: 'linear-gradient(rgba(192,192,192,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(192,192,192,0.1) 1px, transparent 1px)',
                        backgroundSize: '20px 20px'
                      }} />
-
-                {/* Geometric shape */}
-                <div className={`border border-k-silver/20 transition-all duration-500 group-hover:scale-110 group-hover:border-k-silver/40 group-hover:rotate-[15deg] ${
-                  i % 4 === 0 ? 'w-24 h-24 rounded-xl rotate-45' :
-                  i % 4 === 1 ? 'w-28 h-28 rounded-full' :
-                  i % 4 === 2 ? 'w-20 h-20 rotate-12' :
-                  'w-32 h-16 rounded-xl -rotate-6'
-                }`} />
 
                 {/* Info overlay */}
                 <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-400">
@@ -81,9 +76,9 @@ export default function Gallery() {
             >
               <X size={16} />
             </button>
-            <div className="w-full h-64 rounded-xl mb-6 flex items-center justify-center"
+            <div className="w-full h-64 md:h-96 rounded-xl mb-6 flex items-center justify-center relative overflow-hidden"
                  style={{ background: `linear-gradient(135deg, ${lightbox.color}, #0a0a0a)` }}>
-              <div className="w-32 h-32 border border-k-silver/30 rounded-xl rotate-45" />
+              <img src={lightbox.image} alt={lightbox.title} className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <span className="text-xs text-k-silver-dim uppercase tracking-[0.2em]">{lightbox.category}</span>
             <h3 className="font-display text-xl font-bold text-white mt-2">{lightbox.title}</h3>

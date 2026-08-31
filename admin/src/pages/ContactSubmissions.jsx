@@ -101,16 +101,16 @@ export default function ContactSubmissions() {
           placeholder="Search by name, email, or tracking ID..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full max-w-md pl-11 pr-4 py-3 bg-k-dark border border-k-border rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+          className="w-full max-w-md pl-11 pr-4 py-3 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
         />
       </div>
 
       {/* Table */}
-      <div className="bg-k-dark border border-k-border rounded-xl overflow-hidden">
+      <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead>
-              <tr className="border-b border-k-border">
+            <thead className="bg-white/5">
+              <tr className="border-b border-white/10">
                 <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Tracking ID</th>
                 <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Customer</th>
                 <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Date</th>
@@ -121,7 +121,7 @@ export default function ContactSubmissions() {
             </thead>
             <tbody>
               {filtered.map((sub) => (
-                <tr key={sub.id} className="border-b border-k-border/50 hover:bg-white/[0.02] transition-colors">
+                <tr key={sub.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
                   <td className="px-6 py-4">
                     <span className="font-mono text-xs font-bold text-white bg-white/5 px-2 py-1 rounded">{sub.tracking_id}</span>
                   </td>
@@ -181,8 +181,8 @@ export default function ContactSubmissions() {
       {/* View Modal */}
       {modalOpen && viewing && (
         <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-k-dark border border-k-border rounded-2xl w-full max-w-3xl p-0 relative overflow-hidden flex flex-col max-h-[90vh]">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-k-border bg-k-black/40 shrink-0">
+          <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl w-full max-w-3xl p-0 relative overflow-hidden flex flex-col max-h-[90vh]">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-white/10 bg-black/40 backdrop-blur-xl/40 shrink-0">
               <h2 className="font-display text-lg font-bold text-white flex items-center gap-3">
                 Submission Details
                 <span className="font-mono text-xs font-bold text-white bg-white/5 px-2 py-1 rounded tracking-wider">
@@ -234,7 +234,7 @@ export default function ContactSubmissions() {
 
                   <div>
                     <h3 className="text-xs text-k-silver-dim uppercase tracking-wider font-bold mb-3">Project Requirements</h3>
-                    <div className="p-4 bg-k-black rounded-xl border border-k-border/50 text-sm text-white/90 leading-relaxed whitespace-pre-wrap">
+                    <div className="p-4 bg-black/40 backdrop-blur-xl rounded-xl border border-white/10 text-sm text-white/90 leading-relaxed whitespace-pre-wrap">
                       {viewing.message}
                     </div>
                   </div>
@@ -247,19 +247,19 @@ export default function ContactSubmissions() {
                     <div className="flex flex-wrap gap-2">
                       <button 
                         onClick={() => updateStatus(viewing.id, 'new')}
-                        className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider border ${viewing.status === 'new' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-k-black text-k-silver-dim border-k-border hover:border-k-silver/40'}`}
+                        className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider border ${viewing.status === 'new' ? 'bg-blue-500/20 text-blue-400 border-blue-500/50' : 'bg-black/40 backdrop-blur-xl text-k-silver-dim border-k-border hover:border-k-silver/40'}`}
                       >
                         New
                       </button>
                       <button 
                         onClick={() => updateStatus(viewing.id, 'in_progress')}
-                        className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider border ${viewing.status === 'in_progress' ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-k-black text-k-silver-dim border-k-border hover:border-k-silver/40'}`}
+                        className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider border ${viewing.status === 'in_progress' ? 'bg-amber-500/20 text-amber-400 border-amber-500/50' : 'bg-black/40 backdrop-blur-xl text-k-silver-dim border-k-border hover:border-k-silver/40'}`}
                       >
                         In Progress
                       </button>
                       <button 
                         onClick={() => updateStatus(viewing.id, 'completed')}
-                        className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider border ${viewing.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-k-black text-k-silver-dim border-k-border hover:border-k-silver/40'}`}
+                        className={`px-3 py-1.5 rounded text-xs font-bold uppercase tracking-wider border ${viewing.status === 'completed' ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/50' : 'bg-black/40 backdrop-blur-xl text-k-silver-dim border-k-border hover:border-k-silver/40'}`}
                       >
                         Completed
                       </button>
@@ -271,7 +271,7 @@ export default function ContactSubmissions() {
                       <ImageIcon size={14} /> Attached File
                     </h3>
                     {viewing.file_url ? (
-                      <div className="rounded-xl overflow-hidden border border-k-border bg-k-black group relative">
+                      <div className="rounded-xl overflow-hidden border border-white/10 bg-black/40 backdrop-blur-xl group relative">
                         {/* Try to show image preview if it's an image, else provide a link */}
                         {viewing.file_url.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
                           <div className="relative aspect-video">
@@ -291,7 +291,7 @@ export default function ContactSubmissions() {
                         )}
                       </div>
                     ) : (
-                      <div className="p-6 rounded-xl border border-dashed border-k-border bg-k-black/50 flex flex-col items-center justify-center text-k-silver-dim">
+                      <div className="p-6 rounded-xl border border-dashed border-k-border bg-black/40 backdrop-blur-xl/50 flex flex-col items-center justify-center text-k-silver-dim">
                         <ImageIcon size={24} className="mb-2 opacity-50" />
                         <span className="text-sm">No file attached</span>
                       </div>
@@ -301,7 +301,7 @@ export default function ContactSubmissions() {
               </div>
             </div>
             
-            <div className="px-6 py-4 border-t border-k-border bg-k-black/40 flex justify-end shrink-0">
+            <div className="px-6 py-4 border-t border-k-border bg-black/40 backdrop-blur-xl/40 flex justify-end shrink-0">
               <button onClick={() => setModalOpen(false)} className="px-5 py-2.5 text-sm text-white bg-white/10 hover:bg-white/20 font-semibold rounded-xl transition-all">
                 Close
               </button>

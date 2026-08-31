@@ -45,18 +45,16 @@ export default function HowItWorks() {
         {/* Steps */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 relative">
           {/* Connecting line (desktop) */}
-          <div className="hidden lg:block absolute top-14 left-[12%] right-[12%] h-px bg-gradient-to-r from-transparent via-k-border to-transparent" />
+          <div className="hidden lg:block absolute top-[56px] left-[12%] right-[12%] h-[2px] bg-gradient-to-r from-transparent via-white/40 to-transparent z-0" />
 
           {STEPS.map((step, i) => (
             <div key={i} className="step-card relative flex flex-col items-center text-center group">
               {/* Step number */}
               <div className="relative mb-6">
-                <div className="w-28 h-28 rounded-2xl bg-k-card border border-k-border flex flex-col items-center justify-center transition-all duration-500 group-hover:border-k-silver/30 group-hover:shadow-lg group-hover:shadow-k-glow">
+                <div className="relative z-10 w-28 h-28 rounded-2xl bg-k-card border border-k-border flex flex-col items-center justify-center transition-all duration-500 group-hover:border-k-silver/30 group-hover:shadow-lg group-hover:shadow-k-glow">
                   <step.icon size={32} className="text-k-silver mb-1 transition-transform duration-300 group-hover:scale-110" />
                   <span className="text-[10px] text-k-silver-dim font-display tracking-wider">{step.step}</span>
                 </div>
-                {/* Glow dot */}
-                <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 w-2 h-2 rounded-full bg-k-silver opacity-0 group-hover:opacity-100 transition-opacity" />
               </div>
 
               <h3 className="font-display text-sm font-semibold text-white mb-2 tracking-wide">

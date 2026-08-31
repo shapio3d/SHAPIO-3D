@@ -1,6 +1,6 @@
 // ═══════════════════════════════════════════
-// KRIXTRON — Prisma Schema
-// Database: SQLite (dev) → PostgreSQL (prod)
+// SHAPIO — Prisma Schema
+// Database: PostgreSQL (Supabase)
 // ═══════════════════════════════════════════
 
 generator client {
@@ -8,10 +8,17 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
-  // For production PostgreSQL, change to:
-  // provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+  CANCELLED
 }
 
 // ─── Admin User ───
@@ -32,6 +39,8 @@ model Customer {
   phone     String
   company   String?
   address   String?
+  gstNumber String?
+  panNumber String?
   notes     String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -61,15 +70,21 @@ model Invoice {
   customerId  String
   customer    Customer      @relation(fields: [customerId], references: [id])
   items       InvoiceItem[]
-  subtotal    Float         @default(0)
-  taxPercent  Float         @default(18)
-  totalAmount Float         @default(0)
-  status      String        @default("PENDING") // PENDING, PAID, OVERDUE, CANCELLED
-  notes       String?
-  dueDate     DateTime?
-  paidAt      DateTime?
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
+  issueDate   DateTime      @default(now())
+  subtotal    Decimal       @default(0)
+  cgstRate    Decimal       @default(9)
+  sgstRate    Decimal       @default(9)
+  cgstAmount  Decimal       @default(0)
+  sgstAmount  Decimal       @default(0)
+  totalAmount   Decimal       @default(0)
+  status        InvoiceStatus @default(UNPAID)
+  notes         String?
+  shipAddress   String?
+  placeOfSupply String?
+  dueDate       DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
 }
 
 model InvoiceItem {
@@ -77,9 +92,10 @@ model InvoiceItem {
   invoiceId   String
   invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
   description String
+  hsnSac      String?
   quantity    Int     @default(1)
-  unitPrice   Float   @default(0)
-  total       Float   @default(0)
+  unitPrice   Decimal @default(0)
+  total       Decimal @default(0)
 }
 
 // ─── Quotation ───
@@ -102,19 +118,35 @@ model QuotationItem {
   quotationId String
   quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
   description String
+  hsnSac      String?
   quantity    Int       @default(1)
-  unitPrice   Float     @default(0)
-  total       Float     @default(0)
+  rate        Float     @default(0)
+  amount      Float     @default(0)
+  cgstRatePct Float     @default(9)
+  cgstAmount  Float     @default(0)
+  sgstRatePct Float     @default(9)
+  sgstAmount  Float     @default(0)
 }
 
 // ─── Contact Message (from client site) ───
 model ContactMessage {
+  id         String   @id @default(uuid())
+  trackingId String   @unique @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  message    String
+  fileUrl    String?
+  status     String   @default("new")
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+// ─── Settings ───
+model Setting {
   id        String   @id @default(uuid())
-  name      String
-  email     String
-  phone     String?
-  message   String
-  fileUrl   String?
-  isRead    Boolean  @default(false)
+  key       String   @unique
+  value     String
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }

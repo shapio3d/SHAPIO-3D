@@ -22,8 +22,8 @@ export function useScrollAnimations() {
         ease: 'power3.out',
       })
 
-      // Section titles: reveal from left
-      gsap.utils.toArray('.section-title').forEach((el) => {
+      // Section titles: reveal from left (exclude gallery)
+      gsap.utils.toArray('.section-title:not(#gallery .section-title)').forEach((el) => {
         gsap.from(el, {
           scrollTrigger: {
             trigger: el,
@@ -37,8 +37,8 @@ export function useScrollAnimations() {
         })
       })
 
-      // Glass cards: fade in on scroll
-      gsap.utils.toArray('.glass-card').forEach((el, i) => {
+      // Glass cards: fade in on scroll (exclude gallery placeholders)
+      gsap.utils.toArray('.glass-card:not(#gallery .glass-card)').forEach((el, i) => {
         gsap.from(el, {
           scrollTrigger: {
             trigger: el,
@@ -78,6 +78,11 @@ export function useScrollAnimations() {
         stagger: 0.2,
         ease: 'power3.out',
       })
+
+      // Ensure ScrollTrigger calculates correct positions after all components mount
+      setTimeout(() => {
+        ScrollTrigger.refresh()
+      }, 500)
     })
 
     return () => ctx.revert()
