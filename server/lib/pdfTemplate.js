@@ -145,7 +145,7 @@ const InvoiceTemplate = ({ invoice, settings }) => {
     branch: rawConfig.branch || defaults.branch
   };
 
-  const logoPath = path.join(__dirname, '..', '..', 'admin', 'src', 'assets', 'shapio-logo.png');
+  const logoPath = path.join(__dirname, '..', 'assets', 'shapio-logo.png');
   const hasLogo = fs.existsSync(logoPath);
   let logoDataUri = null;
   if (hasLogo) {
@@ -378,7 +378,7 @@ const QuotationTemplate = ({ quotation, settings }) => {
     branch: rawConfig.branch || defaults.branch
   };
 
-  const logoPath = path.join(__dirname, '..', '..', 'admin', 'src', 'assets', 'shapio-logo.png');
+  const logoPath = path.join(__dirname, '..', 'assets', 'shapio-logo.png');
   const hasLogo = fs.existsSync(logoPath);
   let logoDataUri = null;
   if (hasLogo) {
