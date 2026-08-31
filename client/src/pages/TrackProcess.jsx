@@ -10,6 +10,8 @@ const STATUS_INFO = {
   read: { label: 'Under Review', color: 'text-k-silver-dim', icon: Clock }
 }
 
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+
 export default function TrackProcess() {
   const [trackingId, setTrackingId] = useState('')
   const [loading, setLoading] = useState(false)
@@ -26,7 +28,7 @@ export default function TrackProcess() {
 
     // Use Express backend to retrieve status securely
     try {
-      const res = await fetch(`http://localhost:5000/api/contact/track/${encodeURIComponent(trackingId.trim())}`)
+      const res = await fetch(`${API_URL}/contact/track/${encodeURIComponent(trackingId.trim())}`)
       const json = await res.json()
 
       if (!res.ok || !json.success) {
