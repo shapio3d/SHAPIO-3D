@@ -8,10 +8,6 @@ export default function AdminLayout({ children }) {
 
   return (
     <div className="min-h-screen relative text-white overflow-hidden">
-      {/* Floating Logo Top Right */}
-      <div className="absolute top-6 right-8 z-50 pointer-events-none hidden md:block">
-        <img src={logoUrl} alt="Shapio Logo" className="h-16 w-auto object-contain opacity-90" />
-      </div>
 
       {/* Glowing background */}
       <div className="glow-bg">

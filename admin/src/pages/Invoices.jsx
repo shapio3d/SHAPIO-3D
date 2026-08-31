@@ -286,21 +286,21 @@ export default function Invoices() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold text-white tracking-wide">Invoices</h1>
           <p className="text-sm text-k-silver-dim mt-1">{invoices.length} total invoices</p>
         </div>
-        <div className="flex items-center gap-3">
-          <button className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all" onClick={openNew}>
+        <div className="flex items-center w-full sm:w-auto gap-3">
+          <button className="flex items-center justify-center sm:justify-start gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all w-full sm:w-auto" onClick={openNew}>
             <Plus size={16} /> New Invoice
           </button>
         </div>
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-6">
+        <div className="relative flex-1 w-full max-w-none lg:max-w-md">
           <Search size={16} className="absolute top-3.5 left-4 text-k-silver-dim" />
           <input
             type="text"

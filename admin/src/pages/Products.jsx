@@ -180,12 +180,12 @@ export default function Products() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold text-white tracking-wide">Products</h1>
           <p className="text-sm text-k-silver-dim mt-1">{products.length} products · {products.filter(p => p.isActive).length} active</p>
         </div>
-        <button onClick={openNew} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all">
+        <button onClick={openNew} className="flex items-center justify-center sm:justify-start gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all w-full sm:w-auto">
           <Plus size={16} /> Add Product
         </button>
       </div>

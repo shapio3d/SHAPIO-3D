@@ -243,19 +243,19 @@ export default function Quotations() {
   return (
     <div>
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
           <h1 className="font-display text-2xl font-bold text-white tracking-wide">Quotations</h1>
           <p className="text-sm text-k-silver-dim mt-1">{quotations.length} total quotes</p>
         </div>
-        <button onClick={openNew} className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all">
+        <button onClick={openNew} className="flex items-center justify-center sm:justify-start gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all w-full sm:w-auto">
           <Plus size={16} /> Create Quote
         </button>
       </div>
 
       {/* Filters */}
-      <div className="flex items-center gap-4 mb-6">
-        <div className="relative flex-1 max-w-md">
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-6">
+        <div className="relative flex-1 w-full max-w-none lg:max-w-md">
           <Search size={16} className="absolute top-3.5 left-4 text-k-silver-dim" />
           <input
             type="text"
@@ -265,21 +265,26 @@ export default function Quotations() {
             className="w-full pl-11 pr-4 py-3 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
           />
         </div>
-        <div className="flex items-center gap-2">
-          <Filter size={14} className="text-k-silver-dim" />
-          {['', 'DRAFT', 'SENT', 'ACCEPTED', 'REJECTED'].map(status => (
-            <button
-              key={status}
-              onClick={() => setFilterStatus(status)}
-              className={`px-3 py-1.5 text-xs rounded-lg border transition-all ${
-                filterStatus === status
-                  ? 'border-k-silver/40 text-white bg-white/[0.05]'
-                  : 'border-k-border text-k-silver-dim hover:text-white hover:border-k-border'
-              }`}
-            >
-              {status || 'All'}
-            </button>
-          ))}
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full lg:w-auto">
+          <div className="flex items-center gap-2 text-k-silver-dim shrink-0">
+            <Filter size={14} />
+            <span className="text-xs font-semibold uppercase sm:hidden">Filter Status</span>
+          </div>
+          <div className="flex flex-col sm:flex-row flex-wrap gap-2 w-full sm:w-auto">
+            {['', 'DRAFT', 'SENT', 'ACCEPTED', 'REJECTED'].map(status => (
+              <button
+                key={status}
+                onClick={() => setFilterStatus(status)}
+                className={`flex-1 sm:flex-none px-4 py-2.5 sm:px-3 sm:py-1.5 text-sm sm:text-xs rounded-lg border transition-all text-center ${
+                  filterStatus === status
+                    ? 'border-k-silver/40 text-white bg-white/[0.05]'
+                    : 'border-k-border text-k-silver-dim hover:text-white hover:border-k-border bg-black/20 sm:bg-transparent'
+                }`}
+              >
+                {status || 'All'}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
