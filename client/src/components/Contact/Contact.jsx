@@ -39,6 +39,10 @@ export default function Contact() {
       const result = await response.json()
       
       if (!response.ok) {
+        // Zod validation errors return 'details' array
+        if (result.details && result.details.length > 0) {
+          throw new Error(result.details[0].message)
+        }
         throw new Error(result.error || 'Failed to send message')
       }
 
@@ -46,7 +50,7 @@ export default function Contact() {
       setSubmitted(true)
     } catch (err) {
       console.error('Error submitting form:', err)
-      setError('There was an error sending your message. Please try again.')
+      setError(err.message || 'There was an error sending your message. Please try again.')
     } finally {
       setLoading(false)
     }
