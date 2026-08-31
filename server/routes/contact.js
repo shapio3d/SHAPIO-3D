@@ -88,7 +88,8 @@ router.get('/track/:trackingId', async (req, res, next) => {
         createdAt: message.createdAt,
         name: message.name,
         email: message.email,
-        message: message.message
+        message: message.message,
+        fileUrl: message.fileUrl || null
       }
     });
   } catch (error) {

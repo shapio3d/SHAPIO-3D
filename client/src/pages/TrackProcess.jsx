@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Search, Loader2, ArrowLeft, CheckCircle2, Clock, AlertCircle } from 'lucide-react'
+import { Search, Loader2, ArrowLeft, CheckCircle2, Clock, AlertCircle, Image, X } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 const STATUS_INFO = {
@@ -132,37 +132,38 @@ export default function TrackProcess() {
               <div className="mt-6 bg-k-dark rounded-xl p-6 border border-k-border">
                 <p className="text-xs text-k-silver-dim uppercase tracking-wider mb-4">Request Details</p>
                 <div className="text-sm text-white leading-relaxed whitespace-pre-wrap">
-                  {(() => {
-                    let message = processData.message || '';
-                    let file_url = null;
-                    const attachmentMatch = message.match(/\[ATTACHMENT\]:\s*(https?:\/\/[^\s]+)/);
-                    if (attachmentMatch) {
-                      file_url = attachmentMatch[1];
-                      message = message.replace(/\n\n\[ATTACHMENT\]:\s*https?:\/\/[^\s]+/, '');
-                    }
-                    
-                    return (
-                      <>
-                        <p>{message}</p>
-                        {file_url && (
-                          <div className="mt-6 pt-4 border-t border-k-border/50">
-                            <p className="text-xs text-k-silver-dim uppercase tracking-wider mb-2">Attached Reference File</p>
-                            <a 
-                              href={file_url} 
-                              target="_blank" 
-                              rel="noopener noreferrer" 
-                              className="inline-flex items-center gap-2 text-emerald-400 hover:text-emerald-300 text-sm transition-colors"
-                            >
-                              <CheckCircle2 size={14} />
-                              View Attachment
-                            </a>
-                          </div>
-                        )}
-                      </>
-                    )
-                  })()}
+                  <p>{(processData.message || '').replace(/\n\n\[ATTACHMENT\]:\s*\S+/, '')}</p>
                 </div>
               </div>
+
+              {/* Attachment Image Preview */}
+              {processData.fileUrl && (
+                <div className="mt-6 bg-k-dark rounded-xl p-6 border border-k-border">
+                  <p className="text-xs text-k-silver-dim uppercase tracking-wider mb-4 flex items-center gap-2">
+                    <Image size={14} />
+                    Attached Reference
+                  </p>
+                  <div 
+                    className="relative group cursor-pointer rounded-lg overflow-hidden border border-k-border/50 hover:border-emerald-500/50 transition-all"
+                    onClick={() => window.open(processData.fileUrl, '_blank')}
+                  >
+                    <img 
+                      src={processData.fileUrl} 
+                      alt="Reference attachment" 
+                      className="w-full max-h-[300px] object-contain bg-black/50"
+                      onError={(e) => {
+                        e.target.style.display = 'none'
+                        e.target.parentElement.innerHTML = '<div class="p-8 text-center text-k-silver-dim text-sm">Preview not available — <a href="' + processData.fileUrl + '" target="_blank" class="text-emerald-400 underline">Download file</a></div>'
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <span className="bg-white/10 backdrop-blur-sm px-4 py-2 rounded-full text-white text-xs font-semibold tracking-wider">
+                        CLICK TO VIEW FULL SIZE
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
           )}
         </div>
