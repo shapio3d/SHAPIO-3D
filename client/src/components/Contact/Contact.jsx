@@ -37,7 +37,7 @@ export default function Contact() {
       })
 
       const result = await response.json()
-      
+
       if (!response.ok) {
         // Zod validation errors return 'details' array
         if (result.details && result.details.length > 0) {
@@ -68,7 +68,7 @@ export default function Contact() {
             <p className="text-k-silver-dim mt-3 font-body">
               We'll get back to you within 24 hours. Thank you for choosing Shapio 3D Technologies.
             </p>
-            
+
             {/* Tracking ID Section */}
             <div className="mt-8 p-6 bg-k-black border border-k-border rounded-xl w-full max-w-md">
               <p className="text-xs text-k-silver-dim uppercase tracking-wider mb-2">Your Tracking ID</p>
@@ -145,7 +145,7 @@ export default function Contact() {
                     <p className="text-xs text-k-silver-dim uppercase tracking-wider">Studio</p>
                     <p className="text-sm text-white mt-1 leading-relaxed">
                       No.216 Ammanambakkam Street, <br />
-                      Indranagar, Chengalpattu, <br />
+                      Indra nagar, Chengalpattu, <br />
                       Tamil Nadu 603002
                     </p>
                   </div>
