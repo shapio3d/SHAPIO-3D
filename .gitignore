@@ -6,3 +6,5 @@ dist-ssr/
 admin/package-lock.json
 
 screenshots/
+
+client_raw_assets/
