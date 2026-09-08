@@ -1,0 +1,111 @@
+@import "tailwindcss";
+
+/* ═══════════════════════════════════════════
+   SHAPIO Admin — Global Styles
+   Tailwind v4
+   ═══════════════════════════════════════════ */
+
+@theme {
+  --color-k-black:      #0a0a0a;
+  --color-k-dark:       #111111;
+  --color-k-card:       #1a1a1a;
+  --color-k-border:     #2a2a2a;
+  --color-k-silver:     #c0c0c0;
+  --color-k-silver-dim: #707070;
+  --color-k-white:      #f5f5f5;
+  --color-k-glow:       rgba(192,192,192,0.15);
+
+  --font-display: 'Orbitron', sans-serif;
+  --font-body:    'Space Grotesk', sans-serif;
+}
+
+:root {
+  --black: #0a0a0a;
+  --dark: #111111;
+  --card: #1a1a1a;
+  --border: #2a2a2a;
+  --white: #f5f5f5;
+  --silver: #c0c0c0;
+  --silver-dim: #707070;
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--silver) var(--black);
+}
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--dark); }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #888, #555);
+  border-radius: 3px;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--black);
+  color: var(--white);
+  font-family: 'Space Grotesk', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: rgba(192, 192, 192, 0.3);
+  color: #ffffff;
+}
+
+/* Animated glowing background */
+.glow-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: #050a08;
+  overflow: hidden;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.glow-orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(100px);
+  opacity: 0.85;
+  animation: orbit 20s linear infinite;
+}
+
+.glow-orb-1 {
+  width: 60vw;
+  height: 60vw;
+  background: radial-gradient(circle, #025732 0%, transparent 70%);
+  top: -10%;
+  left: -10%;
+  animation-duration: 25s;
+}
+
+.glow-orb-2 {
+  width: 50vw;
+  height: 50vw;
+  background: radial-gradient(circle, #038048 0%, transparent 70%);
+  bottom: -20%;
+  right: -10%;
+  animation-duration: 30s;
+  animation-direction: reverse;
+}
+
+.glow-orb-3 {
+  width: 40vw;
+  height: 40vw;
+  background: radial-gradient(circle, #01351D 0%, transparent 70%);
+  top: 40%;
+  left: 30%;
+  animation-duration: 35s;
+}
+
+@keyframes orbit {
+  0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
+  100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
+}

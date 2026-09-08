@@ -1,0 +1,10 @@
+{ 
+  "clientId": "f1f584e0-32b0-4dbb-bba3-23e3e23d18cd", 
+  "invoiceNumber": "SHP3D/26-27/005", 
+  "issueDate": "2026-08-25", 
+  "items": [ 
+    { "description": "Test Math", "quantity": 2, "rate": 500, "cgstRatePct": 9, "sgstRatePct": 9 } 
+  ], 
+  "subtotal": 99999, 
+  "totalAmount": 999999 
+}

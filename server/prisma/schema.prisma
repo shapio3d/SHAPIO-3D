@@ -1,0 +1,152 @@
+// ═══════════════════════════════════════════
+// SHAPIO — Prisma Schema
+// Database: PostgreSQL (Supabase)
+// ═══════════════════════════════════════════
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─── Enums ───
+enum InvoiceStatus {
+  PAID
+  UNPAID
+  OVERDUE
+  CANCELLED
+}
+
+// ─── Admin User ───
+model Admin {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  passwordHash String
+  refreshToken String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// ─── Customer ───
+model Customer {
+  id        String   @id @default(uuid())
+  name      String
+  email     String?
+  phone     String
+  company   String?
+  address   String?
+  gstNumber String?
+  panNumber String?
+  notes     String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  invoices   Invoice[]
+  quotations Quotation[]
+}
+
+// ─── Product ───
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  description String?
+  material    String?
+  price       Float    @default(0)
+  modelUrl    String?  // GLB/GLTF file path
+  imageUrl    String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+// ─── Invoice ───
+model Invoice {
+  id          String        @id @default(uuid())
+  invoiceNo   String        @unique
+  customerId  String
+  customer    Customer      @relation(fields: [customerId], references: [id])
+  items       InvoiceItem[]
+  issueDate   DateTime      @default(now())
+  subtotal    Decimal       @default(0)
+  cgstRate    Decimal       @default(9)
+  sgstRate    Decimal       @default(9)
+  cgstAmount  Decimal       @default(0)
+  sgstAmount  Decimal       @default(0)
+  totalAmount   Decimal       @default(0)
+  status        InvoiceStatus @default(UNPAID)
+  notes         String?
+  shipAddress   String?
+  placeOfSupply String?
+  dueDate       DateTime?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model InvoiceItem {
+  id          String  @id @default(uuid())
+  invoiceId   String
+  invoice     Invoice @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  description String
+  hsnSac      String?
+  quantity    Int     @default(1)
+  unitPrice   Decimal @default(0)
+  total       Decimal @default(0)
+}
+
+// ─── Quotation ───
+model Quotation {
+  id          String          @id @default(uuid())
+  quoteNo     String          @unique
+  customerId  String
+  customer    Customer        @relation(fields: [customerId], references: [id])
+  items       QuotationItem[]
+  totalAmount Float           @default(0)
+  status      String          @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
+  validUntil  DateTime?
+  notes       String?
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model QuotationItem {
+  id          String    @id @default(uuid())
+  quotationId String
+  quotation   Quotation @relation(fields: [quotationId], references: [id], onDelete: Cascade)
+  description String
+  hsnSac      String?
+  quantity    Int       @default(1)
+  rate        Float     @default(0)
+  amount      Float     @default(0)
+  cgstRatePct Float     @default(9)
+  cgstAmount  Float     @default(0)
+  sgstRatePct Float     @default(9)
+  sgstAmount  Float     @default(0)
+}
+
+// ─── Contact Message (from client site) ───
+model ContactMessage {
+  id         String   @id @default(uuid())
+  trackingId String   @unique @default(uuid())
+  name       String
+  email      String
+  phone      String?
+  message    String
+  fileUrl    String?
+  status     String   @default("new")
+  isRead     Boolean  @default(false)
+  createdAt  DateTime @default(now())
+}
+
+// ─── Settings ───
+model Setting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
