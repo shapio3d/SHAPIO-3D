@@ -60,7 +60,7 @@ export default function HowItWorks() {
               <h3 className="font-display text-sm font-semibold text-white mb-2 tracking-wide">
                 {step.title}
               </h3>
-              <p className="text-xs text-k-silver-dim font-body leading-relaxed max-w-[200px]">
+              <p className="text-base text-white font-bold leading-relaxed max-w-[200px]">
                 {step.description}
               </p>
             </div>

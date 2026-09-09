@@ -22,12 +22,7 @@ export default function App() {
         Skip to main content
       </a>
 
-      {/* Glowing background */}
-      <div className="glow-bg">
-        <div className="glow-orb glow-orb-1"></div>
-        <div className="glow-orb glow-orb-2"></div>
-        <div className="glow-orb glow-orb-3"></div>
-      </div>
+
 
       <ScrollToTop />
 

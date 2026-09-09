@@ -23,12 +23,12 @@ export const SERVICE_DATA = {
       'Orientation: Design parts to minimize overhanging angles beyond 45 degrees.'
     ],
     gallery: [
-      '/images/services/engineering_hero_1788213540020.png',
+      '/images/services/precision_gear.png',
       '/images/services/engineering_gallery1_1788213552000.png',
       '/images/services/engineering_gallery2_1788213562722.png',
       '/images/services/engineering_gallery3_1788213580339.png'
     ],
-    image: '/images/services/engineering_hero_1788213540020.png'
+    image: '/images/services/precision_gear.png'
   },
   'rapid-prototyping': {
     title: 'Rapid Prototyping',

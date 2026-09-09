@@ -185,7 +185,7 @@ const DetailsSection1 = () => {
   const tabs = [
     {
       title: "Engineering & Industrial",
-      image: "/images/services/engineering_hero_1788213540020.png",
+      image: "/images/services/precision_gear.png",
       items: [
         "Engineering & Industrial Components",
         "Custom Machine Parts",
