@@ -80,7 +80,12 @@ export default function Navbar() {
           ))}
         </div>
 
-
+        {/* Right: Text Logo */}
+        <Link to="/" className="hidden md:flex items-center group">
+          <span className="font-display font-bold text-2xl tracking-widest text-white transition-opacity group-hover:opacity-80">
+            SHAPIO<span className="text-white/50"> 3D</span>
+          </span>
+        </Link>
 
         {/* Mobile toggle */}
         <button
