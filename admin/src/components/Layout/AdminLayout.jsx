@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Menu, X } from 'lucide-react'
 import Sidebar from '../Sidebar/Sidebar'
-import logoUrl from '../../../../client_raw_assets/logo/new logo.png'
+import logoUrl from '../../assets/new-logo.png'
 
 
 export default function AdminLayout({ children }) {

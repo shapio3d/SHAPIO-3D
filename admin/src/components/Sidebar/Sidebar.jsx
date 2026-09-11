@@ -5,7 +5,7 @@ import {
  Settings, LogOut, ChevronLeft, ChevronRight, MessageSquare, Search, Sparkles
 } from 'lucide-react'
 import { useState } from 'react'
-import logoUrl from '../../../../client_raw_assets/logo/new logo.png'
+import logoUrl from '../../assets/new-logo.png'
 
 const ALL_ITEMS = [
  { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
