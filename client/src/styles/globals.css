@@ -6,6 +6,13 @@
    Tailwind v4 — @theme block for design tokens
    ═══════════════════════════════════════════ */
 
+@font-face {
+  font-family: 'Cal Sans';
+  src: url('https://cdn.jsdelivr.net/npm/cal-sans@1.0.1/CalSans-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+}
+
 @theme {
   --color-k-black:      #01351D;
   --color-k-dark:       #111111;
@@ -16,8 +23,9 @@
   --color-k-white:      #f5f5f5;
   --color-k-glow:       rgba(192,192,192,0.15);
 
-  --font-display: 'Orbitron', sans-serif;
-  --font-body:    'Space Grotesk', sans-serif;
+  --font-display: 'Bebas Neue', sans-serif;
+  --font-body:    'Plus Jakarta Sans', 'DM Sans', sans-serif;
+  --font-sub:     'Orbitron', sans-serif;
 
   --animate-pulse-glow: pulseGlow 3s ease-in-out infinite;
   --animate-float:      float 6s ease-in-out infinite;
@@ -50,6 +58,10 @@
   }
 }
 
+.font-orbitron {
+  font-family: 'Orbitron', sans-serif;
+}
+
 .animate-marquee-left {
   animation: marqueeLeft 30s linear infinite;
   display: flex;
@@ -79,6 +91,15 @@
   scrollbar-width: auto;
 }
 
+/* Hide scrollbar utility */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 /* Base resets */
 html {
   scroll-behavior: smooth;
@@ -88,77 +109,25 @@ html {
 body {
   margin: 0;
   padding: 0;
-  background: #01351D;
+  background: #06150D !important;
   color: var(--white);
-  font-family: 'Space Grotesk', sans-serif;
+  font-family: var(--font-body);
+  font-weight: 400;
   overflow-x: hidden;
   position: relative;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Animated glowing background */
-.glow-bg {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: #050a08;
-  overflow: hidden;
-  z-index: 0;
-  pointer-events: none;
-}
-
-.glow-orb {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(100px);
-  opacity: 0.85;
-  animation: orbit 20s linear infinite;
-}
-
-.glow-orb-1 {
-  width: 60vw;
-  height: 60vw;
-  background: radial-gradient(circle, #025732 0%, transparent 70%);
-  top: -10%;
-  left: -10%;
-  animation-duration: 25s;
-}
-
-.glow-orb-2 {
-  width: 50vw;
-  height: 50vw;
-  background: radial-gradient(circle, #038048 0%, transparent 70%);
-  bottom: -20%;
-  right: -10%;
-  animation-duration: 30s;
-  animation-direction: reverse;
-}
-
-.glow-orb-3 {
-  width: 40vw;
-  height: 40vw;
-  background: radial-gradient(circle, #01351D 0%, transparent 70%);
-  top: 40%;
-  left: 30%;
-  animation-duration: 35s;
-}
-
-@keyframes orbit {
-  0% { transform: rotate(0deg) translateX(50px) rotate(0deg); }
-  100% { transform: rotate(360deg) translateX(50px) rotate(-360deg); }
-}
-
-/* Glass card utility */
 .glass-card {
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(24px);
-  -webkit-backdrop-filter: blur(24px);
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-radius: 16px;
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  background: #0a0f0d;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  border-left: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  box-shadow: 0 16px 40px -10px rgba(0, 0, 0, 0.5);
 }
 
 /* Glow border on hover */
@@ -258,4 +227,14 @@ body {
 ::selection {
   background: rgba(192, 192, 192, 0.3);
   color: #ffffff;
+}
+
+/* Hide number input spin buttons globally */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }

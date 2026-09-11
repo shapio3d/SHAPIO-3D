@@ -64,7 +64,7 @@ export default function Contact() {
             <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6">
               <CheckCircle size={40} className="text-emerald-400" />
             </div>
-            <h3 className="font-display text-2xl font-bold text-white">Message Sent!</h3>
+            <h3 className="font-sub text-2xl font-bold text-white">Message Sent!</h3>
             <p className="text-k-silver-dim mt-3 font-body">
               We'll get back to you within 24 hours. Thank you for choosing Shapio 3D Technologies.
             </p>
@@ -101,7 +101,7 @@ export default function Contact() {
         {/* Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">Get in Touch</span>
-          <h2 className="section-title font-display text-3xl md:text-4xl font-bold mt-3 text-gradient">
+          <h2 className="section-title font-sub text-3xl md:text-4xl font-bold mt-3 text-white tracking-wide">
             Contact Us
           </h2>
           <p className="mt-4 text-k-silver-dim font-body max-w-xl mx-auto">
@@ -113,37 +113,37 @@ export default function Contact() {
           {/* Contact info */}
           <div className="lg:col-span-2 flex flex-col gap-6">
             <div className="glass-card p-8">
-              <h3 className="font-display text-lg font-semibold text-white mb-6">Quick Info</h3>
-              <div className="space-y-5">
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-k-border/50 flex items-center justify-center shrink-0">
-                    <Mail size={18} className="text-k-silver" />
+              <h3 className="font-sub text-xl font-bold text-white mb-8">Quick Info</h3>
+              <div className="space-y-6">
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-[#111] border border-white/5 flex items-center justify-center shrink-0 shadow-lg">
+                    <Mail size={20} className="text-white" />
                   </div>
-                  <div>
-                    <p className="text-xs text-k-silver-dim uppercase tracking-wider">Email</p>
-                    <a href="mailto:shapio3dtech@gmail.com" className="text-sm text-white mt-0.5 block hover:text-emerald-400 transition-colors">
+                  <div className="pt-0.5">
+                    <p className="text-sm text-white font-bold tracking-wide uppercase mb-1">Email</p>
+                    <a href="mailto:shapio3dtech@gmail.com" className="text-[15px] text-white hover:text-emerald-400 transition-colors">
                       shapio3dtech@gmail.com
                     </a>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-k-border/50 flex items-center justify-center shrink-0">
-                    <Phone size={18} className="text-k-silver" />
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-[#111] border border-white/5 flex items-center justify-center shrink-0 shadow-lg">
+                    <Phone size={20} className="text-white" />
                   </div>
-                  <div>
-                    <p className="text-xs text-k-silver-dim uppercase tracking-wider">Phone</p>
-                    <a href="tel:+916384014546" className="text-sm text-white mt-0.5 block hover:text-emerald-400 transition-colors">
+                  <div className="pt-0.5">
+                    <p className="text-sm text-white font-bold tracking-wide uppercase mb-1">Phone</p>
+                    <a href="tel:+916384014546" className="text-[15px] text-white hover:text-emerald-400 transition-colors">
                       +91 63840 14546
                     </a>
                   </div>
                 </div>
-                <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 rounded-lg bg-k-border/50 flex items-center justify-center shrink-0">
-                    <Printer size={18} className="text-k-silver" />
+                <div className="flex items-start gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-[#111] border border-white/5 flex items-center justify-center shrink-0 shadow-lg">
+                    <Printer size={20} className="text-white" />
                   </div>
-                  <div>
-                    <p className="text-xs text-k-silver-dim uppercase tracking-wider">Studio</p>
-                    <p className="text-sm text-white mt-1 leading-relaxed">
+                  <div className="pt-0.5">
+                    <p className="text-sm text-white font-bold tracking-wide uppercase mb-1">COMPANY</p>
+                    <p className="text-[15px] text-white leading-relaxed">
                       No.216 Ammanambakkam Street, <br />
                       Indra nagar, Chengalpattu, <br />
                       Tamil Nadu 603002
@@ -155,7 +155,7 @@ export default function Contact() {
 
             {/* Working hours */}
             <div className="glass-card p-8">
-              <h3 className="font-display text-lg font-semibold text-white mb-4">Working Hours</h3>
+              <h3 className="font-sub text-lg font-semibold text-white mb-4">Working Hours</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-k-silver-dim">Mon — Fri</span>
@@ -190,7 +190,7 @@ export default function Contact() {
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="lg:col-span-3 glass-card p-8 md:p-10 flex flex-col h-full">
-            <h3 className="font-display text-lg font-semibold text-white mb-8">Send a Message</h3>
+            <h3 className="font-sub text-lg font-semibold text-white mb-8">Send a Message</h3>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               {/* Name */}
@@ -315,4 +315,5 @@ export default function Contact() {
     </section>
   )
 }
+
 

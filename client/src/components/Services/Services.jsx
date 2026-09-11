@@ -1,4 +1,4 @@
-import { Printer, Wrench, Palette, Layers } from 'lucide-react'
+﻿import { Printer, Wrench, Palette, Layers } from 'lucide-react'
 
 const SERVICES = [
   {
@@ -34,7 +34,7 @@ export default function Services() {
         {/* Section header */}
         <div className="text-center mb-16">
           <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">What We Do</span>
-          <h2 className="section-title font-display text-3xl md:text-4xl font-bold mt-3 text-gradient">
+          <h2 className="section-title font-display text-3xl md:text-4xl font-bold mt-3 text-gradient uppercase">
             Our Services
           </h2>
           <p className="mt-4 text-k-silver-dim font-body max-w-xl mx-auto">
@@ -55,7 +55,7 @@ export default function Services() {
               </div>
 
               {/* Title */}
-              <h3 className="font-display text-lg font-semibold text-white mb-3 tracking-wide">
+              <h3 className="font-sub text-lg font-semibold text-white mb-3 tracking-wide">
                 {service.title}
               </h3>
 
@@ -80,3 +80,4 @@ export default function Services() {
     </section>
   )
 }
+

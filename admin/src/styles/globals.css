@@ -15,8 +15,9 @@
   --color-k-white:      #f5f5f5;
   --color-k-glow:       rgba(192,192,192,0.15);
 
-  --font-display: 'Orbitron', sans-serif;
-  --font-body:    'Space Grotesk', sans-serif;
+  --font-display: 'Inter', sans-serif;
+  --font-sub:     'Inter', sans-serif;
+  --font-body:    'Inter', sans-serif;
 }
 
 :root {
@@ -45,15 +46,24 @@ html { scroll-behavior: smooth; }
 body {
   margin: 0;
   padding: 0;
-  background: var(--black);
-  color: var(--white);
-  font-family: 'Space Grotesk', sans-serif;
+  background: #06150D !important;
+  color: #ffffff;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
   background: rgba(192, 192, 192, 0.3);
   color: #ffffff;
+}
+
+/* Hide number input spin buttons globally */
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+input[type="number"] {
+  -moz-appearance: textfield;
 }
 
 /* Animated glowing background */

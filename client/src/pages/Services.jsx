@@ -1,12 +1,13 @@
 import { useScrollAnimations } from '../hooks/useScrollAnimations'
-import { Printer, Wrench, Layers, ArrowRight, CheckCircle, Cpu, Settings, Box, Lightbulb, Shield, ArrowLeft } from 'lucide-react'
+import { Printer, Wrench, Layers, ArrowRight, CheckCircle, Cpu, Settings, Box, Lightbulb, Shield, ArrowLeft, ArrowDown } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import SEO from '../components/SEO/SEO'
+import MaterialVisualization from '../components/MaterialVisualization/MaterialVisualization'
 
 const SERVICES_DETAIL = [
   {
     icon: Wrench,
-    image: '/images/services/engineering_hero_1788213540020.png',
+    image: '/images/services/engineering_and_industrial.png',
     title: 'Engineering & Industrial',
     slug: 'engineering-industrial',
     subtitle: 'Custom Machine Parts',
@@ -32,7 +33,7 @@ const SERVICES_DETAIL = [
   },
   {
     icon: Settings,
-    image: '/images/services/cover_mechanical.png',
+    image: '/images/services/precison_gear_new.png',
     title: 'Mechanical & Assembly',
     slug: 'mechanical-assembly',
     subtitle: 'Fixtures & Supports',
@@ -116,33 +117,64 @@ export default function ServicesPage() {
         title="Products & Applications | Shapio 3D Technologies"
         description="Shapio 3D Technologies is an additive manufacturing and product development company offering FDM & SLA 3D printing, bulk production, and rapid prototyping."
       />
-      <div className="pt-32">
-        <div className="max-w-4xl mx-auto px-6 mb-8 text-left">
+      {/* Hero Section */}
+      <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-k-base">
+        
+        {/* Back button */}
+        <div className="absolute top-24 md:top-28 left-6 md:left-12 z-20">
           <Link to="/#footer" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors">
             <ArrowLeft size={16} />
             Back to Home
           </Link>
         </div>
-        {/* Hero */}
-      <section className="section-padding text-center pt-0">
-        <div className="max-w-4xl mx-auto">
-          <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">What We Offer</span>
-          <h1 className="font-display text-4xl md:text-5xl font-bold mt-4 text-gradient">
-            Products & Applications
-          </h1>
-          <div className="mt-8 space-y-4 text-lg text-k-silver-dim font-body font-light leading-relaxed text-center">
-            <p className="text-white text-xl mb-8">
-              We design and manufacture custom 3D-printed products and functional components for a wide range of industries and applications.
-            </p>
-            <p className="text-left text-base">
+
+
+        {/* Top tiny label (Centered) */}
+        <div className="absolute top-36 md:top-28 left-1/2 -translate-x-1/2 text-xs font-body text-white/50 uppercase tracking-[0.2em] whitespace-nowrap z-20">
+          What We Offer
+        </div>
+
+        <div className="relative z-10 w-full max-w-[90rem] mx-auto px-6 flex-1 flex flex-col lg:flex-row justify-center lg:justify-between items-center py-32 lg:py-40 gap-12 lg:gap-8">
+          
+          <div className="w-full lg:w-[60%] xl:w-[65%] relative text-center lg:text-left mt-12 md:mt-0">
+
+            {/* Main Headline */}
+            <h1 className="flex flex-col items-center lg:items-start justify-center lg:justify-start text-[11vw] lg:text-[7rem] xl:text-[8rem] font-body font-medium leading-[0.9] text-white tracking-tighter uppercase w-full">
+              <span>CUSTOM 3D</span>
+              <span>PRODUCTS <span className="font-sub font-light italic lowercase text-[1.1em] tracking-normal text-white">&</span></span>
+              <span>APPLICATIONS</span>
+            </h1>
+          </div>
+          
+          {/* Right Content */}
+          <div className="w-full lg:w-[40%] xl:w-[35%] flex flex-col gap-6 text-sm md:text-base text-k-silver-dim font-body font-light leading-relaxed lg:pl-10 lg:border-l border-white/10 text-justify">
+            <p>
               <strong className="text-white font-normal">Shapio 3D Technologies</strong> is an additive manufacturing and product development company offering FDM & SLA 3D printing, bulk production, rapid prototyping, engineering and mechanical products, robotic parts, medical applications, and customized manufacturing solutions.
             </p>
-            <p className="text-left text-base">
+            <p>
               We support businesses and industries from idea to final product — step by step, including concept development, 3D modelling, prototyping, testing, manufacturing, and production.
             </p>
           </div>
+          
+        </div>
+
+        {/* Scroll indicator */}
+        <div className="absolute bottom-12 left-1/2 -translate-x-1/2 flex items-center justify-center opacity-50">
+           <div className="w-20 h-20 rounded-full border border-white/20 flex items-center justify-center animate-[spin_10s_linear_infinite]">
+              <svg viewBox="0 0 100 100" className="w-full h-full text-white overflow-visible">
+                <path id="curve" d="M 50, 50 m -35, 0 a 35,35 0 1,1 70,0 a 35,35 0 1,1 -70,0" fill="transparent" />
+                <text className="text-[7.5px] uppercase tracking-[0.2em] fill-current font-body">
+                  <textPath href="#curve" startOffset="0%">
+                    SCROLL TO EXPLORE • SCROLL TO EXPLORE • 
+                  </textPath>
+                </text>
+              </svg>
+           </div>
+           <ArrowDown size={16} className="absolute text-white" />
         </div>
       </section>
+
+      <MaterialVisualization />
 
       {/* Services detail */}
       <section className="max-w-6xl mx-auto px-6 pb-24">
@@ -176,9 +208,9 @@ export default function ServicesPage() {
                   <div className="w-10 h-10 rounded-lg bg-k-card border border-k-border flex items-center justify-center">
                     <service.icon size={20} className="text-k-silver" />
                   </div>
-                  <span className="text-xs text-k-silver-dim uppercase tracking-[0.2em] font-display">{service.subtitle}</span>
+                  <span className="text-xs text-k-silver-dim uppercase tracking-[0.2em] font-sub">{service.subtitle}</span>
                 </div>
-                <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-4">
+                <h2 className="font-display text-2xl md:text-3xl font-bold text-white mb-4 uppercase">
                   {service.title}
                 </h2>
                 <p className="text-k-silver-dim font-body leading-relaxed mb-8">
@@ -193,7 +225,7 @@ export default function ServicesPage() {
                   ))}
                 </ul>
                 <div className="mt-8">
-                  <Link to={`/services/${service.slug}`} className="inline-flex items-center gap-2 text-sm font-display text-white hover:text-emerald-400 transition-colors">
+                  <Link to={`/services/${service.slug}`} className="inline-flex items-center gap-2 text-sm font-sub text-white hover:text-emerald-400 transition-colors">
                     Learn More
                     <ArrowRight size={14} />
                   </Link>
@@ -207,7 +239,7 @@ export default function ServicesPage() {
       {/* Bottom CTA */}
       <section className="section-padding text-center">
         <div className="max-w-2xl mx-auto glass-card p-12">
-          <h3 className="font-display text-2xl font-bold text-white mb-4">
+          <h3 className="font-sub text-2xl font-bold text-white mb-4">
             Need a Custom Solution?
           </h3>
           <p className="text-k-silver-dim font-body mb-8">
@@ -219,7 +251,7 @@ export default function ServicesPage() {
           </Link>
         </div>
       </section>
-      </div>
     </>
   )
 }
+

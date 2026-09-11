@@ -59,20 +59,20 @@ export default function Navbar() {
           <img
             src={logoUrl}
             alt="Logo"
-            className="h-16 object-contain transition-transform duration-300 group-hover:scale-105"
+            className="h-10 object-contain transition-transform duration-300 group-hover:scale-105"
           />
         </Link>
 
         {/* Center: Desktop nav links in a pill */}
-        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2 bg-white/5 backdrop-blur-md rounded-full px-2 py-1 border border-white/10 shadow-lg">
+        <div className="hidden md:flex items-center gap-1 absolute left-1/2 -translate-x-1/2 bg-white/5 backdrop-blur-xl rounded-full px-2 py-1.5 border border-white/10 border-t-white/20 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)]">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.path}
               to={link.path}
               onClick={(e) => handleNavClick(e, link)}
-              className={`relative px-5 py-2 text-sm font-medium tracking-wide uppercase transition-colors duration-300 rounded-full ${location.pathname === link.path
-                  ? 'text-white bg-white/10'
-                  : 'text-k-silver-dim hover:text-white hover:bg-white/5'
+              className={`relative px-5 py-2 text-sm font-medium tracking-wide uppercase transition-all duration-300 rounded-full ${location.pathname === link.path
+                  ? 'text-white bg-white/15 shadow-[inset_0_1px_1px_rgba(255,255,255,0.2)]'
+                  : 'text-k-silver-dim hover:text-white hover:bg-white/10'
                 }`}
             >
               {link.label}
@@ -82,8 +82,8 @@ export default function Navbar() {
 
         {/* Right: Text Logo */}
         <Link to="/" className="hidden md:flex items-center group">
-          <span className="font-display font-bold text-2xl tracking-widest text-white transition-opacity group-hover:opacity-80">
-            SHAPIO<span className="text-white/50"> 3D</span>
+          <span className="font-bold text-2xl tracking-widest text-white transition-opacity group-hover:opacity-80" style={{ fontFamily: "'Orbitron', sans-serif" }}>
+            SHAPIO<span className="text-emerald-400"> 3D</span>
           </span>
         </Link>
 

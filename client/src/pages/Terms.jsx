@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ export default function Terms() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 mb-6">
             <ShieldCheck size={32} className="text-emerald-400" />
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 uppercase">
             Terms & Policies
           </h1>
           <p className="text-lg text-k-silver-dim font-body max-w-2xl mx-auto">
@@ -26,14 +26,14 @@ export default function Terms() {
 
         <div className="glass-card p-8 md:p-12 space-y-8">
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">1. General Terms</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">1. General Terms</h2>
             <p className="text-k-silver-dim leading-relaxed">
               By placing an order with Shapio 3D Technologies, the customer agrees to the terms and policies mentioned below. These terms apply to all 3D printing, product development, prototyping, design, manufacturing, training, and related services provided by us.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">2. Quotation & Pricing</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">2. Quotation & Pricing</h2>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>All quotations are based on the specifications, quantity, material, design, finishing, and other requirements shared by the customer.</li>
               <li>The quoted price may change if there are modifications to the design, quantity, material, or project requirements after quotation approval.</li>
@@ -43,7 +43,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">3. Order Confirmation & Payment</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">3. Order Confirmation & Payment</h2>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>An order will be considered confirmed only after receiving the required advance/payment.</li>
               <li>Production will normally begin after confirmation of the order and approval of the final design/specifications.</li>
@@ -53,7 +53,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">4. Custom Designs & Design Approval</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">4. Custom Designs & Design Approval</h2>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>Customers are responsible for providing accurate dimensions, drawings, references, and technical requirements.</li>
               <li>Where Shapio 3D Technologies provides design/modelling support, the customer must review and approve the final design before production.</li>
@@ -63,7 +63,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">5. 3D Printing Tolerance & Product Variation</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">5. 3D Printing Tolerance & Product Variation</h2>
             <p className="text-k-silver-dim leading-relaxed mb-2">3D printed parts may have minor variations due to material properties, printing technology, machine settings, environmental conditions, and post-processing.</p>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>Minor dimensional variations within reasonable manufacturing tolerance may occur.</li>
@@ -74,7 +74,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">6. Material Selection</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">6. Material Selection</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Material recommendations are made based on the intended application, strength, flexibility, temperature resistance, appearance, and other requirements shared by the customer.
               <br /><br />
@@ -83,7 +83,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">7. Design Files & Intellectual Property</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">7. Design Files & Intellectual Property</h2>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>Customers must have the necessary rights or authorization to use the designs, models, logos, images, and other files submitted to us.</li>
               <li>Customers are responsible for any copyright, trademark, patent, or intellectual-property issues related to files supplied by them.</li>
@@ -93,7 +93,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">8. Confidentiality</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">8. Confidentiality</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Customer-provided designs, drawings, product concepts, and project information will be handled with reasonable confidentiality and used only for fulfilling the agreed requirements.
               <br /><br />
@@ -102,7 +102,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">9. Cancellation & Modification</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">9. Cancellation & Modification</h2>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>Custom production orders may not be cancellable once manufacturing has started.</li>
               <li>If cancellation is requested after production begins, costs already incurred for material, printing, labour, design, and processing may be deducted from any eligible refund.</li>
@@ -111,7 +111,7 @@ export default function Terms() {
           </section>
 
           <section id="returns-refunds">
-            <h2 className="text-xl font-display font-semibold text-white mb-3">10. Returns & Refunds</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">10. Returns & Refunds</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Since most of our products are customized or manufactured according to customer requirements, returns are generally not accepted for change-of-mind reasons.
               <br /><br />
@@ -120,7 +120,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">11. Product Inspection</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">11. Product Inspection</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Customers are advised to inspect the product immediately after delivery.
               <br /><br />
@@ -129,7 +129,7 @@ export default function Terms() {
           </section>
 
           <section id="shipping-returns">
-            <h2 className="text-xl font-display font-semibold text-white mb-3">12. Delivery & Dispatch</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">12. Delivery & Dispatch</h2>
             <ul className="list-disc pl-5 text-k-silver-dim leading-relaxed space-y-2">
               <li>Delivery timelines are estimates and depend on product complexity, quantity, material availability, production load, and finishing requirements.</li>
               <li>Delays caused by courier services, transportation issues, material availability, natural events, or circumstances beyond our reasonable control may affect the delivery date.</li>
@@ -139,7 +139,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">13. Prototype & Product Development</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">13. Prototype & Product Development</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Prototype and R&D projects may require multiple iterations.
               <br /><br />
@@ -148,7 +148,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">14. Engineering & Functional Applications</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">14. Engineering & Functional Applications</h2>
             <p className="text-k-silver-dim leading-relaxed">
               For safety-critical, load-bearing, medical, automotive, aerospace, or other high-risk applications, customers must clearly communicate the intended use and required specifications before production.
               <br /><br />
@@ -157,7 +157,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">15. Warranty</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">15. Warranty</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Warranty, if applicable, will depend on the product and will be clearly mentioned in the quotation or invoice.
               <br /><br />
@@ -166,7 +166,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">16. Customer-Supplied Components</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">16. Customer-Supplied Components</h2>
             <p className="text-k-silver-dim leading-relaxed">
               If customers provide physical components, electronics, materials, or other items for integration or modification, they are responsible for ensuring that the supplied items are suitable and functional.
               <br /><br />
@@ -175,7 +175,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">17. Website Content & Information</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">17. Website Content & Information</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We make reasonable efforts to keep the information on our website accurate and updated. Product availability, pricing, specifications, images, service capabilities, and timelines may change without prior notice.
               <br /><br />
@@ -184,7 +184,7 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">18. Privacy Policy</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">18. Privacy Policy</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Customer information such as name, phone number, email address, delivery details, project information, and order details may be collected for providing our services, processing orders, communicating with customers, and improving our services.
               <br /><br />
@@ -193,14 +193,14 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">19. Communication</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">19. Communication</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Customers may be contacted through phone, WhatsApp, email, or other communication channels provided by them for quotation updates, order confirmations, production updates, payment information, and delivery-related communication.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">20. Limitation of Liability</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">20. Limitation of Liability</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Shapio 3D Technologies will make reasonable efforts to provide products and services according to the agreed specifications.
               <br /><br />
@@ -209,21 +209,21 @@ export default function Terms() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">21. Right to Refuse an Order</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">21. Right to Refuse an Order</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Shapio 3D Technologies reserves the right to refuse or discontinue an order if the requested product, design, application, or service is technically infeasible, unlawful, unsafe, or outside our capabilities.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">22. Changes to These Policies</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">22. Changes to These Policies</h2>
             <p className="text-k-silver-dim leading-relaxed">
               Shapio 3D Technologies reserves the right to update these terms and policies from time to time. The latest version published on our website will apply to future orders and services.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">23. Contact Us</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">23. Contact Us</h2>
             <p className="text-k-silver-dim leading-relaxed">
               For questions regarding our Terms & Policies, quotations, orders, or services, customers can contact Shapio 3D Technologies through our official communication channels.
               <br /><br />
@@ -237,3 +237,4 @@ export default function Terms() {
     </div>
   );
 }
+

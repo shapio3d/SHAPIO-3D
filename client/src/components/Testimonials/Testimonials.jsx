@@ -63,7 +63,7 @@ export default function Testimonials() {
         {/* Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">Trusted By</span>
-          <h2 className="section-title font-display text-3xl md:text-4xl font-bold mt-3 text-gradient">
+          <h2 className="section-title font-sub text-3xl md:text-4xl font-bold mt-3 text-white tracking-wide">
             Client Testimonials
           </h2>
         </div>
@@ -92,7 +92,7 @@ export default function Testimonials() {
 
             {/* Author */}
             <div className="mt-6">
-              <p className="font-display text-sm font-semibold text-white tracking-wide">
+              <p className="font-sub text-sm font-semibold text-white tracking-wide">
                 {TESTIMONIALS[current].name}
               </p>
               <p className="text-xs text-k-silver-dim mt-1">{TESTIMONIALS[current].company}</p>
@@ -137,3 +137,4 @@ export default function Testimonials() {
     </section>
   )
 }
+

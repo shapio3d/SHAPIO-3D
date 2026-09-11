@@ -26,7 +26,7 @@ const HeroSection = ({ videoName, isMobile, videoScale = 1, videoChildren, detai
       </div>
 
       {/* 2. Details Block (Slides OVER the sticky video with no gaps) */}
-      <div className="relative z-20 w-full -mt-[100vh] min-h-[100vh] bg-[#03150d] pt-16 pb-0 flex flex-col justify-center">
+      <div className="relative z-20 w-full -mt-[100vh] min-h-[100vh] bg-[#06150D] pt-16 pb-0 flex flex-col justify-center">
         {detailsNode}
       </div>
     </section>
@@ -160,7 +160,7 @@ const ImageCarousel = ({ tabs, scrollDirection = 'left' }) => {
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />
 
             <div className="absolute bottom-0 left-0 w-full p-5 md:p-6 flex flex-col justify-end">
-              <h3 className="carousel-title font-display font-bold text-white mb-1 drop-shadow-md text-lg origin-bottom-left" style={{ willChange: 'transform' }}>
+              <h3 className="carousel-title font-sub font-bold text-white mb-1 drop-shadow-md text-lg origin-bottom-left" style={{ willChange: 'transform' }}>
                 {tab.title}
               </h3>
               <div className="carousel-text overflow-hidden mt-2" style={{ willChange: 'opacity, max-height, transform' }}>
@@ -185,7 +185,7 @@ const DetailsSection1 = () => {
   const tabs = [
     {
       title: "Engineering & Industrial",
-      image: "/images/services/precision_gear.png",
+      image: "/images/services/engineering_and_industrial.png",
       items: [
         "Engineering & Industrial Components",
         "Custom Machine Parts",
@@ -194,7 +194,7 @@ const DetailsSection1 = () => {
     },
     {
       title: "Prototyping",
-      image: "/images/services/prototyping_hero_1788213591197.png",
+      image: "/images/services/cover_prototyping.png",
       items: [
         "Functional Prototypes",
         "Product Development Prototypes",
@@ -203,7 +203,7 @@ const DetailsSection1 = () => {
     },
     {
       title: "Mechanical & Assembly",
-      image: "/images/services/mechanical_hero_1788213643670.png",
+      image: "/images/services/precison_gear_new.png",
       items: [
         "Mechanical Components & Parts",
         "Jigs, Fixtures & Assembly Aids",
@@ -224,21 +224,19 @@ const DetailsSection1 = () => {
     <div className="w-full relative overflow-hidden pt-12 pb-8">
       {/* Marquee Heading - Flows Left */}
       <div className="w-full overflow-hidden mb-12 relative pointer-events-none select-none">
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#03150d] to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#03150d] to-transparent z-10" />
         <div className="animate-marquee-left flex whitespace-nowrap opacity-80">
-          <h2 className="font-display text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8">
+          <h2 className="font-sub italic tracking-widest text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8 uppercase">
             Products & Applications • Products & Applications • Products & Applications • Products & Applications • Products & Applications • Products & Applications •
           </h2>
-          <h2 className="font-display text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8">
+          <h2 className="font-sub italic tracking-widest text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8 uppercase">
             Products & Applications • Products & Applications • Products & Applications • Products & Applications • Products & Applications • Products & Applications •
           </h2>
         </div>
       </div>
 
       <div className="max-w-3xl mb-8 flex flex-col justify-center text-center mx-auto px-4">
-        <p className="text-white/70 text-lg leading-relaxed max-w-2xl mx-auto">
-          We design and manufacture custom 3D-printed products and functional components for a wide range of industries and applications.
+        <p className="text-white text-lg leading-relaxed max-w-2xl mx-auto">
+          We design and manufacture custom <span className="whitespace-nowrap">3D-printed</span> products and functional components for a wide range of industries and applications.
         </p>
       </div>
       {/* Products & Applications text moves LEFT, so carousel moves RIGHT */}
@@ -287,20 +285,18 @@ const DetailsSection2 = () => {
     <div className="w-full relative overflow-hidden pt-12 pb-8 mt-12">
       {/* Marquee Heading - Flows Right */}
       <div className="w-full overflow-hidden mb-12 relative pointer-events-none select-none">
-        <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#03150d] to-transparent z-10" />
-        <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#03150d] to-transparent z-10" />
         <div className="animate-marquee-right flex whitespace-nowrap opacity-80">
-          <h2 className="font-display text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8">
+          <h2 className="font-sub italic tracking-widest text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8 uppercase">
             Uncompromising Precision • Uncompromising Precision • Uncompromising Precision • Uncompromising Precision • Uncompromising Precision •
           </h2>
-          <h2 className="font-display text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8">
+          <h2 className="font-sub italic tracking-widest text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8 uppercase">
             Uncompromising Precision • Uncompromising Precision • Uncompromising Precision • Uncompromising Precision • Uncompromising Precision •
           </h2>
         </div>
       </div>
 
       <div className="max-w-3xl mb-8 flex flex-col justify-center text-center mx-auto px-4">
-        <p className="text-white/70 text-lg leading-relaxed max-w-2xl mx-auto">
+        <p className="text-white text-lg leading-relaxed max-w-2xl mx-auto">
           Engineered to exact specifications. Our advanced manufacturing techniques ensure flawless accuracy across complex geometries.
         </p>
       </div>
@@ -315,39 +311,39 @@ const DetailsSection3 = () => (
   <div className="w-full relative overflow-hidden pt-12 pb-8 mt-12">
     {/* Marquee Heading - Flows Right (left to right) */}
     <div className="w-full overflow-hidden mb-12 relative pointer-events-none select-none">
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#03150d] to-transparent z-10" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-[#03150d] to-transparent z-10" />
       <div className="animate-marquee-right flex whitespace-nowrap opacity-80">
-        <h2 className="font-display text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8">
+        <h2 className="font-sub italic tracking-widest text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8 uppercase">
           Limitless Scale • Limitless Scale • Limitless Scale • Limitless Scale • Limitless Scale •
         </h2>
-        <h2 className="font-display text-6xl md:text-8xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8">
+        <h2 className="font-sub italic tracking-widest text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-b from-white to-white/20 px-8 uppercase">
           Limitless Scale • Limitless Scale • Limitless Scale • Limitless Scale • Limitless Scale •
         </h2>
       </div>
     </div>
 
-    <div className="max-w-5xl mx-auto w-full text-center glass-card p-10 md:p-20 border border-white/10 relative overflow-hidden rounded-3xl bg-black/40 backdrop-blur-3xl shadow-2xl mb-12">
-      <div className="absolute top-0 right-0 w-64 h-64 bg-[#01351D] rounded-full blur-[100px] opacity-30 pointer-events-none -translate-y-1/2 translate-x-1/2" />
-      <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#01351D] rounded-full blur-[100px] opacity-30 pointer-events-none translate-y-1/2 -translate-x-1/2" />
-
-      <span className="text-xs text-white/50 tracking-widest uppercase mb-12 block relative z-10">End-to-End Solutions</span>
-
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-left mb-16 relative z-10">
-      <div className="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-colors">
-        <h4 className="font-display text-2xl text-white mb-4">Batch & Bulk Production</h4>
-        <p className="text-white/70 text-base leading-relaxed">
-          Scaling up doesn't mean sacrificing quality. From hundreds to thousands of units, our production fleet runs 24/7 to meet your high-volume manufacturing needs efficiently.
+    <div className="max-w-5xl mx-auto w-full mb-12 px-4 md:px-0">
+      <div className="max-w-3xl mb-12 flex flex-col justify-center text-center mx-auto">
+        <p className="text-white text-lg leading-relaxed max-w-4xl mx-auto">
+          From initial prototype to full-scale production runs. <br className="hidden md:block" />
+          Our high-volume manufacturing capabilities ensure consistent quality whether you need ten parts or ten thousand.
         </p>
       </div>
-      <div className="bg-white/5 p-8 rounded-2xl border border-white/10 hover:border-white/20 transition-colors">
-        <h4 className="font-display text-2xl text-white mb-4">Made-to-Order Customization</h4>
-        <p className="text-white/70 text-base leading-relaxed">
-          Unlike traditional molding, we offer limitless iterations. Customized products and on-demand parts manufactured directly from digital files without tooling costs.
-        </p>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 text-center relative z-10">
+        <div className="glass-card p-8 md:p-12 relative overflow-hidden flex flex-col h-full">
+          <h4 className="font-sub text-lg md:text-xl xl:text-2xl text-white mb-4 text-center leading-tight">Batch & Bulk Production</h4>
+          <p className="text-white/70 text-sm md:text-base leading-relaxed flex-1">
+            Scaling up doesn't mean sacrificing quality. From hundreds to thousands of units, our production fleet runs 24/7 to meet your high-volume manufacturing needs efficiently.
+          </p>
+        </div>
+        <div className="glass-card p-8 md:p-12 relative overflow-hidden flex flex-col h-full">
+          <h4 className="font-sub text-lg md:text-xl xl:text-2xl text-white mb-4 text-center leading-tight">Made-to-Order Customization</h4>
+          <p className="text-white/70 text-sm md:text-base leading-relaxed flex-1">
+            Unlike traditional molding, we offer limitless iterations. Customized products and on-demand parts manufactured directly from digital files without tooling costs.
+          </p>
+        </div>
       </div>
     </div>
-  </div>
   </div>
 )
 
@@ -369,13 +365,15 @@ export default function Hero() {
         isMobile={isMobile}
         detailsNode={<DetailsSection1 />}
         videoChildren={
-          <div className="w-full px-4 mt-16 md:mt-32 mx-auto pointer-events-auto text-center">
-            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl font-bold text-white tracking-tight mb-6 max-w-4xl mx-auto">
-              Powering the next generation of <span className="italic font-serif text-white/90">functional</span> products.
+          <div className="w-full max-w-7xl mx-auto px-4 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center">
+            <h1 className="font-display uppercase text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-wide leading-none max-w-[95vw] sm:max-w-4xl mx-auto">
+              <span className="block">Powering the next</span>
+              <span className="block">generation of</span>
+              <span className="block">
+                <span className="italic font-serif text-k-silver pr-3 lowercase text-[0.9em]">functional</span>
+                <span>products.</span>
+              </span>
             </h1>
-            <p className="text-white/70 text-lg mb-8 max-w-2xl mx-auto">
-              From concept to production we turn ideas into functional products.
-            </p>
           </div>
         }
       />
@@ -390,7 +388,7 @@ export default function Hero() {
         videoChildren={
           <div className="w-full h-full flex items-center justify-center md:justify-end text-center md:text-right px-4 md:pr-8 lg:pr-12">
             <div className="max-w-2xl">
-              <h2 className="font-display text-[6vw] sm:text-3xl md:text-5xl font-bold text-white uppercase" style={{ letterSpacing: '0.15em' }}>
+              <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white uppercase leading-none" style={{ letterSpacing: '0.05em' }}>
                 Uncompromising<br />Precision
               </h2>
             </div>
@@ -405,14 +403,17 @@ export default function Hero() {
         isMobile={isMobile}
         detailsNode={<DetailsSection3 />}
         videoChildren={
-          <div className="w-full px-4 mt-16 md:mt-32 mx-auto pointer-events-auto text-center">
-            <h1 className="font-display text-[5vw] sm:text-4xl md:text-5xl lg:text-7xl font-bold text-white tracking-tight mb-6 leading-tight w-full">
-              <span className="block">From Concept to Production</span>
-              <span className="italic font-serif text-green-500/90 text-[4.5vw] sm:text-3xl md:text-4xl lg:text-6xl mt-2 block">We Turn Ideas into Functional Products.</span>
+          <div className="w-full max-w-7xl mx-auto px-4 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center">
+            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-wide mb-2 max-w-5xl mx-auto uppercase">
+              From Concept to Production
             </h1>
+            <p className="text-2xl sm:text-4xl md:text-5xl italic font-serif text-k-green tracking-wide lowercase">
+              we turn ideas into functional products.
+            </p>
           </div>
         }
       />
     </div>
   )
 }
+

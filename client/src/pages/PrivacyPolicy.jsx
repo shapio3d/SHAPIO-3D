@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 mb-6">
             <ShieldCheck size={32} className="text-emerald-400" />
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 uppercase">
             Privacy Policy
           </h1>
           <p className="text-lg text-k-silver-dim font-body max-w-2xl mx-auto">
@@ -26,7 +26,7 @@ export default function PrivacyPolicy() {
 
         <div className="glass-card p-8 md:p-12 space-y-8">
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">1. Information We Collect</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">1. Information We Collect</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We may collect the following types of information when you use our website or services:
             </p>
@@ -39,7 +39,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">2. How We Use Your Information</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">2. How We Use Your Information</h2>
             <p className="text-k-silver-dim leading-relaxed mb-3">
               We use the information we collect for the following purposes:
             </p>
@@ -54,7 +54,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">3. Data Sharing</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">3. Data Sharing</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We do not intentionally sell or share your personal information with unrelated third parties. Your information may be shared only in the following circumstances:
             </p>
@@ -66,7 +66,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">4. Data Security</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">4. Data Security</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We take reasonable measures to protect your personal information from unauthorized access, alteration, disclosure, or destruction. Our website uses SSL/TLS encryption, and we employ industry-standard security practices to safeguard your data.
               <br /><br />
@@ -75,7 +75,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">5. Cookies & Analytics</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">5. Cookies & Analytics</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We use Cloudflare Web Analytics, a privacy-focused analytics service that does not use cookies or track individual users. It collects aggregate data about page views, visitor counts, and referral sources to help us improve our website.
               <br /><br />
@@ -84,7 +84,7 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">6. Your Rights</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">6. Your Rights</h2>
             <p className="text-k-silver-dim leading-relaxed mb-3">
               You have the following rights regarding your personal information:
             </p>
@@ -100,21 +100,21 @@ export default function PrivacyPolicy() {
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">7. Data Retention</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">7. Data Retention</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We retain your personal information for as long as necessary to fulfill the purposes outlined in this policy, comply with legal obligations, resolve disputes, and enforce our agreements.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">8. Changes to This Policy</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">8. Changes to This Policy</h2>
             <p className="text-k-silver-dim leading-relaxed">
               We may update this Privacy Policy from time to time. The latest version will always be available on our website. We encourage you to review this page periodically for any changes.
             </p>
           </section>
 
           <section>
-            <h2 className="text-xl font-display font-semibold text-white mb-3">9. Contact Us</h2>
+            <h2 className="text-xl font-sub font-semibold text-white mb-3">9. Contact Us</h2>
             <p className="text-k-silver-dim leading-relaxed">
               If you have any questions about this Privacy Policy or how we handle your data, please contact us:
               <br /><br />
@@ -130,3 +130,4 @@ export default function PrivacyPolicy() {
     </div>
   );
 }
+

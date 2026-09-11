@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
-import { Search, Plus, FileDown, Upload, Edit3, Trash2, Download, X, Filter, AlertCircle } from 'lucide-react'
+import { Search, Plus, FileDown, Upload, Edit3, Trash2, Download, X, Filter, AlertCircle, ArrowLeft, Eye } from 'lucide-react'
 
 const STATUS_COLORS = {
   PAID: 'text-emerald-300 bg-emerald-500/20 ring-1 ring-emerald-500/30',
@@ -31,12 +31,34 @@ const getFinancialYearString = () => {
   }
 };
 
+function numberToWords(num) {
+  if (num === 0) return 'Zero';
+  const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
+  const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+  
+  const inWords = (n) => {
+    if (n < 20) return a[n];
+    let s = b[Math.floor(n / 10)];
+    if (n % 10) s += ' ' + a[n % 10];
+    return s + ' ';
+  };
+
+  let words = '';
+  if (Math.floor(num / 10000000) > 0) { words += inWords(Math.floor(num / 10000000)) + 'Crore '; num %= 10000000; }
+  if (Math.floor(num / 100000) > 0) { words += inWords(Math.floor(num / 100000)) + 'Lakh '; num %= 100000; }
+  if (Math.floor(num / 1000) > 0) { words += inWords(Math.floor(num / 1000)) + 'Thousand '; num %= 1000; }
+  if (Math.floor(num / 100) > 0) { words += inWords(Math.floor(num / 100)) + 'Hundred '; num %= 100; }
+  if (num > 0) { words += inWords(num); }
+  return 'Rupees ' + words.trim() + ' Only';
+}
+
 export default function Invoices() {
   const queryClient = useQueryClient()
+  const [activeTab, setActiveTab] = useState('list') // 'list', 'create', 'edit'
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
-  const [modalOpen, setModalOpen] = useState(false)
   const [editing, setEditing] = useState(null)
+  const [pdfUrl, setPdfUrl] = useState(null)
   
   const { data: invoices = [], isLoading: isLoadingInvoices, isError: isErrorInvoices } = useQuery({
     queryKey: ['invoices'],
@@ -57,6 +79,9 @@ export default function Invoices() {
       return res.json();
     }
   })
+
+  const [isManualClient, setIsManualClient] = useState(false);
+  const [manualClient, setManualClient] = useState({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' });
 
   const [form, setForm] = useState({
     clientId: '',
@@ -98,7 +123,8 @@ export default function Invoices() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
-      setModalOpen(false)
+      alert("Invoice saved successfully!");
+      setActiveTab('list')
     },
     onError: (err) => {
       alert(err.message)
@@ -133,7 +159,6 @@ export default function Invoices() {
       return res.json();
     },
     onMutate: async (newStatus) => {
-      // Optimistically update the UI instantly
       await queryClient.cancelQueries({ queryKey: ['invoices'] })
       const previousInvoices = queryClient.getQueryData(['invoices'])
       queryClient.setQueryData(['invoices'], old => 
@@ -142,14 +167,12 @@ export default function Invoices() {
       return { previousInvoices }
     },
     onError: (err, newStatus, context) => {
-      // Roll back on error
       if (context?.previousInvoices) {
         queryClient.setQueryData(['invoices'], context.previousInvoices)
       }
       alert("Failed to update status: " + err.message)
     },
     onSettled: () => {
-      // Re-fetch in background to sync
       queryClient.invalidateQueries({ queryKey: ['invoices'] })
       queryClient.invalidateQueries({ queryKey: ['dashboard'] })
     }
@@ -164,6 +187,8 @@ export default function Invoices() {
 
   const openNew = () => {
     setEditing(null)
+    setIsManualClient(false)
+    setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
     setForm({
       clientId: clients[0]?.id || '',
       invoiceNumber: `SHP3D/${getFinancialYearString()}/${String(invoices.length + 1).padStart(3, '0')}`,
@@ -177,12 +202,13 @@ export default function Invoices() {
       status: 'UNPAID', 
       notes: ''
     })
-    setModalOpen(true)
+    setActiveTab('create')
   }
 
   const openEdit = (invoice) => {
     setEditing(invoice)
-    // Map existing invoice to form
+    setIsManualClient(false)
+    setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
     setForm({ 
       clientId: invoice.clientId || '',
       invoiceNumber: invoice.invoiceNumber || '',
@@ -203,7 +229,7 @@ export default function Invoices() {
       status: invoice.status || 'UNPAID', 
       notes: invoice.notes || '' 
     })
-    setModalOpen(true)
+    setActiveTab('edit')
   }
 
   const addItem = () => setForm(f => ({ ...f, items: [...f.items, { description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }] }))
@@ -215,7 +241,7 @@ export default function Invoices() {
     }))
   }
 
-  // Frontend calculation just for display in the form (backend recalculates securely)
+  // Frontend calculation
   let subtotal = 0;
   let totalCgst = 0;
   let totalSgst = 0;
@@ -226,14 +252,57 @@ export default function Invoices() {
     totalSgst += amt * (item.sgstRatePct / 100);
   });
   const total = subtotal + totalCgst + totalSgst;
+  const amountInWords = numberToWords(Math.round(total));
+
+  const buildPayload = () => {
+    return {
+      ...form,
+      clientId: isManualClient ? 'MANUAL' : form.clientId,
+      manualClient: isManualClient ? manualClient : undefined
+    };
+  }
 
   const handleSave = () => {
-    if (!form.clientId || !form.invoiceNumber) {
-      alert("Please select a client and provide an invoice number.");
+    if (!isManualClient && !form.clientId) {
+      alert("Please select a client.");
+      return;
+    }
+    if (isManualClient && !manualClient.name) {
+      alert("Please enter a client name.");
+      return;
+    }
+    if (!form.invoiceNumber) {
+      alert("Please provide an invoice number.");
       return;
     }
     
-    saveMutation.mutate(form)
+    saveMutation.mutate(buildPayload())
+  }
+
+  const handlePreview = async () => {
+    try {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/invoices/preview`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify(buildPayload())
+      });
+      if (!res.ok) {
+        let err;
+        try { err = await res.json(); } catch(e) {}
+        throw new Error((err && err.error) ? err.error : "Preview failed");
+      }
+      const data = await res.json();
+      
+      const binaryString = window.atob(data.pdf);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      setPdfUrl(url);
+    } catch (err) {
+      alert(err.message);
+    }
   }
 
   const handleDelete = (id) => {
@@ -241,11 +310,42 @@ export default function Invoices() {
     deleteMutation.mutate(id)
   }
 
+  const handleViewPdf = async (id) => {
+    try {
+      const headers = await getAuthHeader();
+      delete headers['Content-Type'];
+
+      const res = await fetch(`${API_URL}/invoices/${id}/pdf`, {
+        method: 'GET',
+        headers
+      });
+
+      if (!res.ok) {
+        const err = await res.json();
+        alert(err.error || "Failed to load PDF");
+        return;
+      }
+
+      const data = await res.json();
+      
+      const binaryString = window.atob(data.pdf);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      const blob = new Blob([bytes], { type: 'application/pdf' });
+      
+      const url = window.URL.createObjectURL(blob);
+      setPdfUrl(url);
+    } catch (e) {
+      console.error(e);
+      alert("An error occurred while viewing PDF: " + (e.message || String(e)));
+    }
+  }
 
   const handleDownloadPdf = async (id) => {
     try {
       const headers = await getAuthHeader();
-      // Remove Content-Type for GET request
       delete headers['Content-Type'];
 
       const res = await fetch(`${API_URL}/invoices/${id}/pdf`, {
@@ -261,7 +361,6 @@ export default function Invoices() {
 
       const data = await res.json();
       
-      // Decode base64 to Blob to bypass IDM
       const binaryString = window.atob(data.pdf);
       const bytes = new Uint8Array(binaryString.length);
       for (let i = 0; i < binaryString.length; i++) {
@@ -283,6 +382,259 @@ export default function Invoices() {
     }
   }
 
+  if (activeTab === 'create' || activeTab === 'edit') {
+    return (
+      <div className="w-full max-w-5xl mx-auto pb-12">
+        <div className="flex items-center gap-4 mb-6">
+          <button onClick={() => setActiveTab('list')} className="p-2 rounded-lg bg-[#0a0f0d]/60 backdrop-blur-2xl hover:bg-white/10 text-white transition-all">
+            <ArrowLeft size={20} />
+          </button>
+          <h1 className="font-display text-3xl font-bold text-white tracking-wide">
+            {activeTab === 'edit' ? 'Edit Invoice' : 'Create New Invoice'}
+          </h1>
+        </div>
+
+        <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
+          
+          {/* Top Meta (Matching PDF Order) */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Invoice Details</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Invoice #</label>
+                <input placeholder="e.g. INV-001" value={form.invoiceNumber} onChange={e => setForm({...form, invoiceNumber: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              </div>
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Issue Date</label>
+                <input type="date" value={form.issueDate} onChange={e => setForm({...form, issueDate: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              </div>
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Terms</label>
+                <input placeholder="e.g. Due on Receipt" value={form.terms} onChange={e => setForm({...form, terms: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              </div>
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Due Date</label>
+                <input type="date" value={form.dueDate} onChange={e => setForm({...form, dueDate: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              </div>
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Place of Supply</label>
+                <input value={form.placeOfSupply} onChange={e => setForm({...form, placeOfSupply: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" placeholder="e.g. Tamil Nadu (33)" />
+              </div>
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">PAN No</label>
+                <input placeholder="e.g. ABCDE1234F" value={form.panNo} onChange={e => setForm({...form, panNo: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              </div>
+            </div>
+          </div>
+
+          {/* Client Details */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between border-b border-white/10 pb-2">
+              <h3 className="text-sm font-semibold text-white uppercase tracking-widest">Bill To (Client)</h3>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-white">Manual Entry</span>
+                <button
+                  type="button"
+                  onClick={() => setIsManualClient(!isManualClient)}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isManualClient ? 'bg-emerald-500' : 'bg-white/20'}`}
+                >
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isManualClient ? 'translate-x-6' : 'translate-x-1'}`} />
+                </button>
+              </div>
+            </div>
+            
+            {!isManualClient ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div>
+                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Select Existing Client *</label>
+                  <select value={form.clientId} onChange={e => {
+                    const clientId = e.target.value;
+                    const selectedClient = clients.find(c => c.id === clientId);
+                    if (selectedClient) {
+                      setForm({...form, clientId, panNo: selectedClient.panNo || ''});
+                    } else {
+                      setForm({...form, clientId});
+                    }
+                  }} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-white/40 appearance-none">
+                    <option value="" className="bg-[#111111] text-white">Select Client</option>
+                    {clients.map(c => <option key={c.id} value={c.id} className="bg-[#111111] text-white">{c.name}</option>)}
+                  </select>
+                </div>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-[#0a0f0d]/60 backdrop-blur-2xl rounded-xl border border-white/10">
+                <div>
+                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Client Name *</label>
+                  <input value={manualClient.name} onChange={e => setManualClient({...manualClient, name: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" placeholder="e.g. Acme Corp" />
+                </div>
+                <div>
+                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Phone</label>
+                  <input placeholder="e.g. +91 98765 43210" value={manualClient.phone} onChange={e => setManualClient({...manualClient, phone: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                </div>
+                <div>
+                  <label className="block text-xs text-white uppercase tracking-wider mb-2">GSTIN</label>
+                  <input placeholder="e.g. 29ABCDE1234F1Z5" value={manualClient.gstNumber} onChange={e => setManualClient({...manualClient, gstNumber: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                </div>
+                <div>
+                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Billing Address</label>
+                  <textarea placeholder="Enter complete billing address" value={manualClient.address} onChange={e => setManualClient({...manualClient, address: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none h-12" />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Ship To Details */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Ship To (Optional)</h3>
+            <div>
+              <label className="block text-xs text-white uppercase tracking-wider mb-2">Shipping Address</label>
+              <textarea value={form.shipAddress} onChange={e => setForm({...form, shipAddress: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none h-16" placeholder="Leave blank to use Billing Address" />
+            </div>
+          </div>
+
+          {/* Line Items */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Line Items</h3>
+            <div className="pb-4">
+              <div className="w-full">
+                {/* Headers */}
+                <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-xs text-white uppercase tracking-wider font-semibold">
+                  <div className="col-span-3">Description</div>
+                  <div className="col-span-2">HSN/SAC</div>
+                  <div className="col-span-1 text-center">Qty</div>
+                  <div className="col-span-2 text-right">Rate (₹)</div>
+                  <div className="col-span-1 text-center">CGST %</div>
+                  <div className="col-span-1 text-center">SGST %</div>
+                  <div className="col-span-2 text-right pr-10">Amount (₹)</div>
+                </div>
+                {form.items.map((item, i) => (
+                  <div key={i}>
+                    {/* Mobile card */}
+                    <div className="md:hidden bg-black/30 border border-white/10 rounded-xl p-3 mb-3 space-y-2">
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="text-xs text-white/50 uppercase tracking-wider">Item {i + 1}</span>
+                        {form.items.length > 1 && (
+                          <button onClick={() => removeItem(i)} className="text-white/40 hover:text-red-400 p-1 rounded transition-all"><X size={14} /></button>
+                        )}
+                      </div>
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><label className="text-[10px] text-white/50 uppercase">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" /></div>
+                        <div><label className="text-[10px] text-white/50 uppercase">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" /></div>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        <div><label className="text-[10px] text-white/50 uppercase">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" /></div>
+                        <div><label className="text-[10px] text-white/50 uppercase">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" /></div>
+                      </div>
+                      <div className="flex justify-between items-center pt-1 border-t border-white/10">
+                        <span className="text-xs text-white/50 uppercase">Amount</span>
+                        <span className="text-sm font-semibold text-white">₹{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
+                      </div>
+                    </div>
+                    {/* Desktop grid row */}
+                    <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center">
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="col-span-3 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" />
+                      <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-right focus:outline-none focus:border-white/40" />
+                      <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" />
+                      <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" />
+                      <div className="col-span-2 flex items-center justify-end pr-10 relative">
+                        <span className="text-base font-semibold text-white">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
+                        {form.items.length > 1 && (
+                          <button onClick={() => removeItem(i)} className="absolute right-0 text-k-silver-dim hover:text-red-400 p-2 rounded-lg hover:bg-[#0a0f0d]/60 backdrop-blur-2xl transition-all"><X size={16} /></button>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                <button onClick={addItem} className="mt-2 text-sm font-semibold text-white/70 hover:text-white border border-dashed border-white/20 rounded-xl w-full py-4 hover:border-white/40 hover:bg-[#0a0f0d]/60 backdrop-blur-2xl transition-all">
+                  + Add Line Item
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Totals & Words */}
+          <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl rounded-2xl p-6 border border-white/10 space-y-4">
+            <div className="flex flex-col md:flex-row justify-between gap-8">
+              <div className="flex-1">
+                <h4 className="text-xs text-white uppercase tracking-wider mb-2 font-semibold">Amount in Words</h4>
+                <p className="text-sm text-white/90 font-medium leading-relaxed">{amountInWords}</p>
+              </div>
+              <div className="flex-1 min-w-[250px] space-y-3">
+                <div className="flex justify-between text-base">
+                  <span className="text-white font-medium">Subtotal</span>
+                  <span className="text-white">₹{subtotal.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-white font-medium">CGST Total</span>
+                  <span className="text-white">₹{totalCgst.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between text-base">
+                  <span className="text-white font-medium">SGST Total</span>
+                  <span className="text-white">₹{totalSgst.toLocaleString('en-IN')}</span>
+                </div>
+                <div className="flex justify-between text-2xl font-bold border-t border-white/20 pt-4 mt-2">
+                  <span className="text-white">Total</span>
+                  <span className="text-emerald-400">₹{total.toLocaleString('en-IN')}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Status & Notes */}
+          <div className="space-y-4">
+            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Status & Notes</h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Status</label>
+                <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-white/40 appearance-none">
+                  <option value="PAID">PAID</option>
+                  <option value="UNPAID">UNPAID</option>
+                  <option value="OVERDUE">OVERDUE</option>
+                  <option value="CANCELLED">CANCELLED</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-xs text-white uppercase tracking-wider mb-2">Notes</label>
+                <textarea placeholder="e.g. Thank you for your business!" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none h-14" />
+              </div>
+            </div>
+          </div>
+
+          {/* Action Buttons */}
+          <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-white/10">
+            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-white bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+              Cancel
+            </button>
+            <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 text-base font-semibold text-k-black bg-emerald-400 rounded-xl hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-500/20 transition-all disabled:opacity-50">
+              {editing ? 'Save Invoice Changes' : 'Generate Final Invoice'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  if (pdfUrl) {
+    return (
+      <div className="flex-1 flex flex-col p-8 bg-[#084227]">
+        <div className="flex justify-between items-center mb-6">
+          <h1 className="text-3xl font-bold text-white tracking-tight">PDF Viewer</h1>
+          <button onClick={() => setPdfUrl(null)} className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">
+            Back
+          </button>
+        </div>
+        <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-2xl">
+          <iframe src={pdfUrl} className="w-full h-full border-0" title="PDF Preview" />
+        </div>
+      </div>
+    );
+  }
+
+  // LIST TAB
   return (
     <div>
       {/* Header */}
@@ -307,23 +659,23 @@ export default function Invoices() {
             placeholder="Search by invoice #..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+            className="w-full pl-11 pr-4 py-3 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
           />
         </div>
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block bg-black/20 backdrop-blur-md border border-white/10 rounded-xl overflow-hidden">
+      <div className="hidden md:block bg-[#0a0a0a] border border-white/5 rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
-            <thead className="bg-white/5">
-              <tr className="border-b border-white/10">
-                <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Invoice #</th>
-                <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Customer</th>
-                <th className="text-right px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Amount</th>
-                <th className="text-center px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Status</th>
-                <th className="text-left px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Date</th>
-                <th className="text-right px-6 py-4 text-[11px] text-k-silver-dim uppercase tracking-wider font-medium">Actions</th>
+            <thead>
+              <tr className="border-b border-white/5">
+                <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Invoice #</th>
+                <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Customer</th>
+                <th className="text-right px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Amount</th>
+                <th className="text-center px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Status</th>
+                <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Date</th>
+                <th className="text-right px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -349,15 +701,15 @@ export default function Invoices() {
               ) : (
                 <>
                   {filtered.map((inv) => (
-                    <tr key={inv.id} className="border-b border-white/10 hover:bg-white/10 transition-colors">
+                    <tr key={inv.id} className="border-b border-white/5 hover:bg-[#111111] transition-colors">
                       <td className="px-6 py-4">
-                        <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
+                        <span className="text-sm text-white/80 font-sans">{inv.invoiceNumber}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm text-white">{inv.client?.name}</p>
+                        <p className="text-sm text-white/80 font-sans">{inv.client?.name}</p>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className="text-sm font-semibold text-white">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
+                        <span className="text-sm font-medium text-white/80 font-sans">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
                       </td>
                       <td className="px-6 py-4 text-center">
                         <select
@@ -367,7 +719,7 @@ export default function Invoices() {
                           style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
                           {Object.keys(STATUS_COLORS).map(status => (
-                            <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
+                            <option key={status} value={status} className="bg-[#0a0f0d]/60 backdrop-blur-2xl text-white normal-case">
                               {status}
                             </option>
                           ))}
@@ -408,20 +760,20 @@ export default function Invoices() {
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-4">
         {isLoadingInvoices || isLoadingClients ? (
-          <div className="py-12 flex items-center justify-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+          <div className="py-12 flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
             <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
             <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
             <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
           </div>
         ) : isErrorInvoices || isErrorClients ? (
-          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-black/20 backdrop-blur-md border border-white/10 rounded-xl text-red-400">
+          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-red-400">
             <AlertCircle size={24} />
             <p className="text-sm">Failed to load invoices.</p>
           </div>
         ) : (
           <>
             {filtered.map((inv) => (
-              <div key={inv.id} className="bg-black/20 backdrop-blur-md border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+              <div key={inv.id} className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
@@ -434,7 +786,7 @@ export default function Invoices() {
                     style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     {Object.keys(STATUS_COLORS).map(status => (
-                      <option key={status} value={status} className="bg-black/20 backdrop-blur-md text-white normal-case">
+                      <option key={status} value={status} className="bg-[#0a0f0d]/60 backdrop-blur-2xl text-white normal-case">
                         {status}
                       </option>
                     ))}
@@ -453,210 +805,26 @@ export default function Invoices() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
-                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
                     <Download size={14} /> <span className="hidden sm:inline">PDF</span>
                   </button>
-                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
                     <Edit3 size={14} /> <span className="hidden sm:inline">Edit</span>
                   </button>
-                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-white/5 text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
+                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
                     <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="py-12 text-center text-k-silver-dim text-sm bg-black/20 backdrop-blur-md border border-white/10 rounded-xl">
+              <div className="py-12 text-center text-k-silver-dim text-sm bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
                 No invoices found
               </div>
             )}
           </>
         )}
       </div>
-
-      {/* Create/Edit Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-black/20 backdrop-blur-md border border-white/10 rounded-2xl w-full max-w-4xl p-8 relative max-h-[90vh] overflow-y-auto">
-            <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06]">
-              <X size={16} />
-            </button>
-            <h2 className="font-display text-lg font-bold text-white mb-6">
-              {editing ? 'Edit Invoice' : 'New Invoice'}
-            </h2>
-
-            <div className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Invoice #</label>
-                  <input value={form.invoiceNumber} onChange={e => setForm({...form, invoiceNumber: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Client *</label>
-                  <select value={form.clientId} onChange={e => {
-                    const clientId = e.target.value;
-                    const selectedClient = clients.find(c => c.id === clientId);
-                    if (selectedClient) {
-                      setForm({...form, clientId, panNo: selectedClient.panNo || ''});
-                    } else {
-                      setForm({...form, clientId});
-                    }
-                  }} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 appearance-none">
-                    <option value="">Select Client</option>
-                    {clients.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
-                  </select>
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Issue Date</label>
-                  <input type="date" value={form.issueDate} onChange={e => setForm({...form, issueDate: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Due Date</label>
-                  <input type="date" value={form.dueDate} onChange={e => setForm({...form, dueDate: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Terms</label>
-                  <input value={form.terms} onChange={e => setForm({...form, terms: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Place of Supply</label>
-                  <input value={form.placeOfSupply} onChange={e => setForm({...form, placeOfSupply: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" placeholder="e.g. Tamil Nadu (33)" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">PAN No</label>
-                  <input value={form.panNo} onChange={e => setForm({...form, panNo: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Ship Address</label>
-                  <input value={form.shipAddress} onChange={e => setForm({...form, shipAddress: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" placeholder="Overrides client default" />
-                </div>
-              </div>
-
-              {/* Line items */}
-              <div className="overflow-x-auto pb-4">
-                <div className="min-w-[800px]">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-3">Line Items</label>
-                {/* Headers */}
-                <div className="grid grid-cols-12 gap-3 mb-2 text-[10px] text-k-silver-dim uppercase tracking-wider font-semibold px-2">
-                  <div className="col-span-3">Description</div>
-                  <div className="col-span-2">HSN/SAC</div>
-                  <div className="col-span-1 text-center">Qty</div>
-                  <div className="col-span-2 text-right">Rate</div>
-                  <div className="col-span-1 text-center">CGST %</div>
-                  <div className="col-span-1 text-center">SGST %</div>
-                  <div className="col-span-2 text-right pr-6">Amount</div>
-                </div>
-                {form.items.map((item, i) => (
-                  <div key={i} className="grid grid-cols-12 gap-3 mb-3">
-                    <input
-                      placeholder="Description"
-                      value={item.description}
-                      onChange={e => updateItem(i, 'description', e.target.value)}
-                      className="col-span-3 px-3 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40"
-                    />
-                    <input
-                      placeholder="HSN/SAC"
-                      value={item.hsnSac}
-                      onChange={e => updateItem(i, 'hsnSac', e.target.value)}
-                      className="col-span-2 px-3 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Qty"
-                      value={item.quantity === '' ? '' : item.quantity}
-                      onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))}
-                      className="col-span-1 px-3 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white text-center focus:outline-none focus:border-k-silver/40"
-                    />
-                    <input
-                      type="number"
-                      placeholder="Rate"
-                      value={item.rate === '' ? '' : item.rate}
-                      onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))}
-                      className="col-span-2 px-3 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white text-right focus:outline-none focus:border-k-silver/40"
-                    />
-                    <input
-                      type="number"
-                      placeholder="CGST %"
-                      value={item.cgstRatePct === '' ? '' : item.cgstRatePct}
-                      onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))}
-                      className="col-span-1 px-3 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white text-center focus:outline-none focus:border-k-silver/40"
-                    />
-                    <input
-                      type="number"
-                      placeholder="SGST %"
-                      value={item.sgstRatePct === '' ? '' : item.sgstRatePct}
-                      onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))}
-                      className="col-span-1 px-3 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white text-center focus:outline-none focus:border-k-silver/40"
-                    />
-                    <div className="col-span-2 flex items-center justify-between">
-                      <span className="text-sm text-k-silver">₹{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
-                      {form.items.length > 1 && (
-                        <button onClick={() => removeItem(i)} className="text-k-silver-dim hover:text-red-400">
-                          <X size={14} />
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                <button onClick={addItem} className="text-xs text-k-silver-dim hover:text-white border border-dashed border-k-border rounded-lg px-4 py-2 hover:border-k-silver/40 transition-all">
-                  + Add Item
-                </button>
-                </div>
-              </div>
-
-              {/* Status and Notes */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Status</label>
-                  <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full px-4 py-2.5 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 appearance-none">
-                    <option value="PAID">PAID</option>
-                    <option value="UNPAID">UNPAID</option>
-                    <option value="OVERDUE">OVERDUE</option>
-                    <option value="CANCELLED">CANCELLED</option>
-                  </select>
-                </div>
-                <div className="col-span-1">
-                  <label className="block text-xs text-k-silver-dim uppercase tracking-wider mb-1.5">Notes (Optional)</label>
-                  <textarea value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full px-4 py-2 bg-black/40 backdrop-blur-xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 resize-none h-10" />
-                </div>
-              </div>
-
-              {/* Totals */}
-              <div className="bg-k-card/50 rounded-xl p-4 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="text-k-silver-dim">Subtotal</span>
-                  <span className="text-white">₹{subtotal.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-k-silver-dim">CGST Total</span>
-                  <span className="text-white">₹{totalCgst.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-k-silver-dim">SGST Total</span>
-                  <span className="text-white">₹{totalSgst.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-sm font-bold border-t border-k-border pt-2">
-                  <span className="text-white">Total</span>
-                  <span className="text-white font-display">₹{total.toLocaleString('en-IN')}</span>
-                </div>
-              </div>
-
-            </div>
-
-            <div className="flex justify-end gap-3 mt-6">
-              <button onClick={() => setModalOpen(false)} className="px-5 py-2.5 text-sm text-k-silver-dim border border-white/10 rounded-xl hover:text-white hover:border-k-silver/40 transition-all">
-                Cancel
-              </button>
-              <button disabled={saveMutation.isPending} onClick={handleSave} className="px-5 py-2.5 text-sm bg-gradient-to-r from-white to-k-silver text-k-black font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all disabled:opacity-50">
-                {editing ? 'Save Invoice' : 'Create Invoice'}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }

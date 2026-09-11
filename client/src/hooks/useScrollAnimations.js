@@ -65,18 +65,39 @@ export function useScrollAnimations() {
         ease: 'none',
       })
 
-      // How it works steps: stagger in
-      gsap.from('.step-card', {
-        scrollTrigger: {
-          trigger: '.steps-section',
-          start: 'top 75%',
-          toggleActions: 'play none none reverse',
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.7,
-        stagger: 0.2,
-        ease: 'power3.out',
+      // How it works steps: slide in from sides
+      gsap.utils.toArray('.step-row').forEach((row, i) => {
+        const text = row.querySelector('.step-text');
+        const img = row.querySelector('.step-image');
+        const isReverse = i % 2 === 1;
+
+        if (text) {
+          gsap.from(text, {
+            scrollTrigger: {
+              trigger: row,
+              start: 'top 75%',
+              toggleActions: 'play none none reverse',
+            },
+            x: isReverse ? 50 : -50,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+          });
+        }
+        
+        if (img) {
+          gsap.from(img, {
+            scrollTrigger: {
+              trigger: row,
+              start: 'top 75%',
+              toggleActions: 'play none none reverse',
+            },
+            x: isReverse ? -50 : 50,
+            opacity: 0,
+            duration: 0.8,
+            ease: 'power3.out',
+          });
+        }
       })
 
       // Ensure ScrollTrigger calculates correct positions after all components mount

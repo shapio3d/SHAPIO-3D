@@ -1,4 +1,4 @@
-import { useState } from 'react'
+﻿import { useState } from 'react'
 import { Plus, Minus, HelpCircle, ArrowLeft } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -69,7 +69,7 @@ const FAQS = [
   },
   {
     question: "Can you manufacture a product from just an idea or sketch?",
-    answer: "Yes. We can support the development process from Idea → 3D Design → Prototype → Testing → Final Product → Batch Production, depending on the project requirements."
+    answer: "Yes. We can support the development process from Idea â†’ 3D Design â†’ Prototype â†’ Testing â†’ Final Product â†’ Batch Production, depending on the project requirements."
   },
   {
     question: "Do you provide product development and R&D support?",
@@ -101,7 +101,7 @@ export default function FAQ() {
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-emerald-500/10 mb-6">
             <HelpCircle size={32} className="text-emerald-400" />
           </div>
-          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6">
+          <h1 className="font-display text-4xl md:text-5xl font-bold text-white mb-6 uppercase">
             Frequently Asked Questions
           </h1>
           <p className="text-lg text-k-silver-dim font-body">
@@ -119,7 +119,7 @@ export default function FAQ() {
                 className="w-full px-6 py-5 flex items-center justify-between text-left focus:outline-none"
                 onClick={() => setOpenIndex(openIndex === index ? -1 : index)}
               >
-                <span className={`font-display font-semibold text-lg ${openIndex === index ? 'text-white' : 'text-k-silver'}`}>
+                <span className={`font-sub font-semibold text-lg ${openIndex === index ? 'text-white' : 'text-k-silver'}`}>
                   {faq.question}
                 </span>
                 <div className={`shrink-0 ml-4 p-1.5 rounded-full transition-colors ${openIndex === index ? 'bg-emerald-500/20 text-emerald-400' : 'bg-white/5 text-k-silver'}`}>
@@ -148,3 +148,4 @@ export default function FAQ() {
     </div>
   )
 }
+

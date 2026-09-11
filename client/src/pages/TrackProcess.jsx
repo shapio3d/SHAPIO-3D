@@ -20,7 +20,10 @@ export default function TrackProcess() {
 
   const handleSearch = async (e) => {
     e.preventDefault()
-    if (!trackingId.trim()) return
+    if (!trackingId.trim()) {
+      setError("Please enter a Tracking ID")
+      return
+    }
 
     setLoading(true)
     setError(null)
@@ -41,22 +44,21 @@ export default function TrackProcess() {
     } finally {
       setLoading(false)
     }
-    setLoading(false)
   }
 
   return (
     <section className="section-padding relative min-h-[80vh] flex flex-col justify-center">
-      <div className="max-w-3xl mx-auto w-full">
-        <div className="mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors">
-            <ArrowLeft size={16} />
-            Back to Home
-          </Link>
-        </div>
+      <div className="max-w-7xl mx-auto w-full px-6 mb-8 mt-12 md:mt-0">
+        <Link to="/" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors">
+          <ArrowLeft size={16} />
+          Back to Home
+        </Link>
+      </div>
 
+      <div className="max-w-3xl mx-auto w-full px-4 sm:px-6">
         <div className="text-center mb-12">
           <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">Client Portal</span>
-          <h1 className="section-title font-display text-3xl md:text-5xl font-bold mt-4 text-white">
+          <h1 className="section-title font-sub text-3xl md:text-5xl font-bold mt-4 text-white tracking-wide">
             Track Your Process
           </h1>
           <p className="mt-4 text-k-silver-dim font-body max-w-xl mx-auto">
@@ -65,7 +67,7 @@ export default function TrackProcess() {
         </div>
 
         <div className="glass-card p-6 md:p-8">
-          <form onSubmit={handleSearch} className="flex gap-4 mb-8">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-4 mb-8">
             <div className="relative flex-1">
               <Search size={18} className="absolute top-4 left-5 text-k-silver-dim" />
               <input
@@ -74,12 +76,11 @@ export default function TrackProcess() {
                 value={trackingId}
                 onChange={(e) => setTrackingId(e.target.value)}
                 className="w-full pl-12 pr-4 py-4 bg-k-dark border border-k-border rounded-xl text-base text-white placeholder:text-k-silver-dim/50 focus:outline-none focus:border-white/20 transition-all font-mono"
-                required
               />
             </div>
             <button
               type="submit"
-              disabled={loading || !trackingId.trim()}
+              disabled={loading}
               className="btn-primary whitespace-nowrap disabled:opacity-50"
             >
               {loading ? <Loader2 size={18} className="animate-spin" /> : 'Track Status'}
@@ -97,7 +98,7 @@ export default function TrackProcess() {
             <div className="mt-8 pt-8 border-t border-k-border animate-fade-in">
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
                 <div>
-                  <h2 className="text-xl font-display font-bold text-white mb-2">Project Request</h2>
+                  <h2 className="text-xl font-sub font-bold text-white mb-2">Project Request</h2>
                   <p className="text-sm text-k-silver-dim font-mono tracking-wide">ID: {processData.trackingId}</p>
                 </div>
                 
@@ -185,3 +186,4 @@ export default function TrackProcess() {
     </section>
   )
 }
+

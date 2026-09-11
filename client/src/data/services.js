@@ -11,10 +11,10 @@ export const SERVICE_DATA = {
       'High strength and durability'
     ],
     materials: [
-      { name: 'Carbon-fiber composites', desc: 'Extremely rigid and lightweight, ideal for structural parts.' },
-      { name: 'Nylon PA12', desc: 'High fatigue resistance and low friction.' },
-      { name: 'Polycarbonate (PC)', desc: 'Superior impact strength and heat resistance.' },
-      { name: 'ABS', desc: 'Durable thermoplastic for everyday mechanical applications.' }
+      { id: 'carbon', name: 'Carbon-fiber composites', image: '/images/materials/gear-carbon.png', desc: 'Extremely rigid and lightweight, ideal for structural parts.', surfaceFinish: 5, gloss: 2, layerVisibility: 7, detail: 7 },
+      { id: 'nylon', name: 'Nylon PA12', image: '/images/materials/gear-nylon.png', desc: 'High fatigue resistance and low friction.', surfaceFinish: 6, gloss: 3, layerVisibility: 6, detail: 7 },
+      { id: 'pc', name: 'Polycarbonate (PC)', image: '/images/materials/gear-petg.png', desc: 'Superior impact strength and heat resistance.', surfaceFinish: 8, gloss: 7, layerVisibility: 5, detail: 8 },
+      { id: 'abs', name: 'ABS', image: '/images/materials/gear-abs.png', desc: 'Durable thermoplastic for everyday mechanical applications.', surfaceFinish: 7, gloss: 2, layerVisibility: 7, detail: 7 }
     ],
     designGuidelines: [
       'Minimum wall thickness: 1.2mm for structural integrity.',
@@ -23,12 +23,12 @@ export const SERVICE_DATA = {
       'Orientation: Design parts to minimize overhanging angles beyond 45 degrees.'
     ],
     gallery: [
-      '/images/services/precision_gear.png',
+      '/images/services/engineering_and_industrial.png',
       '/images/services/engineering_gallery1_1788213552000.png',
       '/images/services/engineering_gallery2_1788213562722.png',
       '/images/services/engineering_gallery3_1788213580339.png'
     ],
-    image: '/images/services/precision_gear.png'
+    image: '/images/services/engineering_and_industrial.png'
   },
   'rapid-prototyping': {
     title: 'Rapid Prototyping',
@@ -42,10 +42,10 @@ export const SERVICE_DATA = {
       'Fast turnaround times'
     ],
     materials: [
-      { name: 'PLA', desc: 'Cost-effective, highly accurate for form and fit testing.' },
-      { name: 'Standard Resin', desc: 'Exceptional surface finish and detail for visual prototypes.' },
-      { name: 'ABS', desc: 'Functional testing with moderate heat resistance.' },
-      { name: 'PETG', desc: 'Excellent layer adhesion and impact resistance.' }
+      { id: 'pla', name: 'PLA', image: '/images/materials/gear-pla.png', desc: 'Cost-effective, highly accurate for form and fit testing.', surfaceFinish: 7, gloss: 3, layerVisibility: 6, detail: 8 },
+      { id: 'resin', name: 'Standard Resin', image: '/images/materials/gear-resin.png', desc: 'Exceptional surface finish and detail for visual prototypes.', surfaceFinish: 10, gloss: 8, layerVisibility: 1, detail: 10 },
+      { id: 'abs', name: 'ABS', image: '/images/materials/gear-abs.png', desc: 'Functional testing with moderate heat resistance.', surfaceFinish: 7, gloss: 2, layerVisibility: 7, detail: 7 },
+      { id: 'petg', name: 'PETG', image: '/images/materials/gear-petg.png', desc: 'Excellent layer adhesion and impact resistance.', surfaceFinish: 8, gloss: 6, layerVisibility: 5, detail: 8 }
     ],
     designGuidelines: [
       'Minimum wall thickness: 0.8mm (Resin) / 1.0mm (FDM).',
@@ -73,10 +73,10 @@ export const SERVICE_DATA = {
       'Precision tolerances'
     ],
     materials: [
-      { name: 'Tough Resin', desc: 'Simulates ABS properties with smooth surface finish.' },
-      { name: 'PETG', desc: 'Durable, chemical-resistant for factory floor use.' },
-      { name: 'Nylon', desc: 'Wear-resistant, ideal for friction surfaces and gears.' },
-      { name: 'TPU', desc: 'Flexible material for custom grips and dampeners.' }
+      { id: 'tough-resin', name: 'Tough Resin', image: '/images/materials/gear-resin.png', desc: 'Simulates ABS properties with smooth surface finish.', surfaceFinish: 9, gloss: 7, layerVisibility: 2, detail: 9 },
+      { id: 'petg', name: 'PETG', image: '/images/materials/gear-petg.png', desc: 'Durable, chemical-resistant for factory floor use.', surfaceFinish: 8, gloss: 6, layerVisibility: 5, detail: 8 },
+      { id: 'nylon', name: 'Nylon', image: '/images/materials/gear-nylon.png', desc: 'Wear-resistant, ideal for friction surfaces and gears.', surfaceFinish: 6, gloss: 3, layerVisibility: 6, detail: 7 },
+      { id: 'tpu', name: 'TPU', image: '/images/materials/gear-tpu.png', desc: 'Flexible material for custom grips and dampeners.', surfaceFinish: 6, gloss: 2, layerVisibility: 8, detail: 6 }
     ],
     designGuidelines: [
       'Minimum wall thickness: 1.5mm for load-bearing fixtures.',
@@ -85,12 +85,12 @@ export const SERVICE_DATA = {
       'Inserts: Use heat-set threaded inserts instead of printed threads.'
     ],
     gallery: [
-      '/images/services/mechanical_hero_1788213643670.png',
+      '/images/services/precison_gear_new.png',
       '/images/services/mechanical_gallery1_1788213662134.png',
       '/images/services/mechanical_gallery2_1788213673091.png',
       '/images/services/mechanical_gallery3_1788213686427.png'
     ],
-    image: '/images/services/mechanical_hero_1788213643670.png'
+    image: '/images/services/precison_gear_new.png'
   },
   'electronics-iot': {
     title: 'Electronics & IoT',
@@ -104,10 +104,10 @@ export const SERVICE_DATA = {
       'Snap-fit and screw-assembly designs'
     ],
     materials: [
-      { name: 'ABS', desc: 'Standard choice for consumer electronic casings.' },
-      { name: 'PETG', desc: 'Slightly flexible, great for snap-fit enclosures.' },
-      { name: 'Flame Retardant Resin', desc: 'V-0 rated material for critical electrical components.' },
-      { name: 'PLA', desc: 'For low-heat, aesthetic desktop enclosures.' }
+      { id: 'abs', name: 'ABS', image: '/images/materials/gear-abs.png', desc: 'Standard choice for consumer electronic casings.', surfaceFinish: 7, gloss: 2, layerVisibility: 7, detail: 7 },
+      { id: 'petg', name: 'PETG', image: '/images/materials/gear-petg.png', desc: 'Slightly flexible, great for snap-fit enclosures.', surfaceFinish: 8, gloss: 6, layerVisibility: 5, detail: 8 },
+      { id: 'fr-resin', name: 'Flame Retardant Resin', image: '/images/materials/gear-resin.png', desc: 'V-0 rated material for critical electrical components.', surfaceFinish: 9, gloss: 5, layerVisibility: 2, detail: 9 },
+      { id: 'pla', name: 'PLA', image: '/images/materials/gear-pla.png', desc: 'For low-heat, aesthetic desktop enclosures.', surfaceFinish: 7, gloss: 3, layerVisibility: 6, detail: 8 }
     ],
     designGuidelines: [
       'Minimum wall thickness: 1.2mm for rigid enclosures.',
@@ -134,9 +134,9 @@ export const SERVICE_DATA = {
       'Complex geometries without draft angles'
     ],
     materials: [
-      { name: 'Castable Wax Resin', desc: 'Leaves 0% ash after burnout, perfect for jewelry/metal casting.' },
-      { name: 'High-Temp Resin', desc: 'Withstands up to 289°C for low-run injection molding.' },
-      { name: 'SLA Standard Resin', desc: 'Extremely smooth surface for master silicone molds.' }
+      { id: 'wax', name: 'Castable Wax Resin', image: '/images/materials/gear-resin.png', desc: 'Leaves 0% ash after burnout, perfect for jewelry/metal casting.', surfaceFinish: 9, gloss: 4, layerVisibility: 2, detail: 10 },
+      { id: 'hightemp', name: 'High-Temp Resin', image: '/images/materials/gear-resin.png', desc: 'Withstands up to 289°C for low-run injection molding.', surfaceFinish: 9, gloss: 6, layerVisibility: 1, detail: 10 },
+      { id: 'sla', name: 'SLA Standard Resin', image: '/images/materials/gear-resin.png', desc: 'Extremely smooth surface for master silicone molds.', surfaceFinish: 10, gloss: 8, layerVisibility: 1, detail: 10 }
     ],
     designGuidelines: [
       'Minimum feature size: 0.2mm for high-res SLA.',
@@ -163,10 +163,10 @@ export const SERVICE_DATA = {
       'Lightweight and high-strength'
     ],
     materials: [
-      { name: 'Carbon-fiber Nylon', desc: 'Highest strength-to-weight ratio for robotic arms.' },
-      { name: 'TPU', desc: 'Excellent for custom grippers and shock absorbers.' },
-      { name: 'Polycarbonate', desc: 'High impact resistance for automation shields.' },
-      { name: 'ABS', desc: 'Cost-effective structural components.' }
+      { id: 'carbon', name: 'Carbon-fiber Nylon', image: '/images/materials/gear-carbon.png', desc: 'Highest strength-to-weight ratio for robotic arms.', surfaceFinish: 6, gloss: 2, layerVisibility: 7, detail: 7 },
+      { id: 'tpu', name: 'TPU', image: '/images/materials/gear-tpu.png', desc: 'Excellent for custom grippers and shock absorbers.', surfaceFinish: 6, gloss: 2, layerVisibility: 8, detail: 6 },
+      { id: 'pc', name: 'Polycarbonate', image: '/images/materials/gear-petg.png', desc: 'High impact resistance for automation shields.', surfaceFinish: 8, gloss: 7, layerVisibility: 5, detail: 8 },
+      { id: 'abs', name: 'ABS', image: '/images/materials/gear-abs.png', desc: 'Cost-effective structural components.', surfaceFinish: 7, gloss: 2, layerVisibility: 7, detail: 7 }
     ],
     designGuidelines: [
       'Weight Reduction: Use internal honeycomb infill (20-40%) to save weight.',
@@ -193,10 +193,10 @@ export const SERVICE_DATA = {
       'Cost-effective educational pricing'
     ],
     materials: [
-      { name: 'PLA', desc: 'Most affordable and versatile, available in many colors.' },
-      { name: 'PETG', desc: 'For mechanical projects needing moderate strength.' },
-      { name: 'Standard Resin', desc: 'For highly detailed architectural or medical models.' },
-      { name: 'Multi-color printing', desc: 'For distinct visualization of complex assemblies.' }
+      { id: 'pla', name: 'PLA', image: '/images/materials/gear-pla.png', desc: 'Most affordable and versatile, available in many colors.', surfaceFinish: 7, gloss: 3, layerVisibility: 6, detail: 8 },
+      { id: 'petg', name: 'PETG', image: '/images/materials/gear-petg.png', desc: 'For mechanical projects needing moderate strength.', surfaceFinish: 8, gloss: 6, layerVisibility: 5, detail: 8 },
+      { id: 'resin', name: 'Standard Resin', image: '/images/materials/gear-resin.png', desc: 'For highly detailed architectural or medical models.', surfaceFinish: 10, gloss: 8, layerVisibility: 1, detail: 10 },
+      { id: 'multicolor', name: 'Multi-color printing', image: '/images/materials/gear-pla.png', desc: 'For distinct visualization of complex assemblies.', surfaceFinish: 7, gloss: 4, layerVisibility: 6, detail: 7 }
     ],
     designGuidelines: [
       'Scale: Models should fit within a 300x300x400mm build volume.',
@@ -223,9 +223,9 @@ export const SERVICE_DATA = {
       'Rapid scaling capabilities'
     ],
     materials: [
-      { name: 'Industrial SLA Resin', desc: 'For batches of parts requiring injection-mold-like finish.' },
-      { name: 'Nylon PA12 (SLS)', desc: 'For high-volume, strong functional parts without support marks.' },
-      { name: 'ABS / PETG Farm', desc: 'Cost-effective high-volume FDM production.' }
+      { id: 'ind-sla', name: 'Industrial SLA Resin', image: '/images/materials/gear-resin.png', desc: 'For batches of parts requiring injection-mold-like finish.', surfaceFinish: 10, gloss: 8, layerVisibility: 1, detail: 10 },
+      { id: 'sls-nylon', name: 'Nylon PA12 (SLS)', image: '/images/materials/gear-nylon.png', desc: 'For high-volume, strong functional parts without support marks.', surfaceFinish: 7, gloss: 3, layerVisibility: 4, detail: 8 },
+      { id: 'fdm-farm', name: 'ABS / PETG Farm', image: '/images/materials/gear-abs.png', desc: 'Cost-effective high-volume FDM production.', surfaceFinish: 7, gloss: 2, layerVisibility: 7, detail: 7 }
     ],
     designGuidelines: [
       'Batch nesting: We optimize build volumes for highest throughput.',

@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { X } from 'lucide-react'
 
 const GALLERY_ITEMS = [
+  { id: 0, title: 'Concept Toy Prototype', category: 'Prototyping', color: '#16213e', image: '/images/gallery/minion.jpeg' },
   { id: 1, title: 'Precision Gear Set', category: 'Mechanical', color: '#1a1a2e', image: '/images/gallery/gear.png' },
   { id: 2, title: 'Architectural Scale Model', category: 'Architecture', color: '#16213e', image: '/images/gallery/architecture.png' },
   { id: 3, title: 'Custom Robot Parts', category: 'Robotics', color: '#0f3460', image: '/images/gallery/robotics.png' },
@@ -21,7 +22,7 @@ export default function Gallery() {
         {/* Header */}
         <div className="text-center mb-16">
           <span className="text-xs font-body text-k-silver-dim uppercase tracking-[0.3em]">Showcase</span>
-          <h2 className="section-title font-display text-3xl md:text-4xl font-bold mt-3 text-gradient">
+          <h2 className="section-title font-sub text-3xl md:text-4xl font-bold mt-3 text-white tracking-wide">
             Our Work
           </h2>
           <p className="mt-4 text-k-silver-dim font-body max-w-xl mx-auto">
@@ -30,14 +31,12 @@ export default function Gallery() {
         </div>
 
         {/* Masonry grid */}
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-5 space-y-5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {GALLERY_ITEMS.map((item, i) => (
             <div
               key={item.id}
               onClick={() => setLightbox(item)}
-              className={`break-inside-avoid glass-card glow-border overflow-hidden cursor-pointer group ${
-                i % 3 === 0 ? 'h-72' : i % 3 === 1 ? 'h-56' : 'h-64'
-              }`}
+              className="glass-card glow-border overflow-hidden cursor-pointer group aspect-[4/3]"
             >
               {/* Image with geometric design fallback */}
               <div className="w-full h-full relative flex items-center justify-center"
@@ -53,9 +52,9 @@ export default function Gallery() {
                      }} />
 
                 {/* Info overlay */}
-                <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-400">
-                  <span className="text-[10px] text-k-silver-dim uppercase tracking-[0.2em]">{item.category}</span>
-                  <h4 className="font-display text-sm font-semibold text-white mt-1">{item.title}</h4>
+                <div className="absolute bottom-0 left-0 right-0 bg-black/40 backdrop-blur-md border-t border-white/10 p-5 translate-y-full group-hover:translate-y-0 transition-transform duration-400">
+                  <span className="text-xs font-bold text-white/80 uppercase tracking-[0.2em]">{item.category}</span>
+                  <h4 className="font-sub text-base font-semibold text-white mt-1">{item.title}</h4>
                 </div>
               </div>
             </div>
@@ -66,22 +65,22 @@ export default function Gallery() {
       {/* Lightbox */}
       {lightbox && (
         <div
-          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-8"
+          className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-sm flex items-center justify-center p-4 pt-24 md:p-8 md:pt-28"
           onClick={() => setLightbox(null)}
         >
-          <div className="relative max-w-2xl w-full glass-card p-8 text-center" onClick={e => e.stopPropagation()}>
+          <div className="relative max-w-2xl w-full max-h-[85vh] overflow-y-auto glass-card p-6 md:p-8 text-center" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => setLightbox(null)}
               className="absolute top-4 right-4 z-10 w-8 h-8 rounded-full bg-k-border flex items-center justify-center text-k-silver hover:text-white transition-colors"
             >
               <X size={16} />
             </button>
-            <div className="w-full h-64 md:h-96 rounded-xl mb-6 flex items-center justify-center relative overflow-hidden"
+            <div className="w-full h-48 sm:h-64 md:h-80 rounded-xl mb-6 flex items-center justify-center relative overflow-hidden"
                  style={{ background: `linear-gradient(135deg, ${lightbox.color}, #0a0a0a)` }}>
               <img src={lightbox.image} alt={lightbox.title} className="absolute inset-0 w-full h-full object-cover" />
             </div>
             <span className="text-xs text-k-silver-dim uppercase tracking-[0.2em]">{lightbox.category}</span>
-            <h3 className="font-display text-xl font-bold text-white mt-2">{lightbox.title}</h3>
+            <h3 className="font-sub text-xl font-bold text-white mt-2">{lightbox.title}</h3>
             <p className="text-sm text-k-silver-dim mt-3 font-body">
               Precision-crafted using advanced additive manufacturing techniques with premium materials.
             </p>
@@ -91,3 +90,4 @@ export default function Gallery() {
     </section>
   )
 }
+
