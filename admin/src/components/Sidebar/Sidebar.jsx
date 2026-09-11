@@ -23,7 +23,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
 
  return (
  <aside
- className={`fixed top-0 left-0 h-screen bg-[#031107] border-r border-white/10 flex flex-col transition-all duration-300 z-40 
+ className={`fixed top-0 left-0 h-screen bg-[#0a0a0a] border-r border-white/10 flex flex-col transition-all duration-300 z-40 
  ${collapsed ? 'w-[72px]' : 'w-[260px]'}
  ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
  `}

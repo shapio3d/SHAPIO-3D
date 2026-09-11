@@ -109,10 +109,10 @@ export default function Dashboard() {
  {STAT_CARDS.map((stat, i) => (
  <div
  key={i}
- className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-6 hover:border-white/30 transition-all group shadow-2xl shadow-black/20"
+ className="bg-[#0a0a0a] border border-white/10 rounded-xl p-6 hover:border-white/30 transition-all group shadow-2xl shadow-black/20"
  >
  <div className="flex items-start justify-between mb-4">
- <div className="w-11 h-11 rounded-xl bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-colors">
+ <div className="w-11 h-11 rounded-xl bg-[#0a0a0a] border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-colors">
  <stat.icon size={20} className="text-white group-hover:text-white" />
  </div>
  <span className={`text-xs font-medium px-2 py-1 rounded-md ${
@@ -132,7 +132,7 @@ export default function Dashboard() {
  {/* Charts row */}
  <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
  {/* Revenue chart */}
- <div className="lg:col-span-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
+ <div className="lg:col-span-2 bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
  <div className="flex items-center justify-between mb-6">
  <div>
  <h3 className="text-sm font-semibold text-white">Monthly Revenue</h3>
@@ -171,7 +171,7 @@ export default function Dashboard() {
  </div>
 
  {/* Invoice status pie */}
- <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
+ <div className="bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
  <div className="flex items-center justify-between mb-6">
  <div>
  <h3 className="text-sm font-semibold text-white">Invoice Status</h3>
@@ -235,16 +235,16 @@ export default function Dashboard() {
  {/* Recent activity */}
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
  {/* Recent invoices */}
- <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
+ <div className="bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
  <h3 className="text-sm font-semibold text-white mb-4">Recent Invoices</h3>
  <div className="space-y-3">
  {recentInvoices.length > 0 ? recentInvoices.map((inv) => (
  <div
  key={inv.id}
- className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/5 hover:border-white/20 transition-colors"
+ className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-white/5 hover:border-white/20 transition-colors"
  >
  <div className="flex items-center gap-4">
- <div className="w-9 h-9 rounded-lg bg-[#0a0f0d]/60 backdrop-blur-2xl flex items-center justify-center">
+ <div className="w-9 h-9 rounded-lg bg-[#0a0a0a] flex items-center justify-center">
  <FileText size={16} className="text-white" />
  </div>
  <div>
@@ -268,13 +268,13 @@ export default function Dashboard() {
  </div>
 
  {/* Recent customers */}
- <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
+ <div className="bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
  <h3 className="text-sm font-semibold text-white mb-4">Recent Customers</h3>
  <div className="space-y-3">
  {recentCustomers.length > 0 ? recentCustomers.map((cust) => (
  <div
  key={cust.id}
- className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/5 hover:border-white/20 transition-colors"
+ className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-white/5 hover:border-white/20 transition-colors"
  >
  <div className="flex items-center gap-4">
  <div className="w-9 h-9 rounded-full bg-gradient-to-br from-k-silver/20 to-k-border flex items-center justify-center">
