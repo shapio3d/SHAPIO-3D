@@ -239,5 +239,35 @@ export const SERVICE_DATA = {
       '/images/services/production_gallery3_1788685187709.png'
     ],
     image: '/images/services/production.png'
+  },
+  'resin-print': {
+    title: 'Resin Print',
+    subtitle: 'Ultra-Detail SLA/MSLA',
+    description: 'Achieve injection-mold-level surface quality with our SLA/MSLA resin printing — perfect for miniatures, dental, jewelry, and high-detail prototypes.',
+    longDescription: 'Our resin printing service uses SLA and MSLA technology to produce parts with an extraordinarily smooth surface finish and fine feature resolution down to 0.05mm. Resin prints are ideal when visual quality, micro-detail, and surface smoothness are paramount — from concept models and jewelry masters to dental appliances and intricate miniatures.',
+    features: [
+      'Ultra-high detail surface finish',
+      'Miniatures, figurines & display models',
+      'Dental & medical models',
+      'Jewelry master patterns & prototypes'
+    ],
+    materials: [
+      { id: 'standard-resin', name: 'Standard Resin', image: '/images/materials/gear-resin.png', desc: 'Smooth glossy surface, great for visual models and display.', surfaceFinish: 10, gloss: 9, layerVisibility: 1, detail: 10 },
+      { id: 'abs-like-resin', name: 'ABS-Like Resin', image: '/images/materials/gear-resin.png', desc: 'Tougher resin for functional snap-fit and structural parts.', surfaceFinish: 9, gloss: 7, layerVisibility: 1, detail: 9 },
+      { id: 'castable-wax', name: 'Castable Wax Resin', image: '/images/materials/gear-resin.png', desc: 'Burns out cleanly — ideal for metal casting and jewelry.', surfaceFinish: 9, gloss: 4, layerVisibility: 2, detail: 10 },
+      { id: 'water-washable', name: 'Water-Washable Resin', image: '/images/materials/gear-resin.png', desc: 'Easy cleanup with smooth finish for art and education.', surfaceFinish: 10, gloss: 8, layerVisibility: 1, detail: 10 }
+    ],
+    designGuidelines: [
+      'Minimum feature size: 0.1mm — ideal for intricate details.',
+      'Wall thickness: Minimum 0.5mm (supported) or 1mm (unsupported).',
+      'Hollow parts: Add at least 2 drainage holes (2–3mm diameter).',
+      'Tolerances: ±0.05mm for high-accuracy resin prints.'
+    ],
+    gallery: [
+      '/images/services/resin_print.png',
+      '/images/services/resin_print.png',
+      '/images/services/resin_print.png'
+    ],
+    image: '/images/services/resin_print.png'
   }
 }

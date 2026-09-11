@@ -1,4 +1,4 @@
-﻿import { ArrowRight } from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function CTA() {
@@ -26,9 +26,6 @@ export default function CTA() {
               <Link to="/contact" className="h-12 px-8 rounded-lg bg-gradient-to-r from-white to-gray-200 text-black font-sub font-bold text-sm tracking-widest uppercase flex items-center gap-2 hover:scale-105 transition-transform duration-300">
                 Get a Free Quote
                 <ArrowRight size={16} />
-              </Link>
-              <Link to="/products" className="h-12 px-8 rounded-lg border border-white/20 bg-transparent text-white font-sub font-bold text-sm tracking-widest uppercase flex items-center hover:bg-white/5 transition-colors duration-300">
-                Explore Products
               </Link>
             </div>
           </div>

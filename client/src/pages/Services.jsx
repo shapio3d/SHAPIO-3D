@@ -106,8 +106,19 @@ const SERVICES_DETAIL = [
       'Customized Products & Made-to-Order Parts',
     ],
   },
+  {
+    icon: Printer,
+    image: '/images/services/resin_print.png',
+    title: 'Resin Print',
+    slug: 'resin-print',
+    subtitle: 'Ultra-Detail SLA/MSLA',
+    description: 'Achieve injection-mold-level surface quality with our SLA/MSLA resin printing — perfect for miniatures, dental, jewelry, and high-detail prototypes.',
+    features: [
+      'Ultra-high detail surface finish',
+      'Miniatures, figurines & display models',
+    ],
+  },
 ]
-
 export default function ServicesPage() {
   useScrollAnimations()
 

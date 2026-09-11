@@ -28,6 +28,7 @@ const FOOTER_LINKS = [
       { label: 'Robotics & Automation', path: '/services/robotics-automation' },
       { label: 'Education & Research', path: '/services/education-research' },
       { label: 'Scale & Production', path: '/services/scale-production' },
+      { label: 'Resin Print', path: '/services/resin-print' },
     ],
   },
   {
@@ -52,7 +53,7 @@ export default function Footer() {
           <div className="lg:col-span-4 flex flex-col">
             <Link to="/" className="flex items-center gap-3 mb-6">
               <img src={logoUrl} alt="Shapio 3D Logo" className="w-10 h-10 object-contain drop-shadow-lg" />
-              <span className="font-sub font-bold text-xl tracking-wider text-k-white">
+              <span style={{ fontFamily: "'Orbitron', sans-serif" }} className="font-bold text-xl tracking-widest text-white">
                 SHAPIO <span className="text-emerald-400">3D</span>
               </span>
             </Link>
@@ -100,7 +101,7 @@ export default function Footer() {
                     <li key={link.label}>
                       <Link
                         to={link.path}
-                        className="text-[13px] text-k-silver-dim hover:text-white transition-colors inline-block"
+                        className="text-[13px] text-[#a0a0a0] hover:text-white transition-colors inline-block"
                       >
                         {link.label}
                       </Link>
@@ -116,9 +117,9 @@ export default function Footer() {
                 Legal
               </h4>
               <ul className="space-y-4">
-                <li><Link to="/privacy-policy" className="text-[13px] text-k-silver-dim hover:text-white transition-colors inline-block">Privacy Policy</Link></li>
-                <li><Link to="/terms" className="text-[13px] text-k-silver-dim hover:text-white transition-colors inline-block">Terms of Service</Link></li>
-                <li><Link to="/terms#shipping-returns" className="text-[13px] text-k-silver-dim hover:text-white transition-colors inline-block">Shipping & Returns</Link></li>
+                <li><Link to="/privacy-policy" className="text-[13px] text-[#a0a0a0] hover:text-white transition-colors inline-block">Privacy Policy</Link></li>
+                <li><Link to="/terms" className="text-[13px] text-[#a0a0a0] hover:text-white transition-colors inline-block">Terms of Service</Link></li>
+                <li><Link to="/terms#shipping-returns" className="text-[13px] text-[#a0a0a0] hover:text-white transition-colors inline-block">Shipping &amp; Returns</Link></li>
               </ul>
             </div>
           </div>

@@ -47,9 +47,9 @@ export default function Login() {
   <div className="w-20 h-20 flex items-center justify-center mb-4">
   <img src={logoUrl} alt="Shapio 3D" className="w-full h-full object-contain drop-shadow-xl" />
   </div>
-  <h1 className="font-sub text-2xl tracking-widest uppercase">
+  <h1 style={{ fontFamily: "'Orbitron', sans-serif" }} className="text-2xl tracking-widest uppercase font-bold">
   <span className="text-white">SHAPIO </span>
-  <span className="text-white">3D</span>
+  <span className="text-emerald-400">3D</span>
   </h1>
   <p className="text-[11px] font-sub text-white/70 mt-2 uppercase tracking-[0.3em]">Admin Portal</p>
   </div>
