@@ -11,6 +11,7 @@ const GALLERY_ITEMS = [
   { id: 6, title: 'Art Installation Piece', category: 'Art', color: '#0f3460', image: '/images/gallery/art.png' },
   { id: 7, title: 'Electronics Enclosure', category: 'Electronics', color: '#1a1a2e', image: '/images/gallery/enclosure.png' },
   { id: 8, title: 'Automotive Prototype', category: 'Automotive', color: '#16213e', image: '/images/gallery/automotive.png' },
+  { id: 9, title: 'High-Detail Miniature', category: 'Resin Print', color: '#0f3460', image: '/images/services/resin_print_gallery1.png' },
 ]
 
 export default function Gallery() {
