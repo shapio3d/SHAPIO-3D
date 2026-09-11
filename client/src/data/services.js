@@ -265,8 +265,7 @@ export const SERVICE_DATA = {
     ],
     gallery: [
       '/images/services/resin_print_gallery1.png',
-      '/images/services/resin_print_gallery1.png',
-      '/images/services/resin_print_gallery1.png'
+      '/images/services/resin_print.png'
     ],
     image: '/images/services/resin_print.png'
   }
