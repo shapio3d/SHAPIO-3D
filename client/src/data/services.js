@@ -264,9 +264,9 @@ export const SERVICE_DATA = {
       'Tolerances: ±0.05mm for high-accuracy resin prints.'
     ],
     gallery: [
-      '/images/services/resin_print.png',
-      '/images/services/resin_print.png',
-      '/images/services/resin_print.png'
+      '/images/services/resin_print_gallery1.png',
+      '/images/services/resin_print_gallery1.png',
+      '/images/services/resin_print_gallery1.png'
     ],
     image: '/images/services/resin_print.png'
   }

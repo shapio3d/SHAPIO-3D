@@ -31,13 +31,7 @@ export default function Login() {
  }
 
  return (
- <div className="min-h-screen flex items-center justify-center relative overflow-hidden">
- {/* Global Glow Background */}
- <div className="glow-bg">
- <div className="glow-orb-1"></div>
- <div className="glow-orb-2"></div>
- <div className="glow-orb-3"></div>
- </div>
+ <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#06150D]">
 
   {/* Login card */}
   <div className="relative z-10 w-full max-w-md mx-4">

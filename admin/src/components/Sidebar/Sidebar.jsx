@@ -56,8 +56,8 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  onClick={() => setMobileMenuOpen && setMobileMenuOpen(false)}
  className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
  isActive
- ? 'bg-[#152e1f] text-white'
- : 'text-[#829087] hover:text-white'
+ ? 'bg-[#0a0a0a] border border-white/5 text-white'
+ : 'text-[#829087] hover:text-white hover:bg-white/5'
  }`}
  >
  <div className="flex items-center gap-4">

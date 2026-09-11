@@ -134,7 +134,7 @@ export default function ContactSubmissions() {
  <div className="overflow-x-auto">
  <table className="w-full">
  <thead>
- <tr className="border-b border-white/5 bg-[#152e1f]">
+ <tr className="border-b border-white/5">
  <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Tracking ID</th>
  <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Customer</th>
  <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Date</th>
