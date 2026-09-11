@@ -274,6 +274,7 @@ export default function Customers() {
                   <td className="px-6 py-4 text-sm text-white/80 font-sans">{cust.phone}</td>
                   <td className="px-6 py-4 text-sm text-white/80 font-sans">{cust.company || '—'}</td>
                   <td className="px-6 py-4 text-sm text-white/60 font-sans">{cust.billAddress || cust.address || '—'}</td>
+                  <td className="px-6 py-4 text-sm text-white/60 font-sans">
                     {new Date(cust.createdAt || new Date()).toLocaleDateString('en-IN', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                   </td>
                   <td className="px-6 py-4">
