@@ -102,7 +102,7 @@ export default function Navbar() {
         className={`md:hidden absolute top-0 left-0 right-0 flex flex-col gap-4 pt-24 pb-6 px-6 bg-k-dark border-b border-k-border transition-all duration-400 overflow-hidden shadow-2xl shadow-black ${mobileOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
           }`}
       >
-        <div className="px-6 py-4 flex flex-col gap-1 items-end">
+        <div className="px-6 py-4 flex flex-col gap-1 items-center">
           {NAV_LINKS.map((link) => (
             <Link
               key={link.path}
