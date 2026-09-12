@@ -32,41 +32,48 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center relative overflow-hidden bg-[#f8f9fa] text-gray-900 px-4 py-12">
-      {/* Subtle background ambient glow */}
-      <div className="absolute -top-32 -left-32 w-80 h-80 bg-blue-100/60 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute -bottom-32 -right-32 w-80 h-80 bg-emerald-100/50 rounded-full blur-3xl pointer-events-none" />
+      {/* Subtle clean background pattern */}
+      <div 
+        className="absolute inset-0 pointer-events-none opacity-[0.4]"
+        style={{
+          backgroundImage: 'radial-gradient(#cbd5e1 1px, transparent 1px)',
+          backgroundSize: '24px 24px'
+        }}
+      />
 
-      {/* Login card */}
+      {/* Login Card (The Tab) */}
       <div className="relative z-10 w-full max-w-md mx-auto">
-        <div className="bg-white border border-gray-200 rounded-3xl p-8 sm:p-10 shadow-xl shadow-gray-200/50">
+        <div className="bg-[#eef2f6] border border-slate-300 rounded-3xl p-8 sm:p-10 shadow-2xl shadow-slate-400/20">
           {/* Logo & Branding */}
           <div className="flex flex-col items-center mb-8">
-            <div className="w-16 h-16 flex items-center justify-center mb-4">
-              <img src={logoUrl} alt="Shapio 3D" className="w-full h-full object-contain drop-shadow-md" />
+            <div className="w-16 h-16 rounded-2xl bg-white border border-slate-300/90 flex items-center justify-center mb-4 p-2.5 shadow-sm">
+              <img src={logoUrl} alt="Shapio 3D" className="w-full h-full object-contain drop-shadow-sm" />
             </div>
             <h1 style={{ fontFamily: "'Orbitron', sans-serif" }} className="text-2xl tracking-widest uppercase font-bold text-gray-900">
               SHAPIO <span className="text-emerald-500">3D</span>
             </h1>
-            <p className="text-[11px] font-semibold text-slate-500 mt-1.5 uppercase tracking-[0.25em]">
-              Admin Portal
-            </p>
+            <div className="mt-2.5 px-3.5 py-1 rounded-full bg-slate-200 border border-slate-300 shadow-sm">
+              <p className="text-[10px] font-bold text-slate-700 uppercase tracking-[0.25em]">
+                Admin Portal
+              </p>
+            </div>
           </div>
 
           {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Email */}
             <div>
-              <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Email
               </label>
               <div className="relative">
-                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Mail size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type="email"
                   id="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-4 py-3 text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm"
+                  className="w-full bg-white border border-slate-300 rounded-xl pl-11 pr-4 py-3.5 text-sm font-medium text-gray-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
                   placeholder="Enter your email"
                   required
                 />
@@ -75,24 +82,24 @@ export default function Login() {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
                 Password
               </label>
               <div className="relative">
-                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400" />
+                <Lock size={16} className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400" />
                 <input
                   type={showPassword ? 'text' : 'password'}
                   id="password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full bg-white border border-gray-200 rounded-xl pl-11 pr-12 py-3 text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all shadow-sm"
+                  className="w-full bg-white border border-slate-300 rounded-xl pl-11 pr-12 py-3.5 text-sm font-medium text-gray-900 placeholder:text-slate-400 focus:outline-none focus:border-blue-600 focus:ring-4 focus:ring-blue-500/10 transition-all shadow-sm"
                   placeholder="Enter your password"
                   required
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-700 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-700 transition-colors"
                 >
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
@@ -110,7 +117,7 @@ export default function Login() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold tracking-wide py-3.5 rounded-xl shadow-sm hover:shadow transition-all mt-2 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+              className="w-full bg-blue-600 hover:bg-blue-700 active:bg-blue-800 text-white font-semibold tracking-wide py-3.5 rounded-xl shadow-md hover:shadow-lg hover:shadow-blue-600/20 transition-all mt-3 disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center gap-2"
             >
               {loading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -125,7 +132,7 @@ export default function Login() {
           </form>
 
           {/* Footer hint */}
-          <p className="text-center text-xs text-gray-400 mt-6">
+          <p className="text-center text-xs text-slate-500 mt-6">
             Login with your registered administrator account
           </p>
         </div>
