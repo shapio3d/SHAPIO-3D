@@ -10,7 +10,7 @@ const STATUS_INFO = {
   read: { label: 'Under Review', color: 'text-k-silver-dim', icon: Clock }
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 export default function TrackProcess() {
   const [trackingId, setTrackingId] = useState('')

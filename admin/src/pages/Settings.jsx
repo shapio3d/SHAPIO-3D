@@ -32,7 +32,7 @@ export default function Settings() {
   const fetchPdfSettings = async () => {
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/settings`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api'}/settings`, {
         headers: {
           'Authorization': `Bearer ${session?.access_token}`
         }
@@ -52,7 +52,7 @@ export default function Settings() {
     
     try {
       const { data: { session } } = await supabase.auth.getSession();
-      const res = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/settings`, {
+      const res = await fetch(`${import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api'}/settings`, {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${session?.access_token}`,
@@ -113,7 +113,7 @@ export default function Settings() {
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div className="space-y-6">
           {/* Account info */}
-          <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-6">
+          <div className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-6">
           <div className="flex items-center gap-4">
             <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
               <span className="font-sub text-lg font-bold text-white uppercase">
@@ -128,7 +128,7 @@ export default function Settings() {
         </div>
 
         {/* Password Reset */}
-        <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-6 mt-6">
+        <div className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-6 mt-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-black/80 border border-white/10 flex items-center justify-center">
               <Key size={18} className="text-white" />
@@ -166,7 +166,7 @@ export default function Settings() {
       </div>
 
       {/* Right Column: PDF Defaults config */}
-      <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-6">
+      <div className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-6">
           <div className="flex items-center gap-3 mb-6">
             <div className="w-10 h-10 rounded-xl bg-k-card border border-white/10 flex items-center justify-center">
               <FileText size={18} className="text-k-silver" />

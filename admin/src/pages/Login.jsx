@@ -35,7 +35,7 @@ export default function Login() {
 
   {/* Login card */}
   <div className="relative z-10 w-full max-w-md mx-4">
-  <div className="bg-[#0a0f0d]/60 backdrop-blur-3xl border border-white/10 rounded-2xl p-10 shadow-2xl shadow-black/50">
+  <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl p-10 shadow-2xl shadow-black/50">
   {/* Logo */}
   <div className="flex flex-col items-center mb-10">
   <div className="w-20 h-20 flex items-center justify-center mb-4">
@@ -60,7 +60,7 @@ export default function Login() {
   id="email"
   value={email}
   onChange={(e) => setEmail(e.target.value)}
-  className="w-full bg-black/40 backdrop-blur-2xl border border-white/10 rounded-lg px-4 py-3 text-sm font-body text-white placeholder-white/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+  className="w-full bg-black/40  border border-white/10 rounded-lg px-4 py-3 text-sm font-body text-white placeholder-white/40 focus:outline-none focus:border-k-silver/40 transition-colors"
   placeholder="Enter email"
   />
   </div>
@@ -76,7 +76,7 @@ export default function Login() {
   id="password"
   value={password}
   onChange={(e) => setPassword(e.target.value)}
-  className="w-full bg-black/40 backdrop-blur-2xl border border-white/10 rounded-lg pl-4 pr-12 py-3 text-sm font-body text-white placeholder-white/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+  className="w-full bg-black/40  border border-white/10 rounded-lg pl-4 pr-12 py-3 text-sm font-body text-white placeholder-white/40 focus:outline-none focus:border-k-silver/40 transition-colors"
   placeholder="Enter password"
   />
   <button

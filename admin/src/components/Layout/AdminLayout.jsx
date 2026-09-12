@@ -13,7 +13,7 @@ export default function AdminLayout({ children }) {
 
 
  {/* Mobile Header */}
- <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a0f0d]/60 backdrop-blur-2xl border-b border-white/10 z-30 flex items-center px-4 justify-between">
+ <div className="md:hidden fixed top-0 left-0 right-0 h-16 bg-[#0a0a0a]  border-b border-white/10 z-30 flex items-center px-4 justify-between">
  <div className="flex items-center gap-2">
   <img src={logoUrl} alt="Shapio Logo" className="h-7 w-auto object-contain drop-shadow-lg" />
   <span style={{ fontFamily: "'Orbitron', sans-serif" }} className="font-bold text-base tracking-widest text-white">

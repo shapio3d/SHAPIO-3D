@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 import { Search, Plus, Edit3, Trash2, X, AlertCircle, ArrowLeft } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 const getAuthHeader = async () => {
   const { data: { session } } = await supabase.auth.getSession();
@@ -159,7 +159,7 @@ export default function Customers() {
           </h1>
         </div>
 
-        <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
+        <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl p-6 sm:p-8 space-y-6">
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -205,7 +205,7 @@ export default function Customers() {
           </div>
 
           <div className="pt-6 border-t border-white/10 flex gap-4 justify-end">
-            <button onClick={() => setActiveTab('list')} className="px-8 py-4 bg-[#0a0f0d]/60 backdrop-blur-2xl hover:bg-white/10 text-white font-bold rounded-xl transition-colors">
+            <button onClick={() => setActiveTab('list')} className="px-8 py-4 bg-[#0a0a0a]  hover:bg-white/10 text-white font-bold rounded-xl transition-colors">
               Cancel
             </button>
             <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 bg-white text-black font-bold rounded-xl hover:shadow-lg hover:shadow-white/20 transition-all disabled:opacity-50">
@@ -239,7 +239,7 @@ export default function Customers() {
           placeholder="Search by name, company, or phone..."
           value={search}
           onChange={e => setSearch(e.target.value)}
-          className="w-full lg:max-w-md pl-11 pr-4 py-3 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors"
+          className="w-full lg:max-w-md pl-11 pr-4 py-3 bg-[#0a0a0a]  border border-white/10 rounded-xl text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors"
         />
       </div>
 
@@ -304,7 +304,7 @@ export default function Customers() {
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-4">
         {filtered.map((cust) => (
-          <div key={cust.id} className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+          <div key={cust.id} className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-4 flex flex-col gap-4">
             <div className="flex justify-between items-start">
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-white/10 border border-white/20 flex items-center justify-center shrink-0">
@@ -316,10 +316,10 @@ export default function Customers() {
                 </div>
               </div>
               <div className="flex items-center gap-2">
-                <button onClick={() => handleEdit(cust)} className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0a0f0d]/60 backdrop-blur-2xl text-white/60 hover:text-white transition-all">
+                <button onClick={() => handleEdit(cust)} className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0a0a0a]  text-white/60 hover:text-white transition-all">
                   <Edit3 size={14} />
                 </button>
-                <button onClick={() => handleDelete(cust.id)} className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0a0f0d]/60 backdrop-blur-2xl text-white/60 hover:text-red-400 transition-all">
+                <button onClick={() => handleDelete(cust.id)} className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#0a0a0a]  text-white/60 hover:text-red-400 transition-all">
                   <Trash2 size={14} />
                 </button>
               </div>
@@ -342,7 +342,7 @@ export default function Customers() {
           </div>
         ))}
         {filtered.length === 0 && (
-          <div className="text-center p-6 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-white/50 text-sm">
+          <div className="text-center p-6 bg-[#0a0a0a]  border border-white/10 rounded-xl text-white/50 text-sm">
             No customers found
           </div>
         )}

@@ -3,7 +3,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 import { Plus, Edit3, Trash2, X, Package, ToggleLeft, ToggleRight, AlertCircle, Loader } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 const getAuthHeader = async () => {
  const { data: { session } } = await supabase.auth.getSession();
@@ -195,7 +195,7 @@ export default function Products() {
  {products.map((product) => (
  <div
  key={product.id}
- className={`bg-[#0a0f0d]/60 backdrop-blur-2xl border rounded-xl overflow-hidden transition-all hover:border-k-silver/20 ${
+ className={`bg-[#0a0a0a]  border rounded-xl overflow-hidden transition-all hover:border-k-silver/20 ${
  product.isActive ? 'border-k-border' : 'border-k-border/50 opacity-60'
  }`}
  >
@@ -263,7 +263,7 @@ export default function Products() {
  {/* Modal */}
  {modalOpen && (
  <div className="fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4">
- <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-2xl w-full max-w-lg p-8 relative">
+ <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl w-full max-w-lg p-8 relative">
  <button onClick={() => setModalOpen(false)} className="absolute top-4 right-4 w-8 h-8 rounded-lg flex items-center justify-center text-white hover:text-white hover:bg-white/[0.06]">
  <X size={16} />
  </button>
@@ -274,27 +274,27 @@ export default function Products() {
  <div className="space-y-4">
  <div>
  <label className="block text-xs text-white uppercase tracking-wider mb-1.5">Product Name *</label>
- <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-4 py-2.5 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
+ <input value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="w-full px-4 py-2.5 bg-[#0a0a0a]  border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
  </div>
  <div>
  <label className="block text-xs text-white uppercase tracking-wider mb-1.5">Description</label>
- <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows={3} className="w-full px-4 py-2.5 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 resize-none" />
+ <textarea value={form.description} onChange={e => setForm({...form, description: e.target.value})} rows={3} className="w-full px-4 py-2.5 bg-[#0a0a0a]  border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40 resize-none" />
  </div>
  <div className="grid grid-cols-2 gap-4">
  <div>
  <label className="block text-xs text-white uppercase tracking-wider mb-1.5">Material</label>
- <input value={form.material} onChange={e => setForm({...form, material: e.target.value})} className="w-full px-4 py-2.5 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
+ <input value={form.material} onChange={e => setForm({...form, material: e.target.value})} className="w-full px-4 py-2.5 bg-[#0a0a0a]  border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
  </div>
  <div>
  <label className="block text-xs text-white uppercase tracking-wider mb-1.5">Price (₹)</label>
- <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className="w-full px-4 py-2.5 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
+ <input type="number" value={form.price} onChange={e => setForm({...form, price: e.target.value})} className="w-full px-4 py-2.5 bg-[#0a0a0a]  border border-white/10 rounded-lg text-sm text-white focus:outline-none focus:border-k-silver/40" />
  </div>
  </div>
  
  {/* GLB upload */}
  <div>
  <label className="block text-xs text-white uppercase tracking-wider mb-1.5">3D Model (.glb)</label>
- <label className={`flex items-center gap-3 px-4 py-3 bg-[#0a0f0d]/60 backdrop-blur-2xl border ${file ? 'border-k-silver' : 'border-dashed border-k-border'} rounded-lg cursor-pointer hover:border-k-silver-dim transition-colors`}>
+ <label className={`flex items-center gap-3 px-4 py-3 bg-[#0a0a0a]  border ${file ? 'border-k-silver' : 'border-dashed border-k-border'} rounded-lg cursor-pointer hover:border-k-silver-dim transition-colors`}>
  <Package size={16} className={file ? 'text-white' : 'text-white'} />
  <span className={`text-sm ${file ? 'text-white font-medium' : 'text-white'}`}>
  {file ? file.name : (editing?.modelUrl ? 'Upload new .glb to replace existing' : 'Click to upload .glb model file')}

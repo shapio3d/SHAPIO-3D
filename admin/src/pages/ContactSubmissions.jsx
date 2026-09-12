@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Search, Eye, X, Image as ImageIcon, CheckCircle, Trash2, Calendar, User, Mail, Phone, Hash, ChevronDown, ChevronUp } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 const getAuthHeader = async () => {
  const { data: { session } } = await supabase.auth.getSession();
@@ -125,7 +125,7 @@ export default function ContactSubmissions() {
  placeholder="Search by name, email, or tracking ID..."
  value={search}
  onChange={e => setSearch(e.target.value)}
- className="w-full lg:max-w-md pl-11 pr-4 py-3 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-sm text-white placeholder:text-white focus:outline-none focus:border-white/20 transition-colors"
+ className="w-full lg:max-w-md pl-11 pr-4 py-3 bg-[#0a0a0a]  border border-white/10 rounded-xl text-sm text-white placeholder:text-white focus:outline-none focus:border-white/20 transition-colors"
  />
  </div>
 
@@ -276,7 +276,7 @@ export default function ContactSubmissions() {
  {sub.file_url.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
  <div className="relative aspect-video w-full">
  <img src={sub.file_url} alt="Attachment" className="w-full h-full object-cover" />
- <a href={sub.file_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm backdrop-blur-sm">
+ <a href={sub.file_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-medium text-sm ">
  Open Full Size
  </a>
  </div>
@@ -319,7 +319,7 @@ export default function ContactSubmissions() {
  {/* Mobile Card View */}
  <div className="block md:hidden space-y-4">
  {filtered.map((sub) => (
- <div key={sub.id} className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl overflow-hidden flex flex-col transition-all shadow-xl shadow-black/10">
+ <div key={sub.id} className="bg-[#0a0a0a]  border border-white/10 rounded-xl overflow-hidden flex flex-col transition-all shadow-xl shadow-black/10">
  <div className="p-4 flex flex-col gap-4" onClick={() => toggleView(sub.id)}>
  <div className="flex justify-between items-start">
  <div className="flex items-center gap-3">
@@ -421,7 +421,7 @@ export default function ContactSubmissions() {
  </div>
  ))}
  {filtered.length === 0 && (
- <div className="py-12 text-center text-white text-sm bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
+ <div className="py-12 text-center text-white text-sm bg-[#0a0a0a]  border border-white/10 rounded-xl">
  No submissions found
  </div>
  )}

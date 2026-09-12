@@ -3,9 +3,9 @@ import { AlertTriangle, Home, ArrowLeft } from 'lucide-react'
 
 export default function NotFound() {
  return (
- <div className="min-h-screen bg-[#0a0f0d]/60 backdrop-blur-2xl flex items-center justify-center p-4">
+ <div className="min-h-screen bg-[#0a0a0a]  flex items-center justify-center p-4">
  <div className="max-w-md w-full text-center">
- <div className="w-20 h-20 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/50">
+ <div className="w-20 h-20 bg-[#0a0a0a]  border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-black/50">
  <AlertTriangle size={36} className="text-white" />
  </div>
  

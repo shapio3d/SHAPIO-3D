@@ -10,7 +10,7 @@ const STATUS_COLORS = {
   REJECTED: 'text-red-300 bg-red-500/20 ring-1 ring-red-500/30',
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 const getAuthHeader = async () => {
   const { data: { session } } = await supabase.auth.getSession();
@@ -330,7 +330,7 @@ export default function Quotations() {
           </h1>
         </div>
 
-        <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
+        <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="col-span-1">
               <label className="block text-xs text-white uppercase tracking-wider mb-2">Quote #</label>
@@ -409,13 +409,13 @@ export default function Quotations() {
                       <div className="col-span-2 flex items-center justify-between">
                         <span className="text-base font-semibold text-white">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
                         {form.items.length > 1 && (
-                          <button onClick={() => removeItem(i)} className="text-white/40 hover:text-red-400 p-2 rounded-lg hover:bg-[#0a0f0d]/60 backdrop-blur-2xl transition-all"><X size={16} /></button>
+                          <button onClick={() => removeItem(i)} className="text-white/40 hover:text-red-400 p-2 rounded-lg hover:bg-[#0a0a0a]  transition-all"><X size={16} /></button>
                         )}
                       </div>
                     </div>
                   </div>
                 ))}
-                <button onClick={addItem} className="mt-2 text-sm font-semibold text-white/70 hover:text-white border border-dashed border-white/20 rounded-xl w-full py-4 hover:border-white/40 hover:bg-[#0a0f0d]/60 backdrop-blur-2xl transition-all">
+                <button onClick={addItem} className="mt-2 text-sm font-semibold text-white/70 hover:text-white border border-dashed border-white/20 rounded-xl w-full py-4 hover:border-white/40 hover:bg-[#0a0a0a]  transition-all">
                   + Add Line Item
                 </button>
               </div>
@@ -450,7 +450,7 @@ export default function Quotations() {
           </div>
 
           <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-white/10">
-            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-white bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-white bg-[#0a0a0a]  border border-white/10 rounded-xl hover:bg-white/10 transition-all">
               Cancel
             </button>
             <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 text-base font-semibold text-k-black bg-emerald-400 rounded-xl hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-500/20 transition-all disabled:opacity-50">
@@ -484,7 +484,7 @@ export default function Quotations() {
             placeholder="Search by quote # or customer..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors"
+            className="w-full pl-11 pr-4 py-3 bg-[#0a0a0a]  border border-white/10 rounded-xl text-sm text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 transition-colors"
           />
         </div>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 w-full lg:w-auto">
@@ -606,20 +606,20 @@ export default function Quotations() {
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-4">
         {isLoadingQuotations || isLoadingClients ? (
-          <div className="py-12 flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
+          <div className="py-12 flex items-center justify-center gap-2 bg-[#0a0a0a]  border border-white/10 rounded-xl">
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" />
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" style={{ animationDelay: '0.2s' }} />
             <span className="w-2 h-2 rounded-full bg-white animate-pulse" style={{ animationDelay: '0.4s' }} />
           </div>
         ) : isErrorQuotations || isErrorClients ? (
-          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-red-400">
+          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-[#0a0a0a]  border border-white/10 rounded-xl text-red-400">
             <AlertCircle size={24} />
             <p className="text-sm">Failed to load quotations.</p>
           </div>
         ) : (
           <>
             {filtered.map((qt) => (
-              <div key={qt.id} className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+              <div key={qt.id} className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-sm font-bold text-white font-display tracking-wide">{qt.quoteNo}</span>
@@ -651,20 +651,20 @@ export default function Quotations() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
-                  <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-bold">
+                  <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-bold">
                     <Download size={14} /> <span className="hidden sm:inline">PDF</span>
                   </button>
-                  <button onClick={() => handleEdit(qt)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-bold">
+                  <button onClick={() => handleEdit(qt)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-white/70 hover:text-white hover:bg-white/10 transition-all text-sm font-bold">
                     <Edit3 size={14} /> <span className="hidden sm:inline">Edit</span>
                   </button>
-                  <button onClick={() => handleDelete(qt.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-white/70 hover:text-red-400 hover:bg-red-400/10 transition-all text-sm font-bold">
+                  <button onClick={() => handleDelete(qt.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-white/70 hover:text-red-400 hover:bg-red-400/10 transition-all text-sm font-bold">
                     <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="py-12 text-center text-white/50 text-sm bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
+              <div className="py-12 text-center text-white/50 text-sm bg-[#0a0a0a]  border border-white/10 rounded-xl">
                 No quotations found
               </div>
             )}

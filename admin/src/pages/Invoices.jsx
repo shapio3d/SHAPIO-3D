@@ -10,7 +10,7 @@ const STATUS_COLORS = {
   CANCELLED: 'text-gray-300 bg-white/10 ring-1 ring-white/20',
 }
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 const getAuthHeader = async () => {
   const { data: { session } } = await supabase.auth.getSession();
@@ -386,7 +386,7 @@ export default function Invoices() {
     return (
       <div className="w-full max-w-5xl mx-auto pb-12">
         <div className="flex items-center gap-4 mb-6">
-          <button onClick={() => setActiveTab('list')} className="p-2 rounded-lg bg-[#0a0f0d]/60 backdrop-blur-2xl hover:bg-white/10 text-white transition-all">
+          <button onClick={() => setActiveTab('list')} className="p-2 rounded-lg bg-[#0a0a0a]  hover:bg-white/10 text-white transition-all">
             <ArrowLeft size={20} />
           </button>
           <h1 className="font-display text-3xl font-bold text-white tracking-wide">
@@ -394,7 +394,7 @@ export default function Invoices() {
           </h1>
         </div>
 
-        <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
+        <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
           
           {/* Top Meta (Matching PDF Order) */}
           <div className="space-y-4">
@@ -462,7 +462,7 @@ export default function Invoices() {
                 </div>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-[#0a0f0d]/60 backdrop-blur-2xl rounded-xl border border-white/10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-[#0a0a0a]  rounded-xl border border-white/10">
                 <div>
                   <label className="block text-xs text-white uppercase tracking-wider mb-2">Client Name *</label>
                   <input value={manualClient.name} onChange={e => setManualClient({...manualClient, name: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" placeholder="e.g. Acme Corp" />
@@ -543,13 +543,13 @@ export default function Invoices() {
                       <div className="col-span-2 flex items-center justify-end pr-10 relative">
                         <span className="text-base font-semibold text-white">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
                         {form.items.length > 1 && (
-                          <button onClick={() => removeItem(i)} className="absolute right-0 text-k-silver-dim hover:text-red-400 p-2 rounded-lg hover:bg-[#0a0f0d]/60 backdrop-blur-2xl transition-all"><X size={16} /></button>
+                          <button onClick={() => removeItem(i)} className="absolute right-0 text-k-silver-dim hover:text-red-400 p-2 rounded-lg hover:bg-[#0a0a0a]  transition-all"><X size={16} /></button>
                         )}
                       </div>
                     </div>
                   </div>
                 ))}
-                <button onClick={addItem} className="mt-2 text-sm font-semibold text-white/70 hover:text-white border border-dashed border-white/20 rounded-xl w-full py-4 hover:border-white/40 hover:bg-[#0a0f0d]/60 backdrop-blur-2xl transition-all">
+                <button onClick={addItem} className="mt-2 text-sm font-semibold text-white/70 hover:text-white border border-dashed border-white/20 rounded-xl w-full py-4 hover:border-white/40 hover:bg-[#0a0a0a]  transition-all">
                   + Add Line Item
                 </button>
               </div>
@@ -557,7 +557,7 @@ export default function Invoices() {
           </div>
 
           {/* Totals & Words */}
-          <div className="bg-[#0a0f0d]/60 backdrop-blur-2xl rounded-2xl p-6 border border-white/10 space-y-4">
+          <div className="bg-[#0a0a0a]  rounded-2xl p-6 border border-white/10 space-y-4">
             <div className="flex flex-col md:flex-row justify-between gap-8">
               <div className="flex-1">
                 <h4 className="text-xs text-white uppercase tracking-wider mb-2 font-semibold">Amount in Words</h4>
@@ -606,7 +606,7 @@ export default function Invoices() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-white/10">
-            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-white bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-white bg-[#0a0a0a]  border border-white/10 rounded-xl hover:bg-white/10 transition-all">
               Cancel
             </button>
             <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 text-base font-semibold text-k-black bg-emerald-400 rounded-xl hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-500/20 transition-all disabled:opacity-50">
@@ -659,7 +659,7 @@ export default function Invoices() {
             placeholder="Search by invoice #..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+            className="w-full pl-11 pr-4 py-3 bg-[#0a0a0a]  border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
           />
         </div>
       </div>
@@ -719,7 +719,7 @@ export default function Invoices() {
                           style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
                           {Object.keys(STATUS_COLORS).map(status => (
-                            <option key={status} value={status} className="bg-[#0a0f0d]/60 backdrop-blur-2xl text-white normal-case">
+                            <option key={status} value={status} className="bg-[#0a0a0a]  text-white normal-case">
                               {status}
                             </option>
                           ))}
@@ -760,20 +760,20 @@ export default function Invoices() {
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-4">
         {isLoadingInvoices || isLoadingClients ? (
-          <div className="py-12 flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
+          <div className="py-12 flex items-center justify-center gap-2 bg-[#0a0a0a]  border border-white/10 rounded-xl">
             <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
             <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
             <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
           </div>
         ) : isErrorInvoices || isErrorClients ? (
-          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl text-red-400">
+          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-[#0a0a0a]  border border-white/10 rounded-xl text-red-400">
             <AlertCircle size={24} />
             <p className="text-sm">Failed to load invoices.</p>
           </div>
         ) : (
           <>
             {filtered.map((inv) => (
-              <div key={inv.id} className="bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+              <div key={inv.id} className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
@@ -786,7 +786,7 @@ export default function Invoices() {
                     style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     {Object.keys(STATUS_COLORS).map(status => (
-                      <option key={status} value={status} className="bg-[#0a0f0d]/60 backdrop-blur-2xl text-white normal-case">
+                      <option key={status} value={status} className="bg-[#0a0a0a]  text-white normal-case">
                         {status}
                       </option>
                     ))}
@@ -805,20 +805,20 @@ export default function Invoices() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
-                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
                     <Download size={14} /> <span className="hidden sm:inline">PDF</span>
                   </button>
-                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
+                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
                     <Edit3 size={14} /> <span className="hidden sm:inline">Edit</span>
                   </button>
-                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0f0d]/60 backdrop-blur-2xl text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
+                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
                     <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="py-12 text-center text-k-silver-dim text-sm bg-[#0a0f0d]/60 backdrop-blur-2xl border border-white/10 rounded-xl">
+              <div className="py-12 text-center text-k-silver-dim text-sm bg-[#0a0a0a]  border border-white/10 rounded-xl">
                 No invoices found
               </div>
             )}
