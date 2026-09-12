@@ -95,51 +95,51 @@ export default function Dashboard() {
  ]
 
  return (
- <div>
- {/* Header */}
- <div className="mb-8 flex items-center justify-between">
- <div>
- <h1 className="font-display text-2xl font-bold text-white tracking-wide">Dashboard</h1>
- <p className="text-sm text-white mt-1">Welcome back. Here's your business overview.</p>
- </div>
- </div>
-
- {/* Stat cards */}
- <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
- {STAT_CARDS.map((stat, i) => (
- <div
- key={i}
- className="bg-[#0a0a0a] border border-white/10 rounded-xl p-6 hover:border-white/30 transition-all group shadow-2xl shadow-black/20"
- >
- <div className="flex items-start justify-between mb-4">
- <div className="w-11 h-11 rounded-xl bg-[#0a0a0a] border border-white/10 flex items-center justify-center group-hover:border-white/30 transition-colors">
- <stat.icon size={20} className="text-white group-hover:text-white" />
- </div>
- <span className={`text-xs font-medium px-2 py-1 rounded-md ${
- stat.positive
- ? 'text-emerald-400 bg-emerald-400/[0.08]'
- : 'text-amber-400 bg-amber-400/[0.08]'
- }`}>
- {stat.change}
- </span>
- </div>
- <p className="text-2xl font-bold text-white font-display">{stat.value}</p>
- <p className="text-xs text-white mt-1 uppercase tracking-wider">{stat.label}</p>
- </div>
- ))}
- </div>
-
- {/* Charts row */}
- <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
- {/* Revenue chart */}
- <div className="lg:col-span-2 bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
- <div className="flex items-center justify-between mb-6">
- <div>
- <h3 className="text-sm font-semibold text-white">Monthly Revenue</h3>
- <p className="text-xs text-white mt-0.5">Current Overview</p>
- </div>
- <TrendingUp size={18} className="text-white" />
- </div>
+    <div>
+    {/* Header */}
+    <div className="mb-8 flex items-center justify-between">
+    <div>
+    <h1 className="font-display text-2xl font-bold text-gray-900 tracking-wide">Dashboard</h1>
+    <p className="text-sm text-gray-600 mt-1">Welcome back. Here's your business overview.</p>
+    </div>
+    </div>
+   
+    {/* Stat cards */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+    {STAT_CARDS.map((stat, i) => (
+    <div
+    key={i}
+    className="bg-white border border-gray-200 rounded-xl p-6 hover:border-gray-300 transition-all group shadow-sm"
+    >
+    <div className="flex items-start justify-between mb-4">
+    <div className="w-11 h-11 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center group-hover:border-gray-200 transition-colors">
+    <stat.icon size={20} className="text-gray-700 group-hover:text-gray-900" />
+    </div>
+    <span className={`text-xs font-medium px-2 py-1 rounded-md ${
+    stat.positive
+    ? 'text-emerald-700 bg-emerald-50'
+    : 'text-amber-700 bg-amber-50'
+    }`}>
+    {stat.change}
+    </span>
+    </div>
+    <p className="text-2xl font-bold text-gray-900 font-display">{stat.value}</p>
+    <p className="text-xs text-gray-500 mt-1 uppercase tracking-wider">{stat.label}</p>
+    </div>
+    ))}
+    </div>
+   
+    {/* Charts row */}
+    <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 mb-8">
+    {/* Revenue chart */}
+    <div className="lg:col-span-2 bg-white border border-gray-200 shadow-sm rounded-xl p-6">
+    <div className="flex items-center justify-between mb-6">
+    <div>
+    <h3 className="text-sm font-semibold text-gray-900">Monthly Revenue</h3>
+    <p className="text-xs text-gray-500 mt-0.5">Current Overview</p>
+    </div>
+    <TrendingUp size={18} className="text-gray-400" />
+    </div>
  <div className="h-64">
  <ResponsiveContainer width="100%" height="100%">
  <BarChart data={stats.monthlyRevenue} barSize={32}>
@@ -171,13 +171,13 @@ export default function Dashboard() {
  </div>
 
  {/* Invoice status pie */}
- <div className="bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
+ <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
  <div className="flex items-center justify-between mb-6">
  <div>
- <h3 className="text-sm font-semibold text-white">Invoice Status</h3>
- <p className="text-xs text-white mt-0.5">Current distribution</p>
+ <h3 className="text-sm font-semibold text-gray-900">Invoice Status</h3>
+ <p className="text-xs text-gray-500 mt-0.5">Current distribution</p>
  </div>
- <FileText size={18} className="text-white" />
+ <FileText size={18} className="text-gray-400" />
  </div>
  <div className="h-48">
  {stats.invoicesByStatus.length > 0 ? (
@@ -200,24 +200,24 @@ export default function Dashboard() {
  <Cell 
  key={index} 
  fill={entry.color} 
- style={{ filter: 'drop-shadow(0px 4px 6px rgba(0,0,0,0.4))' }} 
+ style={{ filter: 'drop-shadow(0px 2px 4px rgba(0,0,0,0.1))' }} 
  />
  ))}
  </Pie>
  <Tooltip
  contentStyle={{
- background: 'rgba(0,0,0,0.6)',
+ background: 'rgba(255,255,255,0.95)',
  backdropFilter: 'blur(16px)',
- border: '1px solid rgba(255,255,255,0.1)',
+ border: '1px solid rgba(0,0,0,0.1)',
  borderRadius: '8px',
  fontSize: '12px',
- color: '#f5f5f5',
+ color: '#111',
  }}
  />
  </PieChart>
  </ResponsiveContainer>
  ) : (
- <div className="flex items-center justify-center h-full text-white text-sm">No Invoice Data</div>
+ <div className="flex items-center justify-center h-full text-gray-500 text-sm">No Invoice Data</div>
  )}
  </div>
  {/* Legend */}
@@ -225,7 +225,7 @@ export default function Dashboard() {
  {stats.invoicesByStatus.map((item) => (
  <div key={item.name} className="flex items-center gap-2">
  <span className="w-2.5 h-2.5 rounded-full" style={{ background: item.color }} />
- <span className="text-xs text-white">{item.name} ({item.value})</span>
+ <span className="text-xs text-gray-700">{item.name} ({item.value})</span>
  </div>
  ))}
  </div>
@@ -235,62 +235,62 @@ export default function Dashboard() {
  {/* Recent activity */}
  <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
  {/* Recent invoices */}
- <div className="bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
- <h3 className="text-sm font-semibold text-white mb-4">Recent Invoices</h3>
+ <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
+ <h3 className="text-sm font-semibold text-gray-900 mb-4">Recent Invoices</h3>
  <div className="space-y-3">
  {recentInvoices.length > 0 ? recentInvoices.map((inv) => (
  <div
  key={inv.id}
- className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-white/5 hover:border-white/20 transition-colors"
+ className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 border border-gray-100 hover:border-gray-300 transition-colors"
  >
  <div className="flex items-center gap-4">
- <div className="w-9 h-9 rounded-lg bg-[#0a0a0a] flex items-center justify-center">
- <FileText size={16} className="text-white" />
+ <div className="w-9 h-9 rounded-lg bg-white border border-gray-200 flex items-center justify-center">
+ <FileText size={16} className="text-gray-500" />
  </div>
  <div>
- <p className="text-sm font-medium text-white">{inv.invoiceNo}</p>
- <p className="text-xs text-white">Customer ID: {inv.customerId.slice(0, 8)}</p>
+ <p className="text-sm font-medium text-gray-900">{inv.invoiceNo}</p>
+ <p className="text-xs text-gray-500">Customer ID: {inv.customerId.slice(0, 8)}</p>
  </div>
  </div>
  <div className="text-right">
- <p className="text-sm font-semibold text-white">₹{Number(inv.totalAmount || 0).toLocaleString('en-IN')}</p>
+ <p className="text-sm font-semibold text-gray-900">₹{Number(inv.totalAmount || 0).toLocaleString('en-IN')}</p>
  <span className={`text-[10px] uppercase tracking-wider font-medium ${
- inv.status === 'PAID' ? 'text-emerald-400' :
- inv.status === 'UNPAID' ? 'text-amber-400' :
- 'text-red-400'
+ inv.status === 'PAID' ? 'text-emerald-600' :
+ inv.status === 'UNPAID' ? 'text-amber-600' :
+ 'text-red-600'
  }`}>
  {inv.status}
  </span>
  </div>
  </div>
- )) : <p className="text-sm text-white">No recent invoices.</p>}
+ )) : <p className="text-sm text-gray-500">No recent invoices.</p>}
  </div>
  </div>
 
  {/* Recent customers */}
- <div className="bg-[#0a0a0a] border border-white/10 shadow-2xl shadow-black/20 rounded-xl p-6">
- <h3 className="text-sm font-semibold text-white mb-4">Recent Customers</h3>
+ <div className="bg-white border border-gray-200 shadow-sm rounded-xl p-6">
+ <h3 className="text-sm font-semibold text-gray-900 mb-4">Recent Customers</h3>
  <div className="space-y-3">
  {recentCustomers.length > 0 ? recentCustomers.map((cust) => (
  <div
  key={cust.id}
- className="flex items-center justify-between px-4 py-3 rounded-lg bg-[#0a0a0a] border border-white/5 hover:border-white/20 transition-colors"
+ className="flex items-center justify-between px-4 py-3 rounded-lg bg-gray-50 border border-gray-100 hover:border-gray-300 transition-colors"
  >
  <div className="flex items-center gap-4">
- <div className="w-9 h-9 rounded-full bg-gradient-to-br from-k-silver/20 to-k-border flex items-center justify-center">
- <span className="text-xs font-bold text-white">{(cust.name || 'C').charAt(0)}</span>
+ <div className="w-9 h-9 rounded-full bg-emerald-100 flex items-center justify-center">
+ <span className="text-xs font-bold text-emerald-700">{(cust.name || 'C').charAt(0)}</span>
  </div>
  <div>
- <p className="text-sm font-medium text-white">{cust.name}</p>
- <p className="text-xs text-white">{cust.company || '—'}</p>
+ <p className="text-sm font-medium text-gray-900">{cust.name}</p>
+ <p className="text-xs text-gray-500">{cust.company || '—'}</p>
  </div>
  </div>
- <div className="flex items-center gap-1 text-xs text-white">
+ <div className="flex items-center gap-1 text-xs text-gray-500">
  <Clock size={12} />
  {new Date(cust.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric' })}
  </div>
  </div>
- )) : <p className="text-sm text-white">No recent customers.</p>}
+ )) : <p className="text-sm text-gray-500">No recent customers.</p>}
  </div>
  </div>
  </div>

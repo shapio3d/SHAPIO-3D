@@ -105,7 +105,11 @@ const styles = StyleSheet.create({
   hsnSummary: { marginTop: 10, borderTop: '1 solid #000' },
   hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
   
-  footerText: { fontSize: 6, textAlign: 'center', marginTop: 20, marginBottom: 5 }
+  footerText: { fontSize: 6, textAlign: 'center', marginTop: 20, marginBottom: 5 },
+
+  statusBadgePaid: { fontSize: 10, fontWeight: 'bold', color: '#166534', backgroundColor: '#dcfce7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
+  statusBadgeUnpaid: { fontSize: 10, fontWeight: 'bold', color: '#991b1b', backgroundColor: '#fee2e2', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
+  statusBadgeOverdue: { fontSize: 10, fontWeight: 'bold', color: '#92400e', backgroundColor: '#fef3c7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
 });
 
 const formatDate = (dateStr) => {
@@ -185,7 +189,12 @@ const InvoiceTemplate = ({ invoice, settings }) => {
             )
           ),
           e(View, { style: styles.headerRight },
-            e(Text, { style: styles.taxInvoiceTitle }, 'Tax Invoice')
+            e(Text, { style: styles.taxInvoiceTitle }, 'Tax Invoice'),
+            invoice.status === 'PAID'
+              ? e(Text, { style: styles.statusBadgePaid }, 'PAID')
+              : invoice.status === 'OVERDUE'
+                ? e(Text, { style: styles.statusBadgeOverdue }, 'OVERDUE')
+                : e(Text, { style: styles.statusBadgeUnpaid }, 'UNPAID')
           )
         ),
         

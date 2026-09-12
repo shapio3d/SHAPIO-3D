@@ -13,7 +13,11 @@ const HeroSection = ({ videoName, isMobile, videoScale = 1, videoChildren, detai
           <video
             src={videoSrc}
             autoPlay loop muted playsInline
-            style={{ transform: `scale(${videoScale})` }}
+            controls={false}
+            disablePictureInPicture
+            disableRemotePlayback
+            preload="auto"
+            style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
             className="absolute inset-0 w-full h-full object-cover"
           />
           <div className="absolute inset-0 bg-black/40 pointer-events-none" />
