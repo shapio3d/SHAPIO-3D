@@ -412,11 +412,13 @@ export default function Invoices() {
       const fallbackName = cleanNum
         ? (cleanNum.toLowerCase().startsWith('inv') ? `${cleanNum}.pdf` : `Invoice-${cleanNum}.pdf`)
         : 'Invoice.pdf';
-      a.download = data.filename || fallbackName;
+      const finalFileName = data.filename || fallbackName;
+      console.log('[Invoice Download]', { id, invoiceNumber, serverFilename: data.filename, finalFileName });
+      a.download = finalFileName;
       document.body.appendChild(a);
       a.click();
       a.remove();
-      window.URL.revokeObjectURL(url);
+      setTimeout(() => window.URL.revokeObjectURL(url), 1000);
     } catch (e) {
       console.error(e);
       alert("An error occurred while downloading PDF: " + (e.message || String(e)));
@@ -810,7 +812,7 @@ export default function Invoices() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => handleDownloadPdf(inv.id, inv.invoiceNumber)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Download PDF">
+                          <button onClick={() => handleDownloadPdf(inv.id, inv.invoiceNumber || inv.invoiceNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Download PDF">
                             <Download size={16} />
                           </button>
                           <button onClick={() => openEdit(inv)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Edit">
@@ -885,7 +887,7 @@ export default function Invoices() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-200">
-                  <button onClick={() => handleDownloadPdf(inv.id, inv.invoiceNumber)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
+                  <button onClick={() => handleDownloadPdf(inv.id, inv.invoiceNumber || inv.invoiceNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
                     <Download size={16} /> <span className="hidden sm:inline">PDF</span>
                   </button>
                   <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
