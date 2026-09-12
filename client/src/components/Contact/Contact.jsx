@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 import axios from 'axios'
 import { Send, User, Mail, Phone, MessageSquare, Upload, CheckCircle, Printer, ArrowRight } from 'lucide-react'
 
-const API_URL = 'https://server.shapio3d.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
