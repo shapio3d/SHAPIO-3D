@@ -20,14 +20,16 @@ const storage = multer.memoryStorage()
 const fileFilter = (req, file, cb) => {
   // Initial check by extension
   const allowed = [
-    '.glb', '.gltf', '.stl', '.obj', '.step',
+    '.glb', '.gltf', '.stl', '.obj', '.step', '.stp', '.3mf',
     '.pdf', '.jpg', '.jpeg', '.png', '.webp'
   ]
   const ext = path.extname(file.originalname).toLowerCase()
   if (allowed.includes(ext)) {
     cb(null, true)
   } else {
-    cb(new Error(`File type ${ext} not allowed`), false)
+    const err = new Error(`File type ${ext || 'unknown'} not allowed. Supported: 3D models (STL, STEP, STP, OBJ, GLB, GLTF, 3MF), PDF, images (PNG, JPG, WEBP).`)
+    err.statusCode = 400
+    cb(err, false)
   }
 }
 
@@ -52,7 +54,7 @@ const processAndUploadFile = async (req, res, next) => {
     const type = await fileType.default.fromBuffer(req.file.buffer)
     
     const ext = path.extname(req.file.originalname).toLowerCase()
-    const isPlainText3D = ['.obj', '.stl', '.step'].includes(ext)
+    const isPlainText3D = ['.obj', '.stl', '.step', '.stp', '.3mf'].includes(ext)
 
     if (!type && !isPlainText3D) {
       return res.status(400).json({ error: 'Invalid file signature detected.' })
@@ -103,7 +105,7 @@ const processAndUploadFile = async (req, res, next) => {
     next()
   } catch (err) {
     console.error('File processing error:', err)
-    return res.status(500).json({ error: 'File upload failed' })
+    return res.status(500).json({ error: `File upload failed: ${err.message || 'Storage service error'}` })
   }
 }
 

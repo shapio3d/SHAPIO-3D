@@ -37,21 +37,20 @@ export default function Contact() {
 
     try {
       const { data } = await axios.post(`${API_URL}/contact`, formData, {
-        timeout: 30000, // 30 second timeout
+        timeout: 90000, // 90 second timeout for 3D and image uploads
       })
 
       setTrackingId(data.trackingId)
       setSubmitted(true)
     } catch (err) {
       console.error('Error submitting form:', err)
-      // axios wraps server errors in err.response
       const serverMsg = err.response?.data?.error || err.response?.data?.details?.[0]?.message
       if (serverMsg) {
         setError(serverMsg)
-      } else if (err.code === 'ERR_NETWORK') {
-        setError(file ? 'The attachment upload could not be completed. Please try a smaller file or send the message without an attachment.' : 'Could not reach the server. Please try again.')
       } else if (err.code === 'ECONNABORTED') {
-        setError('Request timed out. Your file may be too large or your connection is slow.')
+        setError('Upload timed out. Your connection may be slow or the file is large. Please try a smaller file or reach us via WhatsApp.')
+      } else if (err.code === 'ERR_NETWORK') {
+        setError('Network error: Unable to reach the server. Please check your internet connection or try again.')
       } else {
         setError(err.message || 'There was an error sending your message. Please try again.')
       }
@@ -276,7 +275,7 @@ export default function Contact() {
                   type="file"
                   onChange={(e) => setFile(e.target.files[0])}
                   className="hidden"
-                  accept=".glb,.gltf,.stl,.obj,.step,.pdf,.jpg,.png"
+                  accept=".glb,.gltf,.stl,.obj,.step,.stp,.3mf,.pdf,.jpg,.jpeg,.png,.webp"
                 />
               </label>
               <p className="text-[11px] text-k-silver-dim/70 mt-2 text-center leading-relaxed">

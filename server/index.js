@@ -22,6 +22,66 @@ if (!fs.existsSync(uploadDir)) {
   fs.mkdirSync(uploadDir, { recursive: true })
 }
 
+// ─── CORS Configuration (Must be first to handle preflights and attach headers to all responses) ───
+const allowedOrigins = [
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:3000',
+  'http://localhost:5000',
+  process.env.CLIENT_URL,
+  process.env.ADMIN_URL,
+].filter(Boolean).map(url => url.replace(/\/+$/, ''))
+
+const isOriginAllowed = (origin) => {
+  if (!origin) return true // Allow server-to-server, curl, mobile tools
+
+  const cleanOrigin = origin.replace(/\/+$/, '')
+
+  // Local development
+  if (
+    cleanOrigin.startsWith('http://localhost') ||
+    cleanOrigin.startsWith('http://127.0.0.1') ||
+    cleanOrigin.startsWith('http://192.168.') ||
+    cleanOrigin.startsWith('http://10.') ||
+    cleanOrigin.startsWith('http://172.')
+  ) {
+    return true
+  }
+
+  // Explicit allowed list from env
+  if (allowedOrigins.includes(cleanOrigin)) {
+    return true
+  }
+
+  // Any shapio3d.com domain or subdomain (e.g. shapio3d.com, www.shapio3d.com, admin.shapio3d.com)
+  try {
+    const url = new URL(cleanOrigin)
+    const host = url.hostname.toLowerCase()
+    if (host === 'shapio3d.com' || host.endsWith('.shapio3d.com') || host.endsWith('.vercel.app')) {
+      return true
+    }
+  } catch (e) {
+    // Ignore invalid URL parse
+  }
+
+  return false
+}
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (isOriginAllowed(origin)) {
+      callback(null, true)
+    } else {
+      callback(null, false)
+    }
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept'],
+}
+
+app.use(cors(corsOptions))
+
 // ─── Security & Rate Limiting ───
 // Strict CSP
 app.use(helmet({
@@ -42,7 +102,7 @@ app.use(helmet({
 // Global Rate Limiter
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100, // Limit each IP to 100 requests per `window`
+  max: 200, // Limit each IP to 200 requests per window
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many requests, please try again later.' }
@@ -52,7 +112,7 @@ app.use(globalLimiter)
 // Strict Rate Limiter for sensitive routes (Auth/Contact)
 const strictLimiter = rateLimit({
   windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 10, // Limit each IP to 10 requests per `window`
+  max: 20, // Limit each IP to 20 requests per window
   standardHeaders: true,
   legacyHeaders: false,
   message: { error: 'Too many attempts, please try again after 15 minutes.' }
@@ -63,33 +123,6 @@ app.use(morgan('dev'))
 app.use(cookieParser())
 app.use(express.json({ limit: '10mb' }))
 app.use(express.urlencoded({ extended: true }))
-
-// Strict CORS — specific origins only
-const allowedOrigins = [
-  'http://localhost:5173',   // Local client dev
-  'http://localhost:5174',   // Local admin dev
-  process.env.CLIENT_URL,    // Production client (e.g. https://shapio3d.com)
-  process.env.ADMIN_URL,     // Production admin
-].filter(Boolean)
-
-app.use(cors({
-  origin: function (origin, callback) {
-    const isLocal = origin && (
-      origin.startsWith('http://localhost') ||
-      origin.startsWith('http://127.0.0.1') ||
-      origin.startsWith('http://192.168.') ||
-      origin.startsWith('http://10.') ||
-      origin.startsWith('http://172.')
-    );
-    if (!origin || allowedOrigins.indexOf(origin) !== -1 || isLocal) {
-      callback(null, true)
-    } else {
-      callback(new Error('Not allowed by CORS: ' + origin))
-    }
-  },
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'],
-}))
 
 // Static files
 app.use('/uploads', express.static(uploadDir))
@@ -128,7 +161,11 @@ app.use((err, req, res, next) => {
     return res.status(400).json({ error: err.message })
   }
 
-  const status = err.statusCode || 500
+  if (err.statusCode === 400 || err.status === 400 || err.message?.includes('File type') || err.message?.includes('not allowed')) {
+    return res.status(400).json({ error: err.message })
+  }
+
+  const status = err.statusCode || err.status || 500
   res.status(status).json({
     error: process.env.NODE_ENV === 'production' && status === 500 ? 'Internal server error' : err.message,
   })
