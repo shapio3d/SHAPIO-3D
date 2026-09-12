@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Send, User, Mail, Phone, MessageSquare, Upload, CheckCircle, Printer, ArrowRight } from 'lucide-react'
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
+const API_URL = import.meta.env.PROD ? 'https://server.shapio3d.com/api' : (import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api');
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
@@ -50,7 +50,11 @@ export default function Contact() {
       setSubmitted(true)
     } catch (err) {
       console.error('Error submitting form:', err)
-      setError(err.message || 'There was an error sending your message. Please try again.')
+      let errorMsg = err.message || 'There was an error sending your message. Please try again.'
+      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
+        errorMsg = 'Network Error (Failed to fetch). This usually means the server is unreachable, the file is too large for your connection, or a browser extension is blocking the upload. Please try a smaller file or contact us directly via email.'
+      }
+      setError(errorMsg)
     } finally {
       setLoading(false)
     }
