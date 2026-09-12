@@ -59,6 +59,7 @@ export default function Invoices() {
   const [filterStatus, setFilterStatus] = useState('')
   const [editing, setEditing] = useState(null)
   const [pdfUrl, setPdfUrl] = useState(null)
+  const [selectedQuotationId, setSelectedQuotationId] = useState('')
   
   const { data: invoices = [], isLoading: isLoadingInvoices, isError: isErrorInvoices } = useQuery({
     queryKey: ['invoices'],
@@ -71,11 +72,21 @@ export default function Invoices() {
   })
 
   const { data: clients = [], isLoading: isLoadingClients, isError: isErrorClients } = useQuery({
-    queryKey: ['customers'], // Reuse customers query key if we want to share cache
+    queryKey: ['customers'],
     queryFn: async () => {
       const headers = await getAuthHeader();
       const res = await fetch(`${API_URL}/customers`, { headers });
       if (!res.ok) throw new Error('Failed to fetch clients');
+      return res.json();
+    }
+  })
+
+  const { data: quotations = [] } = useQuery({
+    queryKey: ['quotations'],
+    queryFn: async () => {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/quotations`, { headers });
+      if (!res.ok) throw new Error('Failed to fetch quotations');
       return res.json();
     }
   })
@@ -187,10 +198,11 @@ export default function Invoices() {
 
   const openNew = () => {
     setEditing(null)
+    setSelectedQuotationId('')
     setIsManualClient(false)
     setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
     setForm({
-      clientId: clients[0]?.id || '',
+      clientId: '',
       invoiceNumber: `SHP3D/${getFinancialYearString()}/${String(invoices.length + 1).padStart(3, '0')}`,
       issueDate: new Date().toISOString().split('T')[0],
       dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -203,6 +215,31 @@ export default function Invoices() {
       notes: ''
     })
     setActiveTab('create')
+  }
+
+  const handleImportFromQuotation = (quotationId) => {
+    setSelectedQuotationId(quotationId)
+    if (!quotationId) return
+    const qt = quotations.find(q => q.id === quotationId)
+    if (!qt) return
+    const client = clients.find(c => c.id === qt.customerId)
+    setIsManualClient(false)
+    setForm(f => ({
+      ...f,
+      clientId: qt.customerId || '',
+      panNo: client?.panNo || f.panNo,
+      items: qt.items?.length > 0
+        ? qt.items.map(i => ({
+            description: i.description || '',
+            hsnSac: i.hsnSac || '',
+            quantity: i.quantity || 1,
+            rate: i.rate || '',
+            cgstRatePct: i.cgstRatePct ?? 9,
+            sgstRatePct: i.sgstRatePct ?? 9,
+          }))
+        : f.items,
+      notes: qt.notes || f.notes,
+    }))
   }
 
   const openEdit = (invoice) => {
@@ -395,7 +432,33 @@ export default function Invoices() {
         </div>
 
         <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
-          
+
+          {/* Import from Quotation */}
+          {activeTab === 'create' && (
+            <div className="space-y-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+              <div className="flex items-center gap-2 mb-1">
+                <FileDown size={15} className="text-emerald-400" />
+                <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-widest">Import from Quotation</h3>
+              </div>
+              <p className="text-xs text-white/50 mb-2">Select an existing quotation to auto-fill client and line items. You can edit everything after importing.</p>
+              <select
+                value={selectedQuotationId}
+                onChange={e => handleImportFromQuotation(e.target.value)}
+                className="w-full px-4 py-3 bg-black/40 border border-emerald-500/30 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-emerald-400 appearance-none"
+              >
+                <option value="" className="bg-[#111] text-white">— Select a Quotation to Import —</option>
+                {quotations.map(qt => (
+                  <option key={qt.id} value={qt.id} className="bg-[#111] text-white">
+                    {qt.quoteNo} — {qt.customer?.name} {qt.status !== 'ACCEPTED' ? `(${qt.status})` : ''}
+                  </option>
+                ))}
+              </select>
+              {selectedQuotationId && (
+                <p className="text-xs text-emerald-400 mt-1">✓ Quotation imported. Client and line items have been filled in below.</p>
+              )}
+            </div>
+          )}
+
           {/* Top Meta (Matching PDF Order) */}
           <div className="space-y-4">
             <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Invoice Details</h3>
@@ -444,22 +507,36 @@ export default function Invoices() {
             </div>
             
             {!isManualClient ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div>
-                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Select Existing Client *</label>
-                  <select value={form.clientId} onChange={e => {
-                    const clientId = e.target.value;
-                    const selectedClient = clients.find(c => c.id === clientId);
-                    if (selectedClient) {
-                      setForm({...form, clientId, panNo: selectedClient.panNo || ''});
-                    } else {
-                      setForm({...form, clientId});
-                    }
-                  }} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-white/40 appearance-none">
-                    <option value="" className="bg-[#111111] text-white">Select Client</option>
-                    {clients.map(c => <option key={c.id} value={c.id} className="bg-[#111111] text-white">{c.name}</option>)}
-                  </select>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs text-white uppercase tracking-wider mb-2">Select Existing Client *</label>
+                    <select value={form.clientId} onChange={e => {
+                      const clientId = e.target.value;
+                      const selectedClient = clients.find(c => c.id === clientId);
+                      setForm({...form,
+                        clientId,
+                        panNo: selectedClient?.panNo || '',
+                      });
+                    }} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-white/40 appearance-none">
+                      <option value="" className="bg-[#111111] text-white">Select Client</option>
+                      {clients.map(c => <option key={c.id} value={c.id} className="bg-[#111111] text-white">{c.name}</option>)}
+                    </select>
+                  </div>
                 </div>
+                {/* Show selected client's details as read-only preview */}
+                {form.clientId && (() => {
+                  const sc = clients.find(c => c.id === form.clientId);
+                  return sc ? (
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-black/20 border border-white/5 rounded-xl">
+                      {sc.email && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">Email</p><p className="text-xs text-white/80 mt-0.5 truncate">{sc.email}</p></div>}
+                      {sc.phone && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">Phone</p><p className="text-xs text-white/80 mt-0.5">{sc.phone}</p></div>}
+                      {sc.gstNumber && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">GSTIN</p><p className="text-xs text-white/80 mt-0.5">{sc.gstNumber}</p></div>}
+                      {sc.panNo && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">PAN</p><p className="text-xs text-white/80 mt-0.5">{sc.panNo}</p></div>}
+                      {sc.address && <div className="col-span-2 md:col-span-4"><p className="text-[10px] text-white/40 uppercase tracking-wider">Address</p><p className="text-xs text-white/80 mt-0.5">{sc.address}</p></div>}
+                    </div>
+                  ) : null;
+                })()}
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-[#0a0a0a]  rounded-xl border border-white/10">
