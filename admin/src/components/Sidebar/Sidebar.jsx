@@ -21,7 +21,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
 
  return (
  <aside
- className={`fixed top-0 left-0 h-screen bg-[#0a0a0a] border-r border-white/10 flex flex-col transition-all duration-300 z-40 w-[260px]
+ className={`fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-40 w-[260px]
  ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
  `}
  >
@@ -29,8 +29,8 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  <div className="h-16 flex items-center justify-start shrink-0 px-6 mt-4">
  <div className="flex items-center gap-3">
    <img src={logoUrl} alt="Shapio Logo" className="h-8 w-auto object-contain drop-shadow-lg shrink-0" />
-   <span style={{ fontFamily: "'Orbitron', sans-serif" }} className="font-bold text-xl tracking-widest text-white">
-    SHAPIO<span className="text-emerald-400"> 3D</span>
+   <span style={{ fontFamily: "'Orbitron', sans-serif" }} className="font-bold text-xl tracking-widest text-gray-900">
+    SHAPIO<span className="text-emerald-500"> 3D</span>
     </span>
  </div>
  </div>
@@ -49,20 +49,20 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  onClick={() => setMobileMenuOpen && setMobileMenuOpen(false)}
  className={`flex items-center justify-between px-4 py-3 rounded-xl transition-all duration-300 group ${
  isActive
- ? 'bg-[#0a0a0a] border border-white/5 text-white'
- : 'text-[#829087] hover:text-white hover:bg-white/5'
+ ? 'bg-blue-50 border border-blue-100 text-blue-700'
+ : 'text-slate-500 hover:text-gray-900 hover:bg-gray-50'
  }`}
  >
  <div className="flex items-center gap-4">
  <item.icon
  size={20}
  className={`shrink-0 transition-colors ${
- isActive ? 'text-white' : 'text-[#829087] group-hover:text-white'
+ isActive ? 'text-blue-600' : 'text-slate-400 group-hover:text-gray-700'
  }`}
  />
- <span className="font-medium text-[15px]">{item.label}</span>
+ <span className="font-semibold text-[15px]">{item.label}</span>
  </div>
- {isActive && <div className="w-1.5 h-1.5 rounded-full bg-white mr-1 shadow-[0_0_8px_rgba(255,255,255,0.8)]" />}
+ {isActive && <div className="w-1.5 h-1.5 rounded-full bg-blue-600 mr-1" />}
  </NavLink>
  )
  })}
@@ -70,17 +70,17 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  </nav>
 
  {/* Bottom Section */}
- <div className="shrink-0 p-4 flex flex-col gap-2">
+ <div className="shrink-0 p-4 flex flex-col gap-2 border-t border-gray-100">
 
  {/* Profile Block */}
- <div className="px-4 py-3.5 bg-[#0a1a12] border border-white/5 rounded-xl flex items-center">
- <span className="text-[#7d8c83] text-sm font-medium">Logged in as</span>
- {admin?.username && <span className="text-white text-sm ml-2 font-medium">{admin.username}</span>}
+ <div className="px-4 py-3.5 bg-gray-50 border border-gray-200 rounded-xl flex items-center">
+ <span className="text-slate-500 text-sm font-medium">Logged in as</span>
+ {admin?.username && <span className="text-gray-900 text-sm ml-2 font-semibold">{admin.username}</span>}
  </div>
  
- <button onClick={logout} className="flex items-center gap-4 px-4 py-3 text-[#829087] hover:text-white transition-colors w-full">
+ <button onClick={logout} className="flex items-center gap-4 px-4 py-3 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-xl transition-colors w-full">
  <LogOut size={20} />
- <span className="font-medium text-[15px]">Logout</span>
+ <span className="font-semibold text-[15px]">Logout</span>
  </button>
  </div>
  </aside>

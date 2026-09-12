@@ -62,11 +62,11 @@ const styles = StyleSheet.create({
   addressGrid: { flexDirection: 'row', borderBottom: '1 solid #000' },
   addressBoxLeft: { width: '50%', padding: 5, borderRight: '1 solid #000' },
   addressBoxRight: { width: '50%', padding: 5 },
-  addressTitle: { fontSize: 8, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF', padding: 4, marginBottom: 4 },
+  addressTitle: { fontSize: 8, fontWeight: 'bold', backgroundColor: '#000000', color: '#FFF', padding: 4, marginBottom: 4 },
   addressName: { fontSize: 8, fontWeight: 'bold', marginBottom: 2 },
   addressText: { fontSize: 8, marginBottom: 1 },
 
-  tableHeader: { flexDirection: 'row', borderBottom: '1 solid #000', backgroundColor: '#334F39', color: '#FFF' },
+  tableHeader: { flexDirection: 'row', borderBottom: '1 solid #000', backgroundColor: '#000000', color: '#FFF' },
   thCell: { padding: 4, fontSize: 8, fontWeight: 'bold', borderRight: '1 solid #000', textAlign: 'center' },
   
   tableRow: { flexDirection: 'row', borderBottom: '1 solid #000' },
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
   balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4, borderBottom: '1 solid #000' },
 
   hsnSummary: { marginTop: 10, borderTop: '1 solid #000' },
-  hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
+  hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#000000', color: '#FFF' },
   
   footerText: { fontSize: 6, textAlign: 'center', marginTop: 20, marginBottom: 5 },
 

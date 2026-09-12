@@ -29,7 +29,7 @@ export default function AdminLayout({ children }) {
  <Sidebar mobileMenuOpen={mobileMenuOpen} setMobileMenuOpen={setMobileMenuOpen} />
  
  {/* Main content area */}
- <main className="md:ml-[260px] min-h-screen transition-all duration-300 pt-16 md:pt-0 bg-[#f8f9fa]">
+ <main className="md:ml-[260px] min-h-screen transition-all duration-300 pt-16 md:pt-0 bg-slate-50">
  <div className="p-4 md:p-8 md:pt-8">
  {children}
  </div>

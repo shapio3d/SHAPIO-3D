@@ -71,6 +71,8 @@ model Invoice {
   customer    Customer      @relation(fields: [customerId], references: [id])
   items       InvoiceItem[]
   issueDate   DateTime      @default(now())
+  terms       String?       @default("Due on Receipt")
+  panNo       String?
   subtotal    Decimal       @default(0)
   cgstRate    Decimal       @default(9)
   sgstRate    Decimal       @default(9)
@@ -96,6 +98,8 @@ model InvoiceItem {
   quantity    Int     @default(1)
   unitPrice   Decimal @default(0)
   total       Decimal @default(0)
+  cgstRatePct Float   @default(9)
+  sgstRatePct Float   @default(9)
 }
 
 // ─── Quotation ───

@@ -4,10 +4,10 @@ import { supabase } from '../supabaseClient'
 import { Search, Plus, FileDown, Upload, Edit3, Trash2, Download, X, Filter, AlertCircle, ArrowLeft, Eye } from 'lucide-react'
 
 const STATUS_COLORS = {
-  PAID: 'text-emerald-300 bg-emerald-500/20 ring-1 ring-emerald-500/30',
-  UNPAID: 'text-amber-300 bg-amber-500/20 ring-1 ring-amber-500/30',
-  OVERDUE: 'text-red-300 bg-red-500/20 ring-1 ring-red-500/30',
-  CANCELLED: 'text-gray-300 bg-white/10 ring-1 ring-white/20',
+  PAID: 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200',
+  UNPAID: 'text-amber-700 bg-amber-50 ring-1 ring-amber-200',
+  OVERDUE: 'text-red-700 bg-red-50 ring-1 ring-red-200',
+  CANCELLED: 'text-gray-700 bg-gray-50 ring-1 ring-gray-200',
 }
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
@@ -126,8 +126,8 @@ export default function Invoices() {
         });
       }
       if (!res.ok) {
-        const errorData = await res.json();
-        throw new Error(errorData.error || "Failed to save invoice");
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.error || `Failed to save invoice (HTTP ${res.status})`);
       }
       return res.json();
     },
@@ -422,86 +422,85 @@ export default function Invoices() {
   if (activeTab === 'create' || activeTab === 'edit') {
     return (
       <div className="w-full max-w-5xl mx-auto pb-12">
-        <div className="flex items-center gap-4 mb-6">
-          <button onClick={() => setActiveTab('list')} className="p-2 rounded-lg bg-[#0a0a0a]  hover:bg-white/10 text-white transition-all">
+        <div className="flex items-center gap-4 mb-8">
+          <button onClick={() => setActiveTab('list')} className="p-2.5 rounded-lg bg-white shadow-sm border border-gray-200 hover:bg-gray-50 text-gray-700 transition-all">
             <ArrowLeft size={20} />
           </button>
-          <h1 className="font-display text-3xl font-bold text-white tracking-wide">
-            {activeTab === 'edit' ? 'Edit Invoice' : 'Create New Invoice'}
+          <h1 className="font-display text-4xl font-extrabold text-gray-900 tracking-tight">
+            {activeTab === 'edit' ? 'Edit invoice' : 'New invoice'}
           </h1>
         </div>
 
-        <div className="bg-[#0a0a0a]  border border-white/10 rounded-2xl p-6 sm:p-8 space-y-8">
+        <div className="bg-white shadow-sm border border-gray-200 rounded-3xl p-6 sm:p-10 space-y-8">
 
           {/* Import from Quotation */}
           {activeTab === 'create' && (
-            <div className="space-y-3 p-4 bg-emerald-500/5 border border-emerald-500/20 rounded-xl">
+            <div className="space-y-3 p-4 bg-black/5 border border-black/20 rounded-xl">
               <div className="flex items-center gap-2 mb-1">
-                <FileDown size={15} className="text-emerald-400" />
-                <h3 className="text-sm font-semibold text-emerald-400 uppercase tracking-widest">Import from Quotation</h3>
+                <FileDown size={15} className="text-black" />
+                <h3 className="text-sm font-semibold text-black uppercase tracking-widest">Import from Quotation</h3>
               </div>
-              <p className="text-xs text-white/50 mb-2">Select an existing quotation to auto-fill client and line items. You can edit everything after importing.</p>
+              <p className="text-xs text-gray-500 mb-2">Select an existing quotation to auto-fill client and line items. You can edit everything after importing.</p>
               <select
                 value={selectedQuotationId}
                 onChange={e => handleImportFromQuotation(e.target.value)}
-                className="w-full px-4 py-3 bg-black/40 border border-emerald-500/30 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-emerald-400 appearance-none"
+                className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none"
               >
-                <option value="" className="bg-[#111] text-white">— Select a Quotation to Import —</option>
+                <option value="" className="bg-white text-gray-900">Select a quotation to import</option>
                 {quotations.map(qt => (
-                  <option key={qt.id} value={qt.id} className="bg-[#111] text-white">
-                    {qt.quoteNo} — {qt.customer?.name} {qt.status !== 'ACCEPTED' ? `(${qt.status})` : ''}
+                  <option key={qt.id} value={qt.id} className="bg-white text-gray-900">
+                    {qt.quoteNo} - {qt.customer?.name} {qt.status !== 'ACCEPTED' ? `(${qt.status})` : ''}
                   </option>
                 ))}
               </select>
               {selectedQuotationId && (
-                <p className="text-xs text-emerald-400 mt-1">✓ Quotation imported. Client and line items have been filled in below.</p>
+                <p className="text-xs text-black mt-1">Quotation imported. Client and line items have been filled in below.</p>
               )}
             </div>
           )}
 
-          {/* Top Meta (Matching PDF Order) */}
+          {/* Top Meta */}
           <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Invoice Details</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Invoice #</label>
-                <input placeholder="e.g. INV-001" value={form.invoiceNumber} onChange={e => setForm({...form, invoiceNumber: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Invoice #</label>
+                <input placeholder="e.g. INV-001" value={form.invoiceNumber} onChange={e => setForm({...form, invoiceNumber: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Issue Date</label>
-                <input type="date" value={form.issueDate} onChange={e => setForm({...form, issueDate: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Issue Date</label>
+                <input type="date" value={form.issueDate} onChange={e => setForm({...form, issueDate: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Terms</label>
-                <input placeholder="e.g. Due on Receipt" value={form.terms} onChange={e => setForm({...form, terms: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Terms</label>
+                <input placeholder="e.g. Due on Receipt" value={form.terms} onChange={e => setForm({...form, terms: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Due Date</label>
-                <input type="date" value={form.dueDate} onChange={e => setForm({...form, dueDate: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Due Date</label>
+                <input type="date" value={form.dueDate} onChange={e => setForm({...form, dueDate: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Place of Supply</label>
-                <input value={form.placeOfSupply} onChange={e => setForm({...form, placeOfSupply: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" placeholder="e.g. Tamil Nadu (33)" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Place of Supply</label>
+                <input value={form.placeOfSupply} onChange={e => setForm({...form, placeOfSupply: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="e.g. Tamil Nadu (33)" />
               </div>
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">PAN No</label>
-                <input placeholder="e.g. ABCDE1234F" value={form.panNo} onChange={e => setForm({...form, panNo: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">PAN No</label>
+                <input placeholder="e.g. ABCDE1234F" value={form.panNo} onChange={e => setForm({...form, panNo: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
             </div>
           </div>
 
           {/* Client Details */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between border-b border-white/10 pb-2">
-              <h3 className="text-sm font-semibold text-white uppercase tracking-widest">Bill To (Client)</h3>
+          <div className="space-y-4 pt-4 border-t border-gray-200">
+            <div className="flex items-center justify-between pb-2">
+              <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest">Bill To (Client)</h3>
               <div className="flex items-center gap-2">
-                <span className="text-xs text-white">Manual Entry</span>
+                <span className="text-xs font-bold text-slate-500 uppercase">Manual Entry</span>
                 <button
                   type="button"
                   onClick={() => setIsManualClient(!isManualClient)}
-                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isManualClient ? 'bg-emerald-500' : 'bg-white/20'}`}
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${isManualClient ? 'bg-blue-600' : 'bg-gray-200'}`}
                 >
-                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${isManualClient ? 'translate-x-6' : 'translate-x-1'}`} />
+                  <span className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform shadow-sm ${isManualClient ? 'translate-x-6' : 'translate-x-1'}`} />
                 </button>
               </div>
             </div>
@@ -510,7 +509,7 @@ export default function Invoices() {
               <div className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
-                    <label className="block text-xs text-white uppercase tracking-wider mb-2">Select Existing Client *</label>
+                    <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Select Existing Client *</label>
                     <select value={form.clientId} onChange={e => {
                       const clientId = e.target.value;
                       const selectedClient = clients.find(c => c.id === clientId);
@@ -518,9 +517,9 @@ export default function Invoices() {
                         clientId,
                         panNo: selectedClient?.panNo || '',
                       });
-                    }} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-white/40 appearance-none">
-                      <option value="" className="bg-[#111111] text-white">Select Client</option>
-                      {clients.map(c => <option key={c.id} value={c.id} className="bg-[#111111] text-white">{c.name}</option>)}
+                    }} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none">
+                      <option value="" className="bg-white text-gray-900">Select Client</option>
+                      {clients.map(c => <option key={c.id} value={c.id} className="bg-white text-gray-900">{c.name}</option>)}
                     </select>
                   </div>
                 </div>
@@ -528,54 +527,54 @@ export default function Invoices() {
                 {form.clientId && (() => {
                   const sc = clients.find(c => c.id === form.clientId);
                   return sc ? (
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-black/20 border border-white/5 rounded-xl">
-                      {sc.email && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">Email</p><p className="text-xs text-white/80 mt-0.5 truncate">{sc.email}</p></div>}
-                      {sc.phone && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">Phone</p><p className="text-xs text-white/80 mt-0.5">{sc.phone}</p></div>}
-                      {sc.gstNumber && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">GSTIN</p><p className="text-xs text-white/80 mt-0.5">{sc.gstNumber}</p></div>}
-                      {sc.panNo && <div><p className="text-[10px] text-white/40 uppercase tracking-wider">PAN</p><p className="text-xs text-white/80 mt-0.5">{sc.panNo}</p></div>}
-                      {sc.address && <div className="col-span-2 md:col-span-4"><p className="text-[10px] text-white/40 uppercase tracking-wider">Address</p><p className="text-xs text-white/80 mt-0.5">{sc.address}</p></div>}
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-3 p-4 bg-gray-50 border border-gray-200 rounded-xl">
+                      {sc.email && <div><p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Email</p><p className="text-xs text-gray-700 mt-0.5 truncate">{sc.email}</p></div>}
+                      {sc.phone && <div><p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Phone</p><p className="text-xs text-gray-700 mt-0.5">{sc.phone}</p></div>}
+                      {sc.gstNumber && <div><p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">GSTIN</p><p className="text-xs text-gray-700 mt-0.5">{sc.gstNumber}</p></div>}
+                      {sc.panNo && <div><p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">PAN</p><p className="text-xs text-gray-700 mt-0.5">{sc.panNo}</p></div>}
+                      {sc.address && <div className="col-span-2 md:col-span-4"><p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider">Address</p><p className="text-xs text-gray-700 mt-0.5">{sc.address}</p></div>}
                     </div>
                   ) : null;
                 })()}
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-[#0a0a0a]  rounded-xl border border-white/10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 p-4 bg-gray-50 rounded-xl border border-gray-200">
                 <div>
-                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Client Name *</label>
-                  <input value={manualClient.name} onChange={e => setManualClient({...manualClient, name: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" placeholder="e.g. Acme Corp" />
+                  <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Client Name *</label>
+                  <input value={manualClient.name} onChange={e => setManualClient({...manualClient, name: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" placeholder="e.g. Acme Corp" />
                 </div>
                 <div>
-                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Phone</label>
-                  <input placeholder="e.g. +91 98765 43210" value={manualClient.phone} onChange={e => setManualClient({...manualClient, phone: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                  <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Phone</label>
+                  <input placeholder="e.g. +91 98765 43210" value={manualClient.phone} onChange={e => setManualClient({...manualClient, phone: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-xs text-white uppercase tracking-wider mb-2">GSTIN</label>
-                  <input placeholder="e.g. 29ABCDE1234F1Z5" value={manualClient.gstNumber} onChange={e => setManualClient({...manualClient, gstNumber: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                  <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">GSTIN</label>
+                  <input placeholder="e.g. 29ABCDE1234F1Z5" value={manualClient.gstNumber} onChange={e => setManualClient({...manualClient, gstNumber: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                 </div>
                 <div>
-                  <label className="block text-xs text-white uppercase tracking-wider mb-2">Billing Address</label>
-                  <textarea placeholder="Enter complete billing address" value={manualClient.address} onChange={e => setManualClient({...manualClient, address: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none h-12" />
+                  <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Billing Address</label>
+                  <textarea placeholder="Enter complete billing address" value={manualClient.address} onChange={e => setManualClient({...manualClient, address: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-12" />
                 </div>
               </div>
             )}
           </div>
 
           {/* Ship To Details */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Ship To (Optional)</h3>
+          <div className="space-y-4 pt-4 border-t border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest pb-2">Ship To (Optional)</h3>
             <div>
-              <label className="block text-xs text-white uppercase tracking-wider mb-2">Shipping Address</label>
-              <textarea value={form.shipAddress} onChange={e => setForm({...form, shipAddress: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none h-16" placeholder="Leave blank to use Billing Address" />
+              <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Shipping Address</label>
+              <textarea value={form.shipAddress} onChange={e => setForm({...form, shipAddress: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-16" placeholder="Leave blank to use Billing Address" />
             </div>
           </div>
 
           {/* Line Items */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Line Items</h3>
+          <div className="space-y-4 pt-4 border-t border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest pb-2">Line Items</h3>
             <div className="pb-4">
               <div className="w-full">
                 {/* Headers */}
-                <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-xs text-white uppercase tracking-wider font-semibold">
+                <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] text-slate-500 font-bold uppercase tracking-wider">
                   <div className="col-span-3">Description</div>
                   <div className="col-span-2">HSN/SAC</div>
                   <div className="col-span-1 text-center">Qty</div>
@@ -587,46 +586,46 @@ export default function Invoices() {
                 {form.items.map((item, i) => (
                   <div key={i}>
                     {/* Mobile card */}
-                    <div className="md:hidden bg-black/30 border border-white/10 rounded-xl p-3 mb-3 space-y-2">
+                    <div className="md:hidden bg-gray-50 border border-gray-200 rounded-xl p-3 mb-3 space-y-2">
                       <div className="flex justify-between items-center mb-1">
-                        <span className="text-xs text-white/50 uppercase tracking-wider">Item {i + 1}</span>
+                        <span className="text-xs font-bold text-gray-900 uppercase tracking-wider">Item {i + 1}</span>
                         {form.items.length > 1 && (
-                          <button onClick={() => removeItem(i)} className="text-white/40 hover:text-red-400 p-1 rounded transition-all"><X size={14} /></button>
+                          <button onClick={() => removeItem(i)} className="text-slate-400 hover:text-red-500 p-1 rounded transition-all"><X size={14} /></button>
                         )}
                       </div>
-                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
-                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       <div className="grid grid-cols-2 gap-2">
-                        <div><label className="text-[10px] text-white/50 uppercase">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" /></div>
-                        <div><label className="text-[10px] text-white/50 uppercase">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" /></div>
+                        <div><label className="text-[10px] font-bold text-slate-500 uppercase">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
+                        <div><label className="text-[10px] font-bold text-slate-500 uppercase">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                       </div>
                       <div className="grid grid-cols-2 gap-2">
-                        <div><label className="text-[10px] text-white/50 uppercase">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" /></div>
-                        <div><label className="text-[10px] text-white/50 uppercase">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-black/40 border border-white/10 rounded-lg text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" /></div>
+                        <div><label className="text-[10px] font-bold text-slate-500 uppercase">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
+                        <div><label className="text-[10px] font-bold text-slate-500 uppercase">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                       </div>
-                      <div className="flex justify-between items-center pt-1 border-t border-white/10">
-                        <span className="text-xs text-white/50 uppercase">Amount</span>
-                        <span className="text-sm font-semibold text-white">₹{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
+                      <div className="flex justify-between items-center pt-2 mt-2 border-t border-gray-200">
+                        <span className="text-xs font-bold text-slate-500 uppercase">Amount</span>
+                        <span className="text-sm font-semibold text-gray-900">₹{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
                       </div>
                     </div>
                     {/* Desktop grid row */}
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center">
-                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="col-span-3 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
-                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
-                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" />
-                      <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-right focus:outline-none focus:border-white/40" />
-                      <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" />
-                      <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 text-center focus:outline-none focus:border-white/40" />
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="col-span-3 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       <div className="col-span-2 flex items-center justify-end pr-10 relative">
-                        <span className="text-base font-semibold text-white">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
+                        <span className="text-base font-semibold text-gray-900">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
                         {form.items.length > 1 && (
-                          <button onClick={() => removeItem(i)} className="absolute right-0 text-k-silver-dim hover:text-red-400 p-2 rounded-lg hover:bg-[#0a0a0a]  transition-all"><X size={16} /></button>
+                          <button onClick={() => removeItem(i)} className="absolute right-0 text-slate-400 hover:text-red-500 p-2 rounded-lg hover:bg-red-50 transition-all"><X size={16} /></button>
                         )}
                       </div>
                     </div>
                   </div>
                 ))}
-                <button onClick={addItem} className="mt-2 text-sm font-semibold text-white/70 hover:text-white border border-dashed border-white/20 rounded-xl w-full py-4 hover:border-white/40 hover:bg-[#0a0a0a]  transition-all">
+                <button onClick={addItem} className="mt-2 text-sm font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-xl w-full py-4 transition-all">
                   + Add Line Item
                 </button>
               </div>
@@ -634,40 +633,40 @@ export default function Invoices() {
           </div>
 
           {/* Totals & Words */}
-          <div className="bg-[#0a0a0a]  rounded-2xl p-6 border border-white/10 space-y-4">
+          <div className="bg-gray-50 rounded-2xl p-6 border border-gray-200 space-y-4">
             <div className="flex flex-col md:flex-row justify-between gap-8">
               <div className="flex-1">
-                <h4 className="text-xs text-white uppercase tracking-wider mb-2 font-semibold">Amount in Words</h4>
-                <p className="text-sm text-white/90 font-medium leading-relaxed">{amountInWords}</p>
+                <h4 className="text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Amount in Words</h4>
+                <p className="text-sm text-gray-900 font-medium leading-relaxed">{amountInWords}</p>
               </div>
               <div className="flex-1 min-w-[250px] space-y-3">
                 <div className="flex justify-between text-base">
-                  <span className="text-white font-medium">Subtotal</span>
-                  <span className="text-white">₹{subtotal.toLocaleString('en-IN')}</span>
+                  <span className="text-gray-700 font-medium">Subtotal</span>
+                  <span className="text-gray-900">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-base">
-                  <span className="text-white font-medium">CGST Total</span>
-                  <span className="text-white">₹{totalCgst.toLocaleString('en-IN')}</span>
+                  <span className="text-gray-700 font-medium">CGST Total</span>
+                  <span className="text-gray-900">₹{totalCgst.toLocaleString('en-IN')}</span>
                 </div>
                 <div className="flex justify-between text-base">
-                  <span className="text-white font-medium">SGST Total</span>
-                  <span className="text-white">₹{totalSgst.toLocaleString('en-IN')}</span>
+                  <span className="text-gray-700 font-medium">SGST Total</span>
+                  <span className="text-gray-900">₹{totalSgst.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-2xl font-bold border-t border-white/20 pt-4 mt-2">
-                  <span className="text-white">Total</span>
-                  <span className="text-emerald-400">₹{total.toLocaleString('en-IN')}</span>
+                <div className="flex justify-between text-2xl font-bold border-t border-gray-200 pt-4 mt-2">
+                  <span className="text-gray-900">Total</span>
+                  <span className="text-blue-600">₹{total.toLocaleString('en-IN')}</span>
                 </div>
               </div>
             </div>
           </div>
 
           {/* Status & Notes */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-semibold text-white uppercase tracking-widest border-b border-white/10 pb-2">Status & Notes</h3>
+          <div className="space-y-4 pt-4 border-t border-gray-200">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest pb-2">Status & Notes</h3>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Status</label>
-                <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white focus:outline-none focus:border-white/40 appearance-none">
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Status</label>
+                <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none">
                   <option value="PAID">PAID</option>
                   <option value="UNPAID">UNPAID</option>
                   <option value="OVERDUE">OVERDUE</option>
@@ -675,19 +674,19 @@ export default function Invoices() {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-white uppercase tracking-wider mb-2">Notes</label>
-                <textarea placeholder="e.g. Thank you for your business!" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none h-14" />
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Notes</label>
+                <textarea placeholder="e.g. Thank you for your business!" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-14" />
               </div>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-white/10">
-            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-white bg-[#0a0a0a]  border border-white/10 rounded-xl hover:bg-white/10 transition-all">
+          <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
+            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-gray-700 bg-white border border-gray-300 shadow-sm rounded-xl hover:bg-gray-50 transition-all">
               Cancel
             </button>
-            <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 text-base font-semibold text-k-black bg-emerald-400 rounded-xl hover:bg-emerald-300 hover:shadow-lg hover:shadow-emerald-500/20 transition-all disabled:opacity-50">
-              {editing ? 'Save Invoice Changes' : 'Generate Final Invoice'}
+            <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 text-base font-semibold text-white bg-blue-600 rounded-xl shadow-sm hover:bg-blue-700 transition-all disabled:opacity-50">
+              {editing ? 'Save Invoice Changes' : 'Generate invoice'}
             </button>
           </div>
         </div>
@@ -697,7 +696,7 @@ export default function Invoices() {
 
   if (pdfUrl) {
     return (
-      <div className="flex-1 flex flex-col p-8 bg-[#084227]">
+      <div className="flex-1 flex flex-col p-8 bg-black">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-white tracking-tight">PDF Viewer</h1>
           <button onClick={() => setPdfUrl(null)} className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">
@@ -717,11 +716,11 @@ export default function Invoices() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <h1 className="font-display text-2xl font-bold text-white tracking-wide">Invoices</h1>
-          <p className="text-sm text-k-silver-dim mt-1">{invoices.length} total invoices</p>
+          <h1 className="font-display text-4xl font-extrabold text-gray-900 tracking-tight">Invoices</h1>
+          <p className="text-sm text-gray-500 mt-1">{invoices.length} total invoices</p>
         </div>
         <div className="flex items-center w-full sm:w-auto gap-3">
-          <button className="flex items-center justify-center sm:justify-start gap-2 px-5 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all w-full sm:w-auto" onClick={openNew}>
+          <button className="flex items-center justify-center sm:justify-start gap-2 px-5 py-2.5 bg-blue-600 text-white shadow-sm text-sm font-semibold rounded-xl hover:bg-blue-700 hover:shadow transition-all w-full sm:w-auto" onClick={openNew}>
             <Plus size={16} /> New Invoice
           </button>
         </div>
@@ -730,29 +729,29 @@ export default function Invoices() {
       {/* Filters */}
       <div className="flex flex-col lg:flex-row lg:items-center gap-4 mb-6">
         <div className="relative flex-1 w-full max-w-none lg:max-w-md">
-          <Search size={16} className="absolute top-3.5 left-4 text-k-silver-dim" />
+          <Search size={16} className="absolute top-3.5 left-4 text-gray-400" />
           <input
             type="text"
             placeholder="Search by invoice #..."
             value={search}
             onChange={e => setSearch(e.target.value)}
-            className="w-full pl-11 pr-4 py-3 bg-[#0a0a0a]  border border-white/10 rounded-xl text-sm text-white placeholder:text-k-silver-dim/40 focus:outline-none focus:border-k-silver/40 transition-colors"
+            className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
           />
         </div>
       </div>
 
       {/* Desktop Table View */}
-      <div className="hidden md:block bg-[#0a0a0a] border border-white/5 rounded-2xl overflow-hidden">
+      <div className="hidden md:block bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/5">
-                <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Invoice #</th>
-                <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Customer</th>
-                <th className="text-right px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Amount</th>
-                <th className="text-center px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Status</th>
-                <th className="text-left px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Date</th>
-                <th className="text-right px-6 py-4 text-xs text-white/90 font-display uppercase tracking-wider">Actions</th>
+              <tr className="border-b border-gray-200 bg-gray-50/50">
+                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Invoice #</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Customer</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Amount</th>
+                <th className="text-center px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Status</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Date</th>
+                <th className="text-right px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -760,15 +759,15 @@ export default function Invoices() {
                 <tr>
                   <td colSpan={6} className="px-6 py-12">
                     <div className="flex items-center justify-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
-                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
-                      <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
+                      <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
+                      <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.2s' }} />
+                      <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.4s' }} />
                     </div>
                   </td>
                 </tr>
               ) : isErrorInvoices || isErrorClients ? (
                 <tr>
-                  <td colSpan={6} className="px-6 py-12 text-center text-red-400">
+                  <td colSpan={6} className="px-6 py-12 text-center text-red-500">
                     <div className="flex flex-col items-center justify-center gap-2">
                       <AlertCircle size={24} />
                       <p className="text-sm">Failed to load invoices. Please try refreshing.</p>
@@ -778,43 +777,43 @@ export default function Invoices() {
               ) : (
                 <>
                   {filtered.map((inv) => (
-                    <tr key={inv.id} className="border-b border-white/5 hover:bg-[#111111] transition-colors">
+                    <tr key={inv.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
                       <td className="px-6 py-4">
-                        <span className="text-sm text-white/80 font-sans">{inv.invoiceNumber}</span>
+                        <span className="text-sm font-medium text-gray-900">{inv.invoiceNumber}</span>
                       </td>
                       <td className="px-6 py-4">
-                        <p className="text-sm text-white/80 font-sans">{inv.client?.name}</p>
+                        <p className="text-sm text-gray-600">{inv.client?.name}</p>
                       </td>
                       <td className="px-6 py-4 text-right">
-                        <span className="text-sm font-medium text-white/80 font-sans">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
+                        <span className="text-sm font-semibold text-gray-900">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
                       </td>
                       <td className="px-6 py-4 text-center">
                         <select
                           value={inv.status}
                           onChange={(e) => updateStatusMutation.mutate({ id: inv.id, status: e.target.value })}
-                          className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[inv.status] || STATUS_COLORS.UNPAID}`}
+                          className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold appearance-none cursor-pointer outline-none shadow-sm border border-transparent hover:border-gray-300 ${STATUS_COLORS[inv.status] || STATUS_COLORS.UNPAID}`}
                           style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                         >
                           {Object.keys(STATUS_COLORS).map(status => (
-                            <option key={status} value={status} className="bg-[#0a0a0a]  text-white normal-case">
+                            <option key={status} value={status} className="bg-white text-gray-900 normal-case font-medium">
                               {status}
                             </option>
                           ))}
                         </select>
                       </td>
-                      <td className="px-6 py-4 text-sm text-k-silver-dim">
+                      <td className="px-6 py-4 text-sm text-gray-500">
                         {new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
-                          <button onClick={() => handleDownloadPdf(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Download PDF">
-                            <Download size={14} />
+                          <button onClick={() => handleDownloadPdf(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Download PDF">
+                            <Download size={16} />
                           </button>
-                          <button onClick={() => openEdit(inv)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-white hover:bg-white/[0.06] transition-all" title="Edit">
-                            <Edit3 size={14} />
+                          <button onClick={() => openEdit(inv)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Edit">
+                            <Edit3 size={16} />
                           </button>
-                          <button onClick={() => handleDelete(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-k-silver-dim hover:text-red-400 hover:bg-red-400/[0.06] transition-all" title="Delete">
-                            <Trash2 size={14} />
+                          <button onClick={() => handleDelete(inv.id)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-red-600 hover:bg-red-50 transition-all" title="Delete">
+                            <Trash2 size={16} />
                           </button>
                         </div>
                       </td>
@@ -822,7 +821,7 @@ export default function Invoices() {
                   ))}
                   {filtered.length === 0 && (
                     <tr>
-                      <td colSpan={6} className="px-6 py-12 text-center text-k-silver-dim text-sm">
+                      <td colSpan={6} className="px-6 py-12 text-center text-gray-500 text-sm">
                         No invoices found
                       </td>
                     </tr>
@@ -837,65 +836,65 @@ export default function Invoices() {
       {/* Mobile Card View */}
       <div className="block md:hidden space-y-4">
         {isLoadingInvoices || isLoadingClients ? (
-          <div className="py-12 flex items-center justify-center gap-2 bg-[#0a0a0a]  border border-white/10 rounded-xl">
-            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" />
-            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.2s' }} />
-            <span className="w-2 h-2 rounded-full bg-k-silver animate-pulse" style={{ animationDelay: '0.4s' }} />
+          <div className="py-12 flex items-center justify-center gap-2 bg-white border border-gray-200 shadow-sm rounded-xl">
+            <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" />
+            <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.2s' }} />
+            <span className="w-2 h-2 rounded-full bg-gray-400 animate-pulse" style={{ animationDelay: '0.4s' }} />
           </div>
         ) : isErrorInvoices || isErrorClients ? (
-          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-[#0a0a0a]  border border-white/10 rounded-xl text-red-400">
+          <div className="py-12 flex flex-col items-center justify-center gap-2 bg-white border border-gray-200 shadow-sm rounded-xl text-red-500">
             <AlertCircle size={24} />
             <p className="text-sm">Failed to load invoices.</p>
           </div>
         ) : (
           <>
             {filtered.map((inv) => (
-              <div key={inv.id} className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-4 flex flex-col gap-4">
+              <div key={inv.id} className="bg-white border border-gray-200 shadow-sm rounded-xl p-4 flex flex-col gap-4">
                 <div className="flex justify-between items-start">
                   <div>
-                    <span className="text-sm font-medium text-white font-display tracking-wide">{inv.invoiceNumber}</span>
-                    <p className="text-sm text-k-silver-dim mt-1">{inv.client?.name}</p>
+                    <span className="text-sm font-semibold text-gray-900 tracking-wide">{inv.invoiceNumber}</span>
+                    <p className="text-sm text-gray-500 mt-1">{inv.client?.name}</p>
                   </div>
                   <select
                     value={inv.status}
                     onChange={(e) => updateStatusMutation.mutate({ id: inv.id, status: e.target.value })}
-                    className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-semibold appearance-none cursor-pointer outline-none ${STATUS_COLORS[inv.status] || STATUS_COLORS.UNPAID}`}
+                    className={`inline-block px-2.5 py-1 rounded-md text-[10px] uppercase tracking-wider font-bold appearance-none cursor-pointer outline-none shadow-sm border border-transparent hover:border-gray-300 ${STATUS_COLORS[inv.status] || STATUS_COLORS.UNPAID}`}
                     style={{ WebkitAppearance: 'none', MozAppearance: 'none' }}
                   >
                     {Object.keys(STATUS_COLORS).map(status => (
-                      <option key={status} value={status} className="bg-[#0a0a0a]  text-white normal-case">
+                      <option key={status} value={status} className="bg-white text-gray-900 normal-case font-medium">
                         {status}
                       </option>
                     ))}
                   </select>
                 </div>
                 
-                <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                <div className="flex justify-between items-center pt-4 border-t border-gray-200">
                   <div>
-                    <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Amount</p>
-                    <span className="text-sm font-semibold text-white">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Amount</p>
+                    <span className="text-sm font-bold text-gray-900">₹{(inv.total || 0).toLocaleString('en-IN')}</span>
                   </div>
                   <div className="text-right">
-                    <p className="text-[10px] text-k-silver-dim uppercase tracking-wider mb-1">Date</p>
-                    <p className="text-sm text-white">{new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
+                    <p className="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Date</p>
+                    <p className="text-sm text-gray-700">{new Date(inv.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' })}</p>
                   </div>
                 </div>
 
-                <div className="flex items-center justify-end gap-2 pt-4 border-t border-white/10">
-                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
-                    <Download size={14} /> <span className="hidden sm:inline">PDF</span>
+                <div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-200">
+                  <button onClick={() => handleDownloadPdf(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
+                    <Download size={16} /> <span className="hidden sm:inline">PDF</span>
                   </button>
-                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-k-silver-dim hover:text-white hover:bg-white/10 transition-all text-sm">
-                    <Edit3 size={14} /> <span className="hidden sm:inline">Edit</span>
+                  <button onClick={() => openEdit(inv)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
+                    <Edit3 size={16} /> <span className="hidden sm:inline">Edit</span>
                   </button>
-                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-[#0a0a0a]  text-k-silver-dim hover:text-red-400 hover:bg-red-400/10 transition-all text-sm">
-                    <Trash2 size={14} /> <span className="hidden sm:inline">Delete</span>
+                  <button onClick={() => handleDelete(inv.id)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all text-sm font-medium">
+                    <Trash2 size={16} /> <span className="hidden sm:inline">Delete</span>
                   </button>
                 </div>
               </div>
             ))}
             {filtered.length === 0 && (
-              <div className="py-12 text-center text-k-silver-dim text-sm bg-[#0a0a0a]  border border-white/10 rounded-xl">
+              <div className="py-12 text-center text-gray-500 text-sm bg-white border border-gray-200 shadow-sm rounded-xl">
                 No invoices found
               </div>
             )}

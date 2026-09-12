@@ -3,43 +3,9 @@ const router = express.Router();
 const { generateInvoicePdfStream } = require('../lib/pdfTemplate');
 const { createClient } = require('@supabase/supabase-js');
 const { PrismaClient } = require('@prisma/client');
+const { requireSupabaseAuth } = require('../middleware/auth');
 
 const prisma = new PrismaClient();
-
-// Initialize a generic client to verify user tokens
-const supabaseAuthClient = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_ANON_KEY
-);
-
-// Supabase Auth Middleware
-const tokenCache = new Map();
-
-const requireSupabaseAuth = async (req, res, next) => {
-  const authHeader = req.headers.authorization;
-  if (false) {
-    return res.status(401).json({ error: 'Authentication required' });
-  }
-  const token = (authHeader || '').split(' ')[1] || 'dev';
-  
-  if (tokenCache.has(token)) {
-    req.user = tokenCache.get(token);
-    return next();
-  }
-  
-  // bypass auth
-  let user = { id: 'dev-user' };
-  let error = null;
-  if (error || !user) {
-    return res.status(401).json({ error: 'Invalid or expired token' });
-  }
-  
-  tokenCache.set(token, user);
-  setTimeout(() => tokenCache.delete(token), 60 * 1000); // 1m cache
-  
-  req.user = user;
-  next();
-};
 
 // Get All Invoices
 router.get('/', requireSupabaseAuth, async (req, res) => {
@@ -107,7 +73,15 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
       shipAddress,
       notes,
       status,
+      items,
     } = req.body;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'Please select a client.' });
+    }
+    if (!invoiceNumber || !String(invoiceNumber).trim()) {
+      return res.status(400).json({ error: 'Please provide an invoice number.' });
+    }
 
     let finalClientId = clientId;
 
@@ -122,6 +96,10 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
         }
       });
       finalClientId = newCustomer.id;
+    }
+
+    if (!Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'At least one line item is required.' });
     }
 
     let subtotal = 0;
@@ -143,11 +121,13 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
       sgstAmountTotal += itemSgst;
 
       return {
-        description: item.description,
-        hsnSac: item.hsnSac,
+        description: item.description || '',
+        hsnSac: item.hsnSac || '',
         quantity,
         unitPrice: rate,
         total: amount,
+        cgstRatePct,
+        sgstRatePct,
       };
     });
 
@@ -159,6 +139,8 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
         customerId: finalClientId,
         issueDate: issueDate ? new Date(issueDate) : new Date(),
         dueDate: dueDate ? new Date(dueDate) : null,
+        terms: terms || 'Due on Receipt',
+        panNo: panNo || '',
         placeOfSupply,
         shipAddress,
         notes,
@@ -179,8 +161,15 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
 
     res.status(201).json({ success: true, invoice });
   } catch (error) {
+    require('fs').appendFileSync('error.log', new Date().toISOString() + ' Invoice Error: ' + (error?.stack || error) + '\n');
     console.error('Invoice Creation Error:', error);
-    res.status(500).json({ error: 'Failed to create invoice' });
+    if (error?.code === 'P2002') {
+      return res.status(409).json({ error: 'An invoice with this invoice number already exists.' });
+    }
+    if (error?.code === 'P2003') {
+      return res.status(400).json({ error: 'The selected client no longer exists. Please select it again.' });
+    }
+    res.status(500).json({ error: 'Failed to create invoice: ' + (error?.message || String(error)) });
   }
 });
 
@@ -194,11 +183,20 @@ router.put('/:id', requireSupabaseAuth, async (req, res) => {
       issueDate,
       dueDate,
       terms,
+      panNo,
       placeOfSupply,
       shipAddress,
       notes,
       status,
+    items,
     } = req.body;
+
+    if (!clientId) {
+      return res.status(400).json({ error: 'Please select a client.' });
+    }
+    if (!invoiceNumber || !String(invoiceNumber).trim()) {
+      return res.status(400).json({ error: 'Please provide an invoice number.' });
+    }
 
     let finalClientId = clientId;
 
@@ -257,6 +255,8 @@ router.put('/:id', requireSupabaseAuth, async (req, res) => {
         customerId: finalClientId,
         issueDate: issueDate ? new Date(issueDate) : new Date(),
         dueDate: dueDate ? new Date(dueDate) : null,
+        terms: terms || 'Due on Receipt',
+        panNo: panNo || '',
         placeOfSupply,
         shipAddress,
         notes,

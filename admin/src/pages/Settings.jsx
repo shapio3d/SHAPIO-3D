@@ -106,59 +106,59 @@ export default function Settings() {
     <div>
       {/* Header */}
       <div className="mb-8">
-        <h1 className="font-sub text-2xl font-bold text-white tracking-wide">Settings</h1>
-        <p className="text-sm font-body text-white/70 mt-1">Manage your account settings</p>
+        <h1 className="font-display text-2xl font-bold text-gray-900 tracking-tight">Settings</h1>
+        <p className="text-sm font-medium text-slate-500 mt-1">Manage your account settings</p>
       </div>
 
       <div className="w-full max-w-6xl grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
         <div className="space-y-6">
           {/* Account info */}
-          <div className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-6">
+          <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div className="flex items-center gap-4">
-            <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-white/10 to-transparent flex items-center justify-center">
-              <span className="font-sub text-lg font-bold text-white uppercase">
+            <div className="w-14 h-14 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+              <span className="font-bold text-lg text-blue-700 uppercase">
                 {admin?.email?.charAt(0) || 'A'}
               </span>
             </div>
             <div>
-              <p className="text-sm font-sub font-semibold text-white tracking-wide">{admin?.email || 'Administrator'}</p>
-              <p className="text-xs font-body text-white/70 mt-0.5">Administrator</p>
+              <p className="text-sm font-semibold text-gray-900">{admin?.email || 'Administrator'}</p>
+              <p className="text-xs font-medium text-slate-500 mt-0.5">Administrator</p>
             </div>
           </div>
         </div>
 
         {/* Password Reset */}
-        <div className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-6 mt-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6 mt-6 shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-black/80 border border-white/10 flex items-center justify-center">
-              <Key size={18} className="text-white" />
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+              <Key size={18} className="text-blue-600" />
             </div>
             <div>
-              <h3 className="text-sm font-sub font-semibold text-white tracking-wide">Change Password</h3>
-              <p className="text-xs font-body text-white/70">Update your administrator password</p>
+              <h3 className="text-sm font-semibold text-gray-900">Change Password</h3>
+              <p className="text-xs font-medium text-slate-500">Update your administrator password</p>
             </div>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">New Password</label>
-              <input type="password" value={form.newPassword} onChange={e => setForm({...form, newPassword: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">New Password</label>
+              <input type="password" value={form.newPassword} onChange={e => setForm({...form, newPassword: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
             </div>
             <div>
-              <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Confirm New Password</label>
-              <input type="password" value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Confirm New Password</label>
+              <input type="password" value={form.confirmPassword} onChange={e => setForm({...form, confirmPassword: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
             </div>
             
-            {error && <p className="text-xs text-red-400">{error}</p>}
+            {error && <p className="text-xs font-medium text-red-500">{error}</p>}
             
             {saved && (
-              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/20 text-sm text-emerald-400">
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm font-medium text-emerald-700">
                 <CheckCircle size={16} />
                 Password updated successfully
               </div>
             )}
 
-            <button type="submit" className="px-6 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-sub font-semibold rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all">
+            <button type="submit" className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm">
               Update Password
             </button>
           </form>
@@ -166,65 +166,65 @@ export default function Settings() {
       </div>
 
       {/* Right Column: PDF Defaults config */}
-      <div className="bg-[#0a0a0a]  border border-white/10 rounded-xl p-6">
+      <div className="bg-white border border-gray-200 rounded-xl p-6 shadow-sm">
           <div className="flex items-center gap-3 mb-6">
-            <div className="w-10 h-10 rounded-xl bg-k-card border border-white/10 flex items-center justify-center">
-              <FileText size={18} className="text-k-silver" />
+            <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center">
+              <FileText size={18} className="text-blue-600" />
             </div>
             <div>
-              <h3 className="text-sm font-semibold text-white">Invoice PDF Defaults</h3>
-              <p className="text-xs text-k-silver-dim">Configure company details shown on generated invoices</p>
+              <h3 className="text-sm font-semibold text-gray-900">Invoice PDF Defaults</h3>
+              <p className="text-xs font-medium text-slate-500">Configure company details shown on generated invoices</p>
             </div>
           </div>
 
           <form onSubmit={handlePdfSubmit} className="space-y-4">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Company Name</label>
-                <input value={pdfSettings.companyName} onChange={e => setPdfSettings({...pdfSettings, companyName: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Company Name</label>
+                <input value={pdfSettings.companyName} onChange={e => setPdfSettings({...pdfSettings, companyName: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Email</label>
-                <input value={pdfSettings.email} onChange={e => setPdfSettings({...pdfSettings, email: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Email</label>
+                <input value={pdfSettings.email} onChange={e => setPdfSettings({...pdfSettings, email: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
             </div>
             <div>
-              <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Company Address</label>
-              <textarea value={pdfSettings.companyAddress} onChange={e => setPdfSettings({...pdfSettings, companyAddress: e.target.value})} rows={2} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40 resize-none" />
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Company Address</label>
+              <textarea value={pdfSettings.companyAddress} onChange={e => setPdfSettings({...pdfSettings, companyAddress: e.target.value})} rows={2} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm resize-none" />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">GSTIN</label>
-                <input value={pdfSettings.gstin} onChange={e => setPdfSettings({...pdfSettings, gstin: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">GSTIN</label>
+                <input value={pdfSettings.gstin} onChange={e => setPdfSettings({...pdfSettings, gstin: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">PAN</label>
-                <input value={pdfSettings.pan} onChange={e => setPdfSettings({...pdfSettings, pan: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">PAN</label>
+                <input value={pdfSettings.pan} onChange={e => setPdfSettings({...pdfSettings, pan: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Bank Account Name</label>
-                <input value={pdfSettings.accountName} onChange={e => setPdfSettings({...pdfSettings, accountName: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Bank Account Name</label>
+                <input value={pdfSettings.accountName} onChange={e => setPdfSettings({...pdfSettings, accountName: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Account Number</label>
-                <input value={pdfSettings.accountNumber} onChange={e => setPdfSettings({...pdfSettings, accountNumber: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Account Number</label>
+                <input value={pdfSettings.accountNumber} onChange={e => setPdfSettings({...pdfSettings, accountNumber: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
             </div>
             <div className="grid grid-cols-1 gap-4">
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">IFSC Code</label>
-                <input value={pdfSettings.ifsc} onChange={e => setPdfSettings({...pdfSettings, ifsc: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">IFSC Code</label>
+                <input value={pdfSettings.ifsc} onChange={e => setPdfSettings({...pdfSettings, ifsc: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
               <div>
-                <label className="block text-[11px] font-sub text-white uppercase tracking-widest mb-1.5">Branch</label>
-                <input value={pdfSettings.branch} onChange={e => setPdfSettings({...pdfSettings, branch: e.target.value})} className="w-full px-4 py-3 bg-black/40 border border-white/10 rounded-xl text-sm font-normal text-white placeholder:text-white/40 focus:outline-none focus:border-white/40" />
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-widest mb-1.5">Branch</label>
+                <input value={pdfSettings.branch} onChange={e => setPdfSettings({...pdfSettings, branch: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors shadow-sm" />
               </div>
             </div>
 
             {pdfSaved && (
-              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-500/[0.08] border border-emerald-500/20 text-sm text-emerald-400">
+              <div className="flex items-center gap-2 px-4 py-3 rounded-xl bg-emerald-50 border border-emerald-200 text-sm font-medium text-emerald-700">
                 <CheckCircle size={16} />
                 PDF Settings updated successfully
               </div>
@@ -233,7 +233,7 @@ export default function Settings() {
             <button
               type="submit"
               disabled={pdfLoading}
-              className="px-6 py-2.5 bg-gradient-to-r from-white to-k-silver text-k-black text-sm font-sub font-semibold tracking-wide rounded-xl hover:shadow-lg hover:shadow-white/10 transition-all disabled:opacity-50"
+              className="px-6 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl hover:bg-blue-700 transition-colors shadow-sm disabled:opacity-50"
             >
               {pdfLoading ? 'Saving...' : 'Save PDF Settings'}
             </button>
