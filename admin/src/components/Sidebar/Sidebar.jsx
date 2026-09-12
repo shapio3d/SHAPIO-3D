@@ -28,6 +28,14 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  ${mobileMenuOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
  `}
  >
+ {/* Collapse Toggle — floating on the right edge, vertically centered */}
+ <button
+ onClick={() => setCollapsed(!collapsed)}
+ className="hidden md:flex items-center justify-center absolute top-1/2 -translate-y-1/2 -right-3 w-6 h-6 rounded-full bg-[#0a0a0a] border border-white/10 text-[#829087] hover:text-white hover:bg-[#1a1a1a] transition-all z-50"
+ >
+ {collapsed ? <ChevronRight size={14} /> : <ChevronLeft size={14} />}
+ </button>
+
  {/* Logo */}
  <div className="h-16 flex items-center justify-start shrink-0 px-6 mt-4">
  {!collapsed ? (
@@ -90,14 +98,6 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  <button onClick={logout} className="flex items-center gap-4 px-4 py-3 text-[#829087] hover:text-white transition-colors w-full">
  <LogOut size={20} />
  {!collapsed && <span className="font-medium text-[15px]">Logout</span>}
- </button>
- 
- {/* Collapse Toggle */}
- <button
- onClick={() => setCollapsed(!collapsed)}
- className="hidden md:flex items-center justify-center w-full py-2 rounded-lg text-[#829087] hover:text-white hover:bg-white/[0.04] transition-all mt-2"
- >
- {collapsed ? <ChevronRight size={16} /> : <ChevronLeft size={16} />}
  </button>
  </div>
  </aside>
