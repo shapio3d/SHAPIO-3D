@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 import { Search, Plus, Edit3, Trash2, X, AlertCircle, ArrowLeft } from 'lucide-react'
@@ -258,8 +258,13 @@ export default function Customers() {
               </tr>
             </thead>
             <tbody>
-              {filtered.map((cust) => (
-                <tr key={cust.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+              {filtered.map((cust, index) => (
+                <tr 
+                  key={cust.id} 
+                  className={`border-b border-gray-200 transition-colors ${
+                    index % 2 === 0 ? 'bg-white' : 'bg-slate-50/80'
+                  } hover:bg-blue-50/50`}
+                >
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
                       <div className="w-9 h-9 rounded-full bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">

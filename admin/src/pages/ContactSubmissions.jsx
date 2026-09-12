@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { supabase } from '../supabaseClient'
 import { Search, Eye, X, Image as ImageIcon, CheckCircle, Trash2, Calendar, User, Mail, Phone, Hash, ChevronDown, ChevronUp } from 'lucide-react'
 
@@ -144,9 +144,14 @@ export default function ContactSubmissions() {
  </tr>
  </thead>
  <tbody>
- {filtered.map((sub) => (
+ {filtered.map((sub, index) => (
  <React.Fragment key={sub.id}>
- <tr className={`border-b border-gray-200 hover:bg-gray-50 transition-colors cursor-pointer ${viewingId === sub.id ? 'bg-gray-50' : ''}`} onClick={() => toggleView(sub.id)}>
+ <tr 
+ className={`border-b border-gray-200 transition-colors cursor-pointer ${
+ viewingId === sub.id ? 'bg-blue-50/70' : (index % 2 === 0 ? 'bg-white' : 'bg-slate-50/80')
+ } hover:bg-blue-50/40`} 
+ onClick={() => toggleView(sub.id)}
+ >
  <td className="px-6 py-4">
  <span className="font-mono text-xs font-bold text-gray-700 bg-gray-100 px-2 py-1 rounded">{sub.trackingId}</span>
  </td>

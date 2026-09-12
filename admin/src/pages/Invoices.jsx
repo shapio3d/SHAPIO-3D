@@ -782,8 +782,13 @@ export default function Invoices() {
                 </tr>
               ) : (
                 <>
-                  {filtered.map((inv) => (
-                    <tr key={inv.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                  {filtered.map((inv, index) => (
+                    <tr 
+                      key={inv.id} 
+                      className={`border-b border-gray-200 transition-colors ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-slate-50/80'
+                      } hover:bg-blue-50/50`}
+                    >
                       <td className="px-6 py-4">
                         <span className="text-sm font-medium text-gray-900">{inv.invoiceNumber}</span>
                       </td>

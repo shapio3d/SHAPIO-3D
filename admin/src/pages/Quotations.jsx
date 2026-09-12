@@ -1,4 +1,4 @@
-﻿import { useState } from 'react'
+import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 import { Search, Plus, Edit3, Trash2, Download, X, Filter, AlertCircle, ArrowLeft } from 'lucide-react'
@@ -547,8 +547,13 @@ export default function Quotations() {
                 </tr>
               ) : (
                 <>
-                  {filtered.map((qt) => (
-                    <tr key={qt.id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
+                  {filtered.map((qt, index) => (
+                    <tr 
+                      key={qt.id} 
+                      className={`border-b border-gray-200 transition-colors ${
+                        index % 2 === 0 ? 'bg-white' : 'bg-slate-50/80'
+                      } hover:bg-blue-50/50`}
+                    >
                       <td className="px-6 py-4 text-sm font-medium text-gray-900">{qt.quoteNo}</td>
                       <td className="px-6 py-4 text-sm text-gray-600">{qt.customer?.name}</td>
                       <td className="px-6 py-4 text-right">
