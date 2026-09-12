@@ -38,9 +38,9 @@ const e = React.createElement;
 
 const styles = StyleSheet.create({
   page: { padding: 30, fontFamily: 'Roboto', fontSize: 9, color: '#000' },
-  pageBorder: { border: '1 solid #000', flex: 1, padding: 0 },
+  pageBorder: { border: '0.5 solid #000', flex: 1, padding: 0 },
   
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottom: '1 solid #000' },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottom: '0.5 solid #000' },
   headerLeft: { flexDirection: 'row', width: '60%' },
   logoBox: { width: 280, height: 110, marginRight: 15, justifyContent: 'center', alignItems: 'flex-start' },
   logo: { width: '100%', height: '100%', objectFit: 'contain' },
@@ -51,26 +51,26 @@ const styles = StyleSheet.create({
   headerRight: { width: '40%', alignItems: 'flex-end', justifyContent: 'flex-end' },
   taxInvoiceTitle: { fontSize: 18, fontWeight: 'bold' },
 
-  metaGrid: { flexDirection: 'row', borderBottom: '1 solid #000' },
-  metaLeft: { width: '50%', padding: 5, borderRight: '1 solid #000' },
+  metaGrid: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
+  metaLeft: { width: '50%', padding: 5, borderRight: '0.5 solid #000' },
   metaRight: { width: '50%', padding: 5 },
   metaRow: { flexDirection: 'row', marginBottom: 2 },
   metaLabel: { width: 70, fontSize: 8 },
   metaColon: { width: 10, fontSize: 8 },
   metaValue: { flex: 1, fontSize: 8, fontWeight: 'bold' },
 
-  addressGrid: { flexDirection: 'row', borderBottom: '1 solid #000' },
-  addressBoxLeft: { width: '50%', padding: 5, borderRight: '1 solid #000' },
+  addressGrid: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
+  addressBoxLeft: { width: '50%', padding: 5 },
   addressBoxRight: { width: '50%', padding: 5 },
-  addressTitle: { fontSize: 8, fontWeight: 'bold', backgroundColor: '#000000', color: '#FFF', padding: 4, marginBottom: 4 },
+  addressTitle: { fontSize: 8, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF', padding: 4, marginBottom: 4 },
   addressName: { fontSize: 8, fontWeight: 'bold', marginBottom: 2 },
   addressText: { fontSize: 8, marginBottom: 1 },
 
-  tableHeader: { flexDirection: 'row', borderBottom: '1 solid #000', backgroundColor: '#000000', color: '#FFF' },
-  thCell: { padding: 4, fontSize: 8, fontWeight: 'bold', borderRight: '1 solid #000', textAlign: 'center' },
+  tableHeader: { flexDirection: 'row', borderBottom: '0.5 solid #000', backgroundColor: '#334F39', color: '#FFF' },
+  thCell: { padding: 4, fontSize: 8, fontWeight: 'bold', borderRight: '0.5 solid #000', textAlign: 'center' },
   
-  tableRow: { flexDirection: 'row', borderBottom: '1 solid #000' },
-  tdCell: { padding: 4, fontSize: 8, borderRight: '1 solid #000' },
+  tableRow: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
+  tdCell: { padding: 4, fontSize: 8, borderRight: '0.5 solid #000' },
   
   colNo: { width: '4%' },
   colDesc: { width: '28%', textAlign: 'left' },
@@ -80,35 +80,35 @@ const styles = StyleSheet.create({
   colTax: { width: '14%', textAlign: 'center' },
   colAmount: { width: '12%', textAlign: 'right', borderRight: 'none' },
 
-  taxHeaderSplit: { flexDirection: 'row', borderTop: '1 solid #000', marginTop: 2, paddingTop: 2 },
+  taxHeaderSplit: { flexDirection: 'row', borderTop: '0.5 solid #000', marginTop: 2, paddingTop: 2 },
   taxSubCol: { width: '50%', fontSize: 7, textAlign: 'center' },
   
   taxDataSplit: { flexDirection: 'row' },
   taxDataSubCol: { width: '50%', fontSize: 8, textAlign: 'center' },
 
-  bottomSection: { flexDirection: 'row' },
-  bottomLeft: { width: '60%', borderRight: '1 solid #000' },
+  bottomSection: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
+  bottomLeft: { width: '60%', borderRight: '0.5 solid #000' },
   bottomRight: { width: '40%' },
 
-  wordsBox: { padding: 5, borderBottom: '1 solid #000' },
+  wordsBox: { padding: 5, borderBottom: '0.5 solid #000' },
   paymentBox: { padding: 5 },
   paymentTitle: { fontSize: 8, marginBottom: 4 },
   
   totalsRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4 },
   totalsLabel: { fontSize: 8 },
   totalsValue: { fontSize: 8, fontWeight: 'bold' },
-  finalTotalRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4, borderTop: '1 solid #000', borderBottom: '1 solid #000' },
+  finalTotalRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4, borderTop: '0.5 solid #000', borderBottom: '0.5 solid #000' },
   finalTotalLabel: { fontSize: 9, fontWeight: 'bold' },
   finalTotalValue: { fontSize: 9, fontWeight: 'bold' },
-  balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4, borderBottom: '1 solid #000' },
+  balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4 },
 
-  hsnSummary: { marginTop: 10, borderTop: '1 solid #000' },
-  hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#000000', color: '#FFF' },
+  hsnSummary: { marginTop: 10 },
+  hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
   
   footerText: { fontSize: 6, textAlign: 'center', marginTop: 20, marginBottom: 5 },
 
   statusBadgePaid: { fontSize: 10, fontWeight: 'bold', color: '#166534', backgroundColor: '#dcfce7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
-  statusBadgeUnpaid: { fontSize: 10, fontWeight: 'bold', color: '#991b1b', backgroundColor: '#fee2e2', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
+  statusBadgeUnpaid: { fontSize: 10, fontWeight: 'bold', color: '#FFF', backgroundColor: '#000000', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
   statusBadgeOverdue: { fontSize: 10, fontWeight: 'bold', color: '#92400e', backgroundColor: '#fef3c7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
 });
 
@@ -236,14 +236,14 @@ const InvoiceTemplate = ({ invoice, settings }) => {
           e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
             e(Text, { style: { padding: 2 } }, 'CGST'),
             e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, '%'),
+              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
               e(Text, { style: styles.taxSubCol }, 'Amt')
             )
           ),
           e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
             e(Text, { style: { padding: 2 } }, 'SGST'),
             e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, '%'),
+              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
               e(Text, { style: styles.taxSubCol }, 'Amt')
             )
           ),
@@ -255,17 +255,17 @@ const InvoiceTemplate = ({ invoice, settings }) => {
             e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
             e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
             e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
-            e(Text, { style: [styles.tdCell, styles.colQty] }, formatCurrency(item.quantity)),
+            e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
             e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
             e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
               )
             ),
             e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
               )
             ),
@@ -298,20 +298,20 @@ const InvoiceTemplate = ({ invoice, settings }) => {
 
         e(View, { style: styles.hsnSummary },
           e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
-          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '1 solid #000' }] },
+          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
             e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '1 solid #000' } }, 'CGST'),
+              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
               e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, 'Rate'),
+                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
                 e(Text, { style: styles.taxSubCol }, 'Amount')
               )
             ),
             e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '1 solid #000' } }, 'SGST'),
+              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
               e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, 'Rate'),
+                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
                 e(Text, { style: styles.taxSubCol }, 'Amount')
               )
             ),
@@ -329,13 +329,13 @@ const InvoiceTemplate = ({ invoice, settings }) => {
               e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
                 e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, '9%'),
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
                   e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
                 )
               ),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
                 e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, '9%'),
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
                   e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
                 )
               ),
@@ -347,13 +347,13 @@ const InvoiceTemplate = ({ invoice, settings }) => {
             e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
             e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, ''),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
               )
             ),
             e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, ''),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
               )
             ),
@@ -465,14 +465,14 @@ const QuotationTemplate = ({ quotation, settings }) => {
           e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
             e(Text, { style: { padding: 2 } }, 'CGST'),
             e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, '%'),
+              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
               e(Text, { style: styles.taxSubCol }, 'Amt')
             )
           ),
           e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
             e(Text, { style: { padding: 2 } }, 'SGST'),
             e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, '%'),
+              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
               e(Text, { style: styles.taxSubCol }, 'Amt')
             )
           ),
@@ -484,17 +484,17 @@ const QuotationTemplate = ({ quotation, settings }) => {
             e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
             e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
             e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
-            e(Text, { style: [styles.tdCell, styles.colQty] }, formatCurrency(item.quantity)),
+            e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
             e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
             e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
               )
             ),
             e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
               )
             ),
@@ -519,20 +519,20 @@ const QuotationTemplate = ({ quotation, settings }) => {
 
         e(View, { style: styles.hsnSummary },
           e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
-          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '1 solid #000' }] },
+          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
             e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '1 solid #000' } }, 'CGST'),
+              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
               e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, 'Rate'),
+                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
                 e(Text, { style: styles.taxSubCol }, 'Amount')
               )
             ),
             e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '1 solid #000' } }, 'SGST'),
+              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
               e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '1 solid #000' }] }, 'Rate'),
+                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
                 e(Text, { style: styles.taxSubCol }, 'Amount')
               )
             ),
@@ -550,13 +550,13 @@ const QuotationTemplate = ({ quotation, settings }) => {
               e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
                 e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, '9%'),
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
                   e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
                 )
               ),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
                 e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, '9%'),
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
                   e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
                 )
               ),
@@ -568,13 +568,13 @@ const QuotationTemplate = ({ quotation, settings }) => {
             e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
             e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, ''),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
               )
             ),
             e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
               e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '1 solid #000', height: '100%', padding: 4 }] }, ''),
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
                 e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
               )
             ),
