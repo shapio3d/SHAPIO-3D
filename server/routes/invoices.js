@@ -446,7 +446,16 @@ router.get('/:invoiceId/pdf', requireSupabaseAuth, async (req, res) => {
     pdfStream.on('data', (chunk) => chunks.push(chunk));
     pdfStream.on('end', () => {
       const result = Buffer.concat(chunks);
-      res.json({ pdf: result.toString('base64') });
+      const rawNum = (inv.invoiceNo || invoice.invoiceNumber || '').trim();
+      const cleanNum = rawNum.replace(/[/\\?%*:|"<>]/g, '-');
+      const filename = cleanNum
+        ? (cleanNum.toLowerCase().startsWith('inv') ? `${cleanNum}.pdf` : `Invoice-${cleanNum}.pdf`)
+        : 'Invoice.pdf';
+      res.json({
+        success: true,
+        pdf: result.toString('base64'),
+        filename
+      });
     });
     pdfStream.on('error', (err) => {
       console.error('Error generating PDF:', err);
