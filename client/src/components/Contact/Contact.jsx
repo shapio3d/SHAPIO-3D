@@ -19,6 +19,10 @@ export default function Contact() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
+    if (file && file.size > 10 * 1024 * 1024) {
+      setError('Please choose a file smaller than 10 MB.')
+      return
+    }
     setLoading(true)
     setError(null)
     // Instead of direct Supabase upload/insert, send everything to the Express backend via FormData
@@ -34,7 +38,6 @@ export default function Contact() {
     try {
       const { data } = await axios.post(`${API_URL}/contact`, formData, {
         timeout: 30000, // 30 second timeout
-        headers: { 'Content-Type': 'multipart/form-data' },
       })
 
       setTrackingId(data.trackingId)
@@ -46,7 +49,7 @@ export default function Contact() {
       if (serverMsg) {
         setError(serverMsg)
       } else if (err.code === 'ERR_NETWORK') {
-        setError('Could not reach the server. Please check your internet connection and try again.')
+        setError(file ? 'The attachment upload could not be completed. Please try a smaller file or send the message without an attachment.' : 'Could not reach the server. Please try again.')
       } else if (err.code === 'ECONNABORTED') {
         setError('Request timed out. Your file may be too large or your connection is slow.')
       } else {
