@@ -1,8 +1,9 @@
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
+import axios from 'axios'
 import { Send, User, Mail, Phone, MessageSquare, Upload, CheckCircle, Printer, ArrowRight } from 'lucide-react'
 
-const API_URL = import.meta.env.PROD ? 'https://server.shapio3d.com/api' : (import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api');
+const API_URL = 'https://server.shapio3d.com/api';
 
 export default function Contact() {
   const [form, setForm] = useState({ name: '', email: '', phone: '', message: '' })
@@ -31,30 +32,26 @@ export default function Contact() {
     }
 
     try {
-      const response = await fetch(`${API_URL}/contact`, {
-        method: 'POST',
-        body: formData
+      const { data } = await axios.post(`${API_URL}/contact`, formData, {
+        timeout: 30000, // 30 second timeout
+        headers: { 'Content-Type': 'multipart/form-data' },
       })
 
-      const result = await response.json()
-
-      if (!response.ok) {
-        // Zod validation errors return 'details' array
-        if (result.details && result.details.length > 0) {
-          throw new Error(result.details[0].message)
-        }
-        throw new Error(result.error || 'Failed to send message')
-      }
-
-      setTrackingId(result.trackingId)
+      setTrackingId(data.trackingId)
       setSubmitted(true)
     } catch (err) {
       console.error('Error submitting form:', err)
-      let errorMsg = err.message || 'There was an error sending your message. Please try again.'
-      if (err.name === 'TypeError' && err.message === 'Failed to fetch') {
-        errorMsg = 'Network Error (Failed to fetch). This usually means the server is unreachable, the file is too large for your connection, or a browser extension is blocking the upload. Please try a smaller file or contact us directly via email.'
+      // axios wraps server errors in err.response
+      const serverMsg = err.response?.data?.error || err.response?.data?.details?.[0]?.message
+      if (serverMsg) {
+        setError(serverMsg)
+      } else if (err.code === 'ERR_NETWORK') {
+        setError('Could not reach the server. Please check your internet connection and try again.')
+      } else if (err.code === 'ECONNABORTED') {
+        setError('Request timed out. Your file may be too large or your connection is slow.')
+      } else {
+        setError(err.message || 'There was an error sending your message. Please try again.')
       }
-      setError(errorMsg)
     } finally {
       setLoading(false)
     }

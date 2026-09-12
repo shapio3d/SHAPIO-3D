@@ -11,10 +11,10 @@ const rateLimit = require('express-rate-limit')
 // Strict Rate Limiter for Contact Submissions
 const contactSubmitLimiter = rateLimit({
   windowMs: 60 * 60 * 1000, // 1 hour
-  max: 3, // Limit each IP to 3 requests per hour
+  max: 5, // Limit each IP to 5 requests per hour
   standardHeaders: true,
   legacyHeaders: false,
-  message: { error: 'Too many submissions. Please try again later.' }
+  message: { error: 'Too many submissions. Please try again in an hour.' }
 })
 
 // Zod schema for strict input validation
