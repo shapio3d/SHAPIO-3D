@@ -1,26 +1,134 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, useCallback } from 'react'
 import { ArrowRight, ChevronDown, FileText, Cpu, Package, Factory, ChevronRight, Download, Video } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
+const WhatsAppIcon = ({ size = 20, className = '' }) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width={size}
+    height={size}
+    viewBox="0 0 24 24"
+    fill="currentColor"
+    className={className}
+  >
+    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38c1.45.79 3.08 1.21 4.74 1.21 5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.816 9.816 0 0 0 12.04 2m.01 1.67c2.2 0 4.26.86 5.82 2.42a8.225 8.225 0 0 1 2.41 5.83c0 4.54-3.7 8.24-8.24 8.24-1.48 0-2.93-.39-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.196 8.196 0 0 1-1.26-4.36c0-4.54 3.7-8.24 8.24-8.24m4.52 11.66c-.25-.13-1.47-.72-1.7-.81-.23-.08-.39-.13-.56.13-.17.25-.64.81-.79.97-.14.17-.29.19-.54.06-.25-.13-1.06-.39-2.03-1.25-.75-.67-1.26-1.5-1.41-1.75-.15-.25-.02-.39.11-.51.11-.11.25-.29.37-.44.13-.15.17-.25.25-.42.08-.17.04-.31-.02-.44-.06-.12-.56-1.34-.76-1.84-.2-.49-.4-.42-.56-.43h-.47c-.17 0-.44.06-.67.31-.23.25-.88.86-.88 2.1 0 1.24.9 2.44 1.03 2.61.12.17 1.77 2.7 4.29 3.79.6.26 1.07.41 1.43.53.6.19 1.15.16 1.58.1.48-.07 1.47-.6 1.68-1.18.21-.58.21-1.07.15-1.18-.07-.12-.23-.19-.48-.31" />
+  </svg>
+)
+
 const HeroSection = ({ videoName, isMobile, videoScale = 1, videoChildren, detailsNode }) => {
-  const videoSrc = `/videos/hero/${videoName}-${isMobile ? 'mobile' : 'desktop'}.mp4`
+  const videoSrc = videoName ? `/videos/hero/${videoName}-${isMobile ? 'mobile' : 'desktop'}.mp4` : null
+  const videoRef = useRef(null)
+
+  // Synchronous callback ref: sets defaultMuted, muted, and playsInline the exact millisecond WebKit creates the DOM node
+  const setVideoRef = useCallback((video) => {
+    videoRef.current = video
+    if (video) {
+      video.defaultMuted = true
+      video.muted = true
+      video.playsInline = true
+      video.setAttribute('muted', '')
+      video.setAttribute('playsinline', '')
+      video.setAttribute('webkit-playsinline', 'true')
+      const promise = video.play()
+      if (promise !== undefined) {
+        promise.catch(() => {})
+      }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!videoSrc) return
+    const video = videoRef.current
+    if (!video) return
+
+    video.defaultMuted = true
+    video.muted = true
+    video.playsInline = true
+
+    const playVideo = () => {
+      if (video && video.paused) {
+        const promise = video.play()
+        if (promise !== undefined) {
+          promise.catch(() => {})
+        }
+      }
+    }
+
+    playVideo()
+
+    // Listening to user gestures ensures video playback starts immediately on iOS Low Power Mode
+    const onUserGesture = () => {
+      playVideo()
+    }
+
+    const onVisibilityChange = () => {
+      if (!document.hidden) {
+        playVideo()
+      }
+    }
+
+    window.addEventListener('touchstart', onUserGesture, { passive: true })
+    window.addEventListener('touchend', onUserGesture, { passive: true })
+    window.addEventListener('click', onUserGesture, { passive: true })
+    window.addEventListener('scroll', onUserGesture, { passive: true })
+    document.addEventListener('visibilitychange', onVisibilityChange)
+
+    return () => {
+      window.removeEventListener('touchstart', onUserGesture)
+      window.removeEventListener('touchend', onUserGesture)
+      window.removeEventListener('click', onUserGesture)
+      window.removeEventListener('scroll', onUserGesture)
+      document.removeEventListener('visibilitychange', onVisibilityChange)
+    }
+  }, [videoSrc])
+
+  const handleContainerInteraction = () => {
+    if (videoRef.current && videoRef.current.paused) {
+      videoRef.current.play().catch(() => {})
+    }
+  }
 
   return (
     <section className="relative w-full flex flex-col">
       {/* 1. Sticky Video Wrapper (200vh tall to stick for 100vh of scrolling) */}
       <div className="h-[200vh] w-full relative">
-        <div className="sticky top-0 h-[100vh] w-full z-0 overflow-hidden bg-black">
-          <video
-            src={videoSrc}
-            autoPlay loop muted playsInline
-            controls={false}
-            disablePictureInPicture
-            disableRemotePlayback
-            preload="auto"
-            style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
-            className="absolute inset-0 w-full h-full object-cover"
-          />
-          <div className="absolute inset-0 bg-black/40 pointer-events-none" />
+        <div 
+          className="sticky top-0 h-[100vh] w-full z-0 overflow-hidden bg-[#06150D] select-none"
+          onClick={handleContainerInteraction}
+          onTouchStart={handleContainerInteraction}
+        >
+          {videoSrc ? (
+            <video
+              ref={setVideoRef}
+              key={videoSrc}
+              src={videoSrc}
+              autoPlay
+              loop
+              muted
+              playsInline
+              webkit-playsinline="true"
+              controls={false}
+              disablePictureInPicture
+              disableRemotePlayback
+              preload="auto"
+              style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
+              className="absolute inset-0 w-full h-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-[#06150D] overflow-hidden pointer-events-none">
+              {/* Futuristic ambient lighting & tech grid pattern */}
+              <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_-10%,rgba(16,185,129,0.2),rgba(0,0,0,0))]" />
+              <div className="absolute inset-0 bg-[radial-gradient(circle_at_bottom_left,rgba(16,185,129,0.1),transparent_50%)]" />
+              <div className="absolute inset-0 bg-[radial-gradient(#10b981_1px,transparent_1px)] [background-size:40px_40px] opacity-[0.07]" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[700px] rounded-full border border-emerald-500/[0.07] pointer-events-none" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full border border-emerald-500/[0.04] pointer-events-none" />
+              <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/[0.05] blur-[100px] rounded-full pointer-events-none" />
+            </div>
+          )}
+          {/* Enhanced cinematic video overlay for luxury depth and high contrast */}
+          <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/80 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/70 pointer-events-none" />
 
           {/* Video Text */}
           <div className="absolute inset-0 z-10 w-full p-4 md:p-8 lg:p-12 flex flex-col justify-center pointer-events-auto">
@@ -369,15 +477,76 @@ export default function Hero() {
         isMobile={isMobile}
         detailsNode={<DetailsSection1 />}
         videoChildren={
-          <div className="w-full max-w-7xl mx-auto px-4 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center">
-            <h1 className="font-display uppercase text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-wide leading-none max-w-[95vw] sm:max-w-4xl mx-auto">
-              <span className="block">Powering the next</span>
-              <span className="block">generation of</span>
-              <span className="block">
-                <span className="italic font-serif text-k-silver pr-3 lowercase text-[0.9em]">functional</span>
-                <span>products.</span>
+          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 mt-10 sm:mt-14 md:mt-18 pointer-events-auto text-center flex flex-col items-center justify-center">
+            {/* Main Headline (Multi-font & Color Pairing: Modern Sans in Pure White + Editorial Italic Serif in Emerald) */}
+            <h1 
+              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-2"
+              style={{ lineHeight: 1.1 }}
+            >
+              <span 
+                className="font-body font-semibold tracking-tight whitespace-nowrap text-white"
+                style={{ fontSize: 'clamp(1.35rem, 5.2vw, 5.2rem)' }}
+              >
+                Advanced 3D Printing
+              </span>
+              <span 
+                className="font-serif italic font-normal tracking-normal whitespace-nowrap mt-1 bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(16,185,129,0.3)]"
+                style={{ 
+                  fontFamily: "'Instrument Serif', 'Playfair Display', Georgia, serif", 
+                  fontSize: 'clamp(1.45rem, 5.8vw, 5.8rem)' 
+                }}
+              >
+                for Engineering &amp; Manufacturing
               </span>
             </h1>
+
+            {/* Service Capability Buttons (Separate Frosted-Glass Buttons with Navbar Effect) */}
+            <div className="mt-6 sm:mt-8 grid grid-cols-2 md:flex md:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full max-w-sm sm:max-w-md md:max-w-4xl mx-auto">
+              <Link
+                to="/services/rapid-prototyping"
+                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+              >
+                Prototypes
+              </Link>
+              <Link
+                to="/services/engineering-industrial"
+                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+              >
+                Functional Parts
+              </Link>
+              <Link
+                to="/services/robotics-automation"
+                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+              >
+                Robotic Parts
+              </Link>
+              <Link
+                to="/services/scale-production"
+                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+              >
+                Bulk Production
+              </Link>
+            </div>
+
+            {/* Primary Call to Action Buttons (Matching Navbar Glass Depth & Highlights) */}
+            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 w-full sm:w-auto">
+              <Link
+                to="/contact"
+                className="h-12 w-60 sm:w-52 rounded-full bg-white text-black hover:bg-white/90 font-body text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.25)] transition-all duration-300 active:scale-95 whitespace-nowrap"
+              >
+                <span>Get a Quote</span>
+                <ArrowRight size={16} strokeWidth={2.5} />
+              </Link>
+              <a
+                href="https://wa.me/916384014546?text=Hi%20Shapio%203D,%20I%20would%20like%20to%20get%20a%20quote%20for%203D%20printing."
+                target="_blank"
+                rel="noopener noreferrer"
+                className="h-12 w-60 sm:w-52 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 backdrop-blur-xl border border-emerald-400/30 border-t-emerald-400/50 hover:border-emerald-400/80 text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 whitespace-nowrap group"
+              >
+                <WhatsAppIcon size={17} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+                <span>WhatsApp</span>
+              </a>
+            </div>
           </div>
         }
       />

@@ -26,6 +26,7 @@
   --font-display: 'Bebas Neue', sans-serif;
   --font-body:    'Plus Jakarta Sans', 'DM Sans', sans-serif;
   --font-sub:     'Orbitron', sans-serif;
+  --font-serif:   'Instrument Serif', 'Playfair Display', Georgia, serif;
 
   --animate-pulse-glow: pulseGlow 3s ease-in-out infinite;
   --animate-float:      float 6s ease-in-out infinite;
@@ -239,15 +240,26 @@ input[type="number"] {
   -moz-appearance: textfield;
 }
 
-/* Hide default video play button on mobile browsers (Safari/Chrome) */
-video::-webkit-media-controls-start-playback-button {
+/* Hide default video play button and media controls on mobile browsers (iOS Safari/WebKit/Chrome) */
+video::-webkit-media-controls,
+video::-webkit-media-controls-start-playback-button,
+video::-webkit-media-controls-play-button,
+video::-webkit-media-controls-overlay-play-button,
+video::-webkit-media-controls-panel,
+video::-webkit-media-controls-enclosure {
   display: none !important;
-  -webkit-appearance: none;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
 }
-video::-webkit-media-controls-play-button {
+
+*::-webkit-media-controls-start-playback-button,
+*::-webkit-media-controls-overlay-play-button {
   display: none !important;
-  -webkit-appearance: none;
-}
-video::-webkit-media-controls {
-  display: none !important;
+  -webkit-appearance: none !important;
+  opacity: 0 !important;
+  visibility: hidden !important;
 }
