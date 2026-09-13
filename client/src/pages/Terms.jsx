@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { ShieldCheck, ArrowLeft } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
@@ -7,7 +7,7 @@ export default function Terms() {
     <div className="min-h-screen pt-32 pb-20 px-6">
       <div className="max-w-4xl mx-auto">
         <div className="mb-8">
-          <Link to="/#footer" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors cursor-pointer">
             <ArrowLeft size={16} />
             Back to Home
           </Link>

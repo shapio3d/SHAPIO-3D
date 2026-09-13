@@ -132,8 +132,8 @@ export default function ServicesPage() {
       <section className="relative min-h-screen flex flex-col justify-center items-center overflow-hidden bg-k-base">
         
         {/* Back button */}
-        <div className="absolute top-24 md:top-28 left-6 md:left-12 z-20">
-          <Link to="/#footer" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors">
+        <div className="absolute top-24 md:top-28 left-6 md:left-12 z-30">
+          <Link to="/" className="inline-flex items-center gap-2 text-sm text-k-silver-dim hover:text-white transition-colors cursor-pointer">
             <ArrowLeft size={16} />
             Back to Home
           </Link>

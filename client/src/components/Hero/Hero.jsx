@@ -15,8 +15,9 @@ const WhatsAppIcon = ({ size = 20, className = '' }) => (
   </svg>
 )
 
-const HeroSection = ({ videoName, isMobile, videoScale = 1, videoChildren, detailsNode }) => {
+const HeroSection = ({ videoName, imageName, overlay = 'light', isMobile, videoScale = 1, videoChildren, detailsNode }) => {
   const videoSrc = videoName ? `/videos/hero/${videoName}-${isMobile ? 'mobile' : 'desktop'}.mp4` : null
+  const imageSrc = imageName ? `/images/hero/${imageName}-${isMobile ? 'mobile' : 'desktop'}.png` : null
   const videoRef = useRef(null)
 
   // Synchronous callback ref: sets defaultMuted, muted, and playsInline the exact millisecond WebKit creates the DOM node
@@ -114,6 +115,15 @@ const HeroSection = ({ videoName, isMobile, videoScale = 1, videoChildren, detai
               style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
               className="absolute inset-0 w-full h-full object-cover"
             />
+          ) : imageSrc ? (
+            <img
+              src={imageSrc}
+              alt="Advanced 3D Printing & Additive Manufacturing"
+              loading="eager"
+              fetchPriority="high"
+              style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
+              className="absolute inset-0 w-full h-full object-cover select-none"
+            />
           ) : (
             <div className="absolute inset-0 bg-[#06150D] overflow-hidden pointer-events-none">
               {/* Futuristic ambient lighting & tech grid pattern */}
@@ -125,10 +135,24 @@ const HeroSection = ({ videoName, isMobile, videoScale = 1, videoChildren, detai
               <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-emerald-500/[0.05] blur-[100px] rounded-full pointer-events-none" />
             </div>
           )}
-          {/* Enhanced cinematic video overlay for luxury depth and high contrast */}
-          <div className="absolute inset-0 bg-black/50 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/45 to-black/80 pointer-events-none" />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-transparent to-black/70 pointer-events-none" />
+
+          {/* Overlay layers */}
+          {overlay === 'light' && (
+            <>
+              {/* Scrim to differentiate text & buttons from background */}
+              <div className="absolute inset-0 bg-black/55 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-black/55 pointer-events-none" />
+            </>
+          )}
+
+          {overlay === 'heavy' && (
+            <>
+              {/* Enhanced cinematic video overlay for luxury depth and high contrast */}
+              <div className="absolute inset-0 bg-black/50 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-r from-black/80 via-black/40 to-black/80 pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/70 pointer-events-none" />
+            </>
+          )}
 
           {/* Video Text */}
           <div className="absolute inset-0 z-10 w-full p-4 md:p-8 lg:p-12 flex flex-col justify-center pointer-events-auto">
@@ -470,80 +494,85 @@ export default function Hero() {
 
   return (
     <div id="hero" className="bg-transparent">
-      {/* 1. Intro Video & Details */}
+      {/* 1. Intro Hero Image & Details */}
       <HeroSection
-        videoName="intro"
+        imageName="hero"
+        overlay="light"
         type="full-to-top"
         isMobile={isMobile}
         detailsNode={<DetailsSection1 />}
         videoChildren={
           <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 mt-10 sm:mt-14 md:mt-18 pointer-events-auto text-center flex flex-col items-center justify-center">
-            {/* Main Headline (Multi-font & Color Pairing: Modern Sans in Pure White + Editorial Italic Serif in Emerald) */}
+            {/* Main Headline */}
             <h1 
-              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-2"
-              style={{ lineHeight: 1.1 }}
+              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-2 font-body font-medium tracking-tighter text-white uppercase text-[10.5vw] md:text-[3rem] lg:text-[3.4rem] leading-[0.9] md:leading-[1.05]"
             >
-              <span 
-                className="font-body font-semibold tracking-tight whitespace-nowrap text-white"
-                style={{ fontSize: 'clamp(1.35rem, 5.2vw, 5.2rem)' }}
-              >
-                Advanced 3D Printing
-              </span>
-              <span 
-                className="font-serif italic font-normal tracking-normal whitespace-nowrap mt-1 bg-gradient-to-r from-emerald-300 via-emerald-400 to-teal-300 bg-clip-text text-transparent drop-shadow-[0_0_25px_rgba(16,185,129,0.3)]"
-                style={{ 
-                  fontFamily: "'Instrument Serif', 'Playfair Display', Georgia, serif", 
-                  fontSize: 'clamp(1.45rem, 5.8vw, 5.8rem)' 
-                }}
-              >
-                for Engineering &amp; Manufacturing
-              </span>
+              {/* Mobile layout (4 balanced lines) */}
+              <div className="flex flex-col items-center justify-center md:hidden">
+                <span className="whitespace-nowrap">Advanced 3D</span>
+                <span className="whitespace-nowrap">Printing for</span>
+                <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">
+                  <span>Engineering</span>
+                  <span className="font-sub font-light italic lowercase text-[1.15em] tracking-normal text-white -mt-0.5">&amp;</span>
+                </span>
+                <span className="whitespace-nowrap">Manufacturing</span>
+              </div>
+
+              {/* PC / Desktop layout (The 2-line layout) */}
+              <div className="hidden md:flex flex-col items-center justify-center">
+                <span className="whitespace-nowrap">Advanced 3D Printing</span>
+                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
+                  <span>for Engineering</span>
+                  <span className="font-sub font-light italic lowercase text-[1.15em] tracking-normal text-white -mt-0.5">&amp;</span>
+                  <span>Manufacturing</span>
+                </span>
+              </div>
             </h1>
 
-            {/* Service Capability Buttons (Separate Frosted-Glass Buttons with Navbar Effect) */}
-            <div className="mt-6 sm:mt-8 grid grid-cols-2 md:flex md:flex-row items-center justify-center gap-2.5 sm:gap-3 w-full max-w-sm sm:max-w-md md:max-w-4xl mx-auto">
+            {/* Service Capability Buttons — compact on mobile */}
+            <div className="mt-4 sm:mt-8 grid grid-cols-2 md:flex md:flex-row items-center justify-center gap-1.5 sm:gap-3 w-full max-w-[280px] sm:max-w-md md:max-w-4xl mx-auto">
               <Link
                 to="/services/rapid-prototyping"
-                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+                className="w-full md:w-auto px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-[10px] sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
               >
                 Prototypes
               </Link>
               <Link
                 to="/services/engineering-industrial"
-                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+                className="w-full md:w-auto px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-[10px] sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
               >
                 Functional Parts
               </Link>
               <Link
                 to="/services/robotics-automation"
-                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+                className="w-full md:w-auto px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-[10px] sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
               >
                 Robotic Parts
               </Link>
               <Link
                 to="/services/scale-production"
-                className="w-full md:w-auto px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.1),inset_0_1px_1px_rgba(255,255,255,0.2)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
+                className="w-full md:w-auto px-3 sm:px-5 py-1.5 sm:py-2.5 rounded-full bg-white/5 hover:bg-white/15 backdrop-blur-xl border border-white/10 border-t-white/20 hover:border-white/30 text-white/90 hover:text-white font-body text-[10px] sm:text-sm font-semibold tracking-wider uppercase shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 text-center flex items-center justify-center whitespace-nowrap"
               >
                 Bulk Production
               </Link>
             </div>
 
-            {/* Primary Call to Action Buttons (Matching Navbar Glass Depth & Highlights) */}
-            <div className="mt-8 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-3.5 sm:gap-4 w-full sm:w-auto">
+            {/* Primary CTA Buttons — compact on mobile */}
+            <div className="mt-5 sm:mt-10 flex flex-col sm:flex-row items-center justify-center gap-2.5 sm:gap-4 w-full sm:w-auto">
               <Link
                 to="/contact"
-                className="h-12 w-60 sm:w-52 rounded-full bg-white text-black hover:bg-white/90 font-body text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.25)] transition-all duration-300 active:scale-95 whitespace-nowrap"
+                className="h-10 sm:h-12 w-48 sm:w-52 rounded-full bg-white text-black hover:bg-white/90 font-body text-[10px] sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2 shadow-[0_8px_32px_0_rgba(0,0,0,0.5)] hover:shadow-[0_8px_32px_0_rgba(255,255,255,0.25)] transition-all duration-300 active:scale-95 whitespace-nowrap"
               >
                 <span>Get a Quote</span>
-                <ArrowRight size={16} strokeWidth={2.5} />
+                <ArrowRight size={14} strokeWidth={2.5} />
               </Link>
               <a
                 href="https://wa.me/916384014546?text=Hi%20Shapio%203D,%20I%20would%20like%20to%20get%20a%20quote%20for%203D%20printing."
                 target="_blank"
                 rel="noopener noreferrer"
-                className="h-12 w-60 sm:w-52 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 backdrop-blur-xl border border-emerald-400/30 border-t-emerald-400/50 hover:border-emerald-400/80 text-white font-body text-xs sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 whitespace-nowrap group"
+                className="h-10 sm:h-12 w-48 sm:w-52 rounded-full bg-emerald-500/10 hover:bg-emerald-500/20 backdrop-blur-xl border border-emerald-400/30 border-t-emerald-400/50 hover:border-emerald-400/80 text-white font-body text-[10px] sm:text-sm font-semibold tracking-wider uppercase flex items-center justify-center gap-2.5 shadow-[0_8px_32px_0_rgba(0,0,0,0.4)] transition-all duration-300 active:scale-95 whitespace-nowrap group"
               >
-                <WhatsAppIcon size={17} className="text-emerald-400 group-hover:scale-110 transition-transform" />
+                <WhatsAppIcon size={15} className="text-emerald-400 group-hover:scale-110 transition-transform" />
                 <span>WhatsApp</span>
               </a>
             </div>
@@ -554,6 +583,7 @@ export default function Hero() {
       {/* 2. Service Video & Details */}
       <HeroSection
         videoName="service"
+        overlay="light"
         type="bottom-to-full-to-top"
         isMobile={isMobile}
         videoScale={1.35}
@@ -569,9 +599,10 @@ export default function Hero() {
         }
       />
 
-      {/* 3. Final Video & Details */}
+      {/* 3. Final Video (Intro video moved here) & Details */}
       <HeroSection
-        videoName="final"
+        videoName="intro"
+        overlay="light"
         type="bottom-to-full-to-top"
         isMobile={isMobile}
         detailsNode={<DetailsSection3 />}

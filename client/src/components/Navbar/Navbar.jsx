@@ -52,15 +52,21 @@ export default function Navbar() {
           : 'bg-transparent'
         }`}
     >
-      <div className="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 sm:h-20 flex items-center justify-between relative z-10">
         
-        {/* Left: Image Logo */}
-        <Link to="/" className="flex items-center group">
+        {/* Left: Image Logo (+ Mobile Brand Text) */}
+        <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group">
           <img
             src={logoUrl}
             alt="Logo"
-            className="h-10 object-contain transition-transform duration-300 group-hover:scale-105"
+            className="h-8 sm:h-10 object-contain transition-transform duration-300 group-hover:scale-105"
           />
+          <span 
+            className="md:hidden font-bold text-base sm:text-lg tracking-wider sm:tracking-widest text-white transition-opacity group-hover:opacity-80 whitespace-nowrap" 
+            style={{ fontFamily: "'Orbitron', sans-serif" }}
+          >
+            SHAPIO<span className="text-emerald-400"> 3D</span>
+          </span>
         </Link>
 
         {/* Center: Desktop nav links in a pill */}
@@ -99,8 +105,9 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       <div
-        className={`md:hidden absolute top-0 left-0 right-0 flex flex-col gap-4 pt-24 pb-6 px-6 bg-k-dark border-b border-k-border transition-all duration-400 overflow-hidden shadow-2xl shadow-black ${mobileOpen ? 'max-h-[500px] opacity-100' : 'max-h-0 opacity-0'
-          }`}
+        className={`md:hidden absolute top-0 left-0 right-0 flex flex-col gap-4 px-6 bg-k-dark border-b border-k-border transition-all duration-400 overflow-hidden shadow-2xl shadow-black ${
+          mobileOpen ? 'max-h-[500px] opacity-100 pointer-events-auto pt-24 pb-6' : 'max-h-0 opacity-0 pointer-events-none py-0 border-transparent'
+        }`}
       >
         <div className="px-6 py-4 flex flex-col gap-1 items-center">
           {NAV_LINKS.map((link) => (
