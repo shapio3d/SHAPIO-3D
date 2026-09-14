@@ -572,7 +572,7 @@ export default function Hero() {
         videoScale={1.35}
         detailsNode={<DetailsSection2 />}
         videoChildren={
-          <div className="w-full h-full flex items-center justify-center md:justify-end px-4 md:pr-12 lg:pr-20 xl:pr-28 pointer-events-auto">
+          <div className="w-full h-full flex items-center justify-center md:justify-end px-4 md:pr-0 lg:pr-2 xl:pr-4 pointer-events-auto">
             <div className="flex flex-col items-center md:items-end text-center md:text-right">
               <h2 
                 className="font-sub font-orbitron font-bold text-[6.5vw] min-[380px]:text-[7vw] sm:text-3xl md:text-3xl lg:text-[2.6rem] xl:text-[3rem] text-white uppercase tracking-tight leading-[1.18] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] text-center md:text-right"
