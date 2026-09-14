@@ -502,10 +502,10 @@ export default function Hero() {
         isMobile={isMobile}
         detailsNode={<DetailsSection1 />}
         videoChildren={
-          <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 mt-10 sm:mt-14 md:mt-18 pointer-events-auto text-center flex flex-col items-center justify-center">
+          <div className="w-full max-w-6xl mx-auto px-1 sm:px-6 md:px-8 mt-10 sm:mt-14 md:mt-18 pointer-events-auto text-center flex flex-col items-center justify-center">
             {/* Main Headline — 2 lines on all viewports */}
             <h1 
-              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-1 font-sub font-orbitron font-bold tracking-tight text-white uppercase text-[3.8vw] min-[375px]:text-[4.05vw] min-[410px]:text-[4.35vw] sm:text-[1.8rem] md:text-[2.3rem] lg:text-[2.8rem] xl:text-[3.2rem] leading-[1.25] md:leading-[1.25]"
+              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-1 font-sub font-orbitron font-bold tracking-tight text-white uppercase text-[3.6vw] min-[375px]:text-[3.85vw] min-[410px]:text-[4.1vw] sm:text-[1.8rem] md:text-[2.3rem] lg:text-[2.8rem] xl:text-[3.2rem] leading-[1.25] md:leading-[1.25]"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               <span className="whitespace-nowrap">Advanced 3D Printing</span>
@@ -572,10 +572,10 @@ export default function Hero() {
         videoScale={1.35}
         detailsNode={<DetailsSection2 />}
         videoChildren={
-          <div className="w-full h-full flex items-center justify-center md:justify-end px-4 md:pr-0 lg:pr-2 xl:pr-4 pointer-events-auto">
+          <div className="w-full h-full flex items-center justify-center md:justify-end px-2 md:pr-0 lg:pr-2 xl:pr-4 pointer-events-auto">
             <div className="flex flex-col items-center md:items-end text-center md:text-right">
               <h2 
-                className="font-sub font-orbitron font-bold text-[6.5vw] min-[380px]:text-[7vw] sm:text-3xl md:text-3xl lg:text-[2.6rem] xl:text-[3rem] text-white uppercase tracking-tight leading-[1.18] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] text-center md:text-right"
+                className="font-sub font-orbitron font-bold text-[6vw] min-[380px]:text-[6.5vw] sm:text-3xl md:text-3xl lg:text-[2.6rem] xl:text-[3rem] text-white uppercase tracking-tight leading-[1.18] drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] text-center md:text-right"
                 style={{ fontFamily: "'Orbitron', sans-serif" }}
               >
                 <span className="block whitespace-nowrap text-center md:text-right">Uncompromising</span>
@@ -594,15 +594,15 @@ export default function Hero() {
         isMobile={isMobile}
         detailsNode={<DetailsSection3 />}
         videoChildren={
-          <div className="w-full max-w-7xl mx-auto px-4 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center justify-center">
+          <div className="w-full max-w-7xl mx-auto px-1 sm:px-6 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center justify-center">
             <h1 
-              className="font-sub font-orbitron font-bold text-[4.6vw] min-[380px]:text-[4.9vw] sm:text-[1.85rem] md:text-[2.5rem] lg:text-[3.2rem] xl:text-[3.6rem] text-white tracking-tight mb-2 sm:mb-3 max-w-5xl mx-auto uppercase leading-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] whitespace-nowrap"
+              className="font-sub font-orbitron font-bold text-[4.2vw] min-[380px]:text-[4.5vw] sm:text-[1.85rem] md:text-[2.5rem] lg:text-[3.2rem] xl:text-[3.6rem] text-white tracking-tight mb-2 sm:mb-3 max-w-5xl mx-auto uppercase leading-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] whitespace-nowrap"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               From Concept to Production
             </h1>
             <p 
-              className="text-[3.1vw] min-[380px]:text-[3.35vw] min-[410px]:text-[3.65vw] sm:text-base md:text-xl lg:text-2xl font-sub font-orbitron text-emerald-400 tracking-wider uppercase font-semibold drop-shadow-[0_2px_20px_rgba(0,0,0,0.9)] whitespace-nowrap"
+              className="text-[2.65vw] min-[360px]:text-[2.75vw] min-[390px]:text-[2.95vw] min-[430px]:text-[3.15vw] sm:text-base md:text-xl lg:text-2xl font-sub font-orbitron text-emerald-400 tracking-tight sm:tracking-normal md:tracking-wider uppercase font-semibold drop-shadow-[0_2px_20px_rgba(0,0,0,0.9)] whitespace-nowrap"
               style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
               we turn ideas into functional products.
