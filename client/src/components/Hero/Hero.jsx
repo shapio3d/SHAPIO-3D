@@ -503,30 +503,13 @@ export default function Hero() {
         detailsNode={<DetailsSection1 />}
         videoChildren={
           <div className="w-full max-w-6xl mx-auto px-4 sm:px-6 md:px-8 mt-10 sm:mt-14 md:mt-18 pointer-events-auto text-center flex flex-col items-center justify-center">
-            {/* Main Headline */}
+            {/* Main Headline — 2 lines on all viewports */}
             <h1 
-              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-2 font-body font-medium tracking-tighter text-white uppercase text-[10.5vw] md:text-[3rem] lg:text-[3.4rem] leading-[0.9] md:leading-[1.05]"
+              className="drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] w-full max-w-5xl mx-auto flex flex-col items-center justify-center px-1 font-sub font-orbitron font-bold tracking-tight text-white uppercase text-[3.8vw] min-[375px]:text-[4.05vw] min-[410px]:text-[4.35vw] sm:text-[1.8rem] md:text-[2.3rem] lg:text-[2.8rem] xl:text-[3.2rem] leading-[1.25] md:leading-[1.25]"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
             >
-              {/* Mobile layout (4 balanced lines) */}
-              <div className="flex flex-col items-center justify-center md:hidden">
-                <span className="whitespace-nowrap">Advanced 3D</span>
-                <span className="whitespace-nowrap">Printing for</span>
-                <span className="flex items-center justify-center gap-1.5 whitespace-nowrap">
-                  <span>Engineering</span>
-                  <span className="font-sub font-light italic lowercase text-[1.15em] tracking-normal text-white -mt-0.5">&amp;</span>
-                </span>
-                <span className="whitespace-nowrap">Manufacturing</span>
-              </div>
-
-              {/* PC / Desktop layout (The 2-line layout) */}
-              <div className="hidden md:flex flex-col items-center justify-center">
-                <span className="whitespace-nowrap">Advanced 3D Printing</span>
-                <span className="flex items-center justify-center gap-2 whitespace-nowrap">
-                  <span>for Engineering</span>
-                  <span className="font-sub font-light italic lowercase text-[1.15em] tracking-normal text-white -mt-0.5">&amp;</span>
-                  <span>Manufacturing</span>
-                </span>
-              </div>
+              <span className="whitespace-nowrap">Advanced 3D Printing</span>
+              <span className="whitespace-nowrap">for Engineering &amp; Manufacturing</span>
             </h1>
 
             {/* Service Capability Buttons — compact on mobile */}
@@ -589,9 +572,12 @@ export default function Hero() {
         videoScale={1.35}
         detailsNode={<DetailsSection2 />}
         videoChildren={
-          <div className="w-full h-full flex items-center justify-center md:justify-end text-center md:text-right px-4 md:pr-8 lg:pr-12">
+          <div className="w-full h-full flex items-center justify-center md:justify-end text-center md:text-right px-4 md:pr-12 lg:pr-20">
             <div className="max-w-2xl">
-              <h2 className="font-display text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-white uppercase leading-none" style={{ letterSpacing: '0.05em' }}>
+              <h2 
+                className="font-sub font-orbitron font-bold text-[6.5vw] min-[380px]:text-[7vw] sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl text-white uppercase tracking-tight leading-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)]"
+                style={{ fontFamily: "'Orbitron', sans-serif" }}
+              >
                 Uncompromising<br />Precision
               </h2>
             </div>
@@ -599,7 +585,7 @@ export default function Hero() {
         }
       />
 
-      {/* 3. Final Video (Intro video moved here) & Details */}
+      {/* 3. Final Video (Intro video moved here) & Details — strictly 2 lines */}
       <HeroSection
         videoName="intro"
         overlay="light"
@@ -607,11 +593,17 @@ export default function Hero() {
         isMobile={isMobile}
         detailsNode={<DetailsSection3 />}
         videoChildren={
-          <div className="w-full max-w-7xl mx-auto px-4 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center">
-            <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-wide mb-2 max-w-5xl mx-auto uppercase">
+          <div className="w-full max-w-7xl mx-auto px-4 md:px-12 mt-16 md:mt-32 pointer-events-auto text-center flex flex-col items-center justify-center">
+            <h1 
+              className="font-sub font-orbitron font-bold text-[4.6vw] min-[380px]:text-[4.9vw] sm:text-[1.85rem] md:text-[2.5rem] lg:text-[3.2rem] xl:text-[3.6rem] text-white tracking-tight mb-2 sm:mb-3 max-w-5xl mx-auto uppercase leading-tight drop-shadow-[0_4px_30px_rgba(0,0,0,0.95)] whitespace-nowrap"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
               From Concept to Production
             </h1>
-            <p className="text-2xl sm:text-4xl md:text-5xl italic font-serif text-k-green tracking-wide lowercase">
+            <p 
+              className="text-[3.1vw] min-[380px]:text-[3.35vw] min-[410px]:text-[3.65vw] sm:text-base md:text-xl lg:text-2xl font-sub font-orbitron text-emerald-400 tracking-wider uppercase font-semibold drop-shadow-[0_2px_20px_rgba(0,0,0,0.9)] whitespace-nowrap"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
               we turn ideas into functional products.
             </p>
           </div>
