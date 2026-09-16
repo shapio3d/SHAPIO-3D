@@ -12,6 +12,23 @@ const STATUS_COLORS = {
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
+const getNextQuoteNumber = (quoteList) => {
+  const year = new Date().getFullYear();
+  let maxSeq = 0;
+  (quoteList || []).forEach(qt => {
+    const raw = String(qt.quoteNo || '').trim();
+    const match = raw.match(/(\d+)(?:\D*)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num) && num > maxSeq) {
+        maxSeq = num;
+      }
+    }
+  });
+  const nextSeq = maxSeq + 1;
+  return `QT-${year}-${String(nextSeq).padStart(3, '0')}`;
+};
+
 const getAuthHeader = async () => {
   const { data: { session } } = await supabase.auth.getSession();
   return {
@@ -26,6 +43,19 @@ export default function Quotations() {
   const [search, setSearch] = useState('')
   const [filterStatus, setFilterStatus] = useState('')
   const [editingId, setEditingId] = useState(null)
+  const [quoteType, setQuoteType] = useState('taxed') // 'taxed' | 'taxless'
+
+  const handleToggleQuoteType = (type) => {
+    setQuoteType(type)
+    setForm(f => ({
+      ...f,
+      items: f.items.map(item => ({
+        ...item,
+        cgstRatePct: type === 'taxless' ? 0 : 9,
+        sgstRatePct: type === 'taxless' ? 0 : 9
+      }))
+    }))
+  }
   
   const { data: quotations = [], isLoading: isLoadingQuotations, isError: isErrorQuotations } = useQuery({
     queryKey: ['quotations'],
@@ -134,8 +164,9 @@ export default function Quotations() {
 
   const handleNew = () => {
     setEditingId(null)
+    setQuoteType('taxed')
     setForm({
-      quoteNo: `QT-${new Date().getFullYear()}-${String(quotations.length + 1).padStart(3, '0')}`,
+      quoteNo: getNextQuoteNumber(quotations),
       customerId: clients[0]?.id || '', 
       items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: 'DRAFT',
@@ -162,10 +193,12 @@ export default function Quotations() {
       validUntil: quote.validUntil ? quote.validUntil.split('T')[0] : '',
       notes: quote.notes || ''
     })
+    const isQuoteTaxless = quote.items?.length > 0 && quote.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0)
+    setQuoteType(isQuoteTaxless ? 'taxless' : 'taxed')
     setActiveTab('edit')
   }
 
-  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }] }))
+  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: quoteType === 'taxless' ? 0 : 9, sgstRatePct: quoteType === 'taxless' ? 0 : 9 }] }))
   const removeItem = (i) => setForm(f => ({ ...f, items: f.items.filter((_, idx) => idx !== i) }))
   const updateItem = (i, field, val) => {
     setForm(f => ({
@@ -331,9 +364,44 @@ export default function Quotations() {
         </div>
 
         <div className="bg-white border border-gray-200 shadow-sm rounded-2xl p-6 sm:p-8 space-y-8">
+          {/* Quote Type Switcher: Standard vs Taxless */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Quotation Type</span>
+              <p className="text-sm font-semibold text-slate-900 mt-0.5">
+                {quoteType === 'taxless' ? '📋 Taxless Quotation (0% GST)' : '🏢 Standard Quotation (18% GST)'}
+              </p>
+            </div>
+            <div className="inline-flex p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
+              <button
+                type="button"
+                onClick={() => handleToggleQuoteType('taxed')}
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                  quoteType === 'taxed'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                Standard (18% GST)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleToggleQuoteType('taxless')}
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                  quoteType === 'taxless'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${quoteType === 'taxless' ? 'bg-white animate-pulse' : 'bg-emerald-500'}`}></span>
+                Taxless (0% GST)
+              </button>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
             <div className="col-span-1">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Quote #</label>
+              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Quote No.</label>
               <input value={form.quoteNo} onChange={e => setForm({...form, quoteNo: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" placeholder="e.g. QT-2026-001" />
             </div>
             <div className="col-span-1">
@@ -365,12 +433,16 @@ export default function Quotations() {
               <div className="w-full">
                 {/* Headers */}
                 <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <div className="col-span-3">Description</div>
+                  <div className={quoteType === 'taxless' ? "col-span-5" : "col-span-3"}>Item & Description</div>
                   <div className="col-span-2">HSN/SAC</div>
                   <div className="col-span-1 text-center">Qty</div>
                   <div className="col-span-2 text-right">Rate (₹)</div>
-                  <div className="col-span-1 text-center">CGST %</div>
-                  <div className="col-span-1 text-center">SGST %</div>
+                  {quoteType !== 'taxless' && (
+                    <>
+                      <div className="col-span-1 text-center">CGST %</div>
+                      <div className="col-span-1 text-center">SGST %</div>
+                    </>
+                  )}
                   <div className="col-span-2 text-right pr-6">Amount (₹)</div>
                 </div>
                 {form.items.map((item, i) => (
@@ -389,10 +461,12 @@ export default function Quotations() {
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                       </div>
-                      <div className="grid grid-cols-2 gap-3">
-                        <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
-                        <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
-                      </div>
+                      {quoteType !== 'taxless' && (
+                        <div className="grid grid-cols-2 gap-3">
+                          <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
+                          <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
+                        </div>
+                      )}
                       <div className="flex justify-between items-center pt-2 border-t border-gray-200">
                         <span className="text-xs font-bold text-slate-500 uppercase">Amount</span>
                         <span className="text-sm font-bold text-gray-900">₹{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
@@ -400,12 +474,16 @@ export default function Quotations() {
                     </div>
                     {/* Desktop grid row */}
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center group">
-                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="col-span-3 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${quoteType === 'taxless' ? 'col-span-5' : 'col-span-3'} px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors`} />
                       <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
                       <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
                       <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-right focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
-                      <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
-                      <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                      {quoteType !== 'taxless' && (
+                        <>
+                          <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                          <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                        </>
+                      )}
                       <div className="col-span-2 flex items-center justify-between">
                         <span className="text-sm font-bold text-gray-900 w-full text-right pr-2">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
                         {form.items.length > 1 && (
@@ -434,15 +512,19 @@ export default function Quotations() {
                 <span className="text-gray-500 font-medium">Subtotal</span>
                 <span className="text-gray-900 font-bold">₹{subtotal.toLocaleString('en-IN')}</span>
               </div>
-              <div className="flex justify-between text-sm">
-                <span className="text-gray-500 font-medium">CGST</span>
-                <span className="text-gray-900 font-bold">₹{totalCgst.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex justify-between text-sm pb-4 border-b border-gray-200">
-                <span className="text-gray-500 font-medium">SGST</span>
-                <span className="text-gray-900 font-bold">₹{totalSgst.toLocaleString('en-IN')}</span>
-              </div>
-              <div className="flex justify-between text-xl font-black pt-2">
+              {quoteType !== 'taxless' && (
+                <>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-500 font-medium">CGST</span>
+                    <span className="text-gray-900 font-bold">₹{totalCgst.toLocaleString('en-IN')}</span>
+                  </div>
+                  <div className="flex justify-between text-sm pb-4 border-b border-gray-200">
+                    <span className="text-gray-500 font-medium">SGST</span>
+                    <span className="text-gray-900 font-bold">₹{totalSgst.toLocaleString('en-IN')}</span>
+                  </div>
+                </>
+              )}
+              <div className="flex justify-between text-xl font-black pt-2 border-t border-gray-200">
                 <span className="text-gray-900">Total</span>
                 <span className="text-blue-600">₹{total.toLocaleString('en-IN')}</span>
               </div>
@@ -516,7 +598,7 @@ export default function Quotations() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
-                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Quote #</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Quote No.</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Customer</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Total</th>
                 <th className="text-center px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Status</th>

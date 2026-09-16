@@ -37,7 +37,7 @@ Font.register({
 const e = React.createElement;
 
 const styles = StyleSheet.create({
-  page: { padding: 30, fontFamily: 'Roboto', fontSize: 9, color: '#000' },
+  page: { padding: 30, fontFamily: 'Roboto', fontSize: 9, color: '#000', flexDirection: 'column', flex: 1 },
   pageBorder: { border: '0.5 solid #000', flex: 1, padding: 0 },
   
   headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottom: '0.5 solid #000' },
@@ -72,6 +72,7 @@ const styles = StyleSheet.create({
   tableRow: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
   tdCell: { padding: 4, fontSize: 8, borderRight: '0.5 solid #000' },
   
+  // Taxed Table Columns
   colNo: { width: '4%' },
   colDesc: { width: '28%', textAlign: 'left' },
   colHsn: { width: '10%', textAlign: 'center' },
@@ -79,6 +80,14 @@ const styles = StyleSheet.create({
   colRate: { width: '10%', textAlign: 'right' },
   colTax: { width: '14%', textAlign: 'center' },
   colAmount: { width: '12%', textAlign: 'right', borderRight: 'none' },
+
+  // Taxless Table Columns (No CGST/SGST columns!)
+  colNoTaxless: { width: '5%' },
+  colDescTaxless: { width: '51%', textAlign: 'left' },
+  colHsnTaxless: { width: '14%', textAlign: 'center' },
+  colQtyTaxless: { width: '8%', textAlign: 'center' },
+  colRateTaxless: { width: '11%', textAlign: 'right' },
+  colAmountTaxless: { width: '11%', textAlign: 'right', borderRight: 'none' },
 
   taxHeaderSplit: { flexDirection: 'row', borderTop: '0.5 solid #000', marginTop: 2, paddingTop: 2 },
   taxSubCol: { width: '50%', fontSize: 7, textAlign: 'center' },
@@ -102,10 +111,19 @@ const styles = StyleSheet.create({
   finalTotalValue: { fontSize: 9, fontWeight: 'bold' },
   balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4 },
 
-  hsnSummary: { marginTop: 10 },
+  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', minHeight: 55 },
+  signoffLeft: { width: '55%', padding: 8, justifyContent: 'center', borderRight: '0.5 solid #000' },
+  signoffRight: { width: '45%', padding: 8, alignItems: 'center', justifyContent: 'flex-end' },
+  thankYouMessage: { fontSize: 9, fontWeight: 'bold', color: '#334F39', fontStyle: 'italic' },
+  termsNoteText: { fontSize: 7, color: '#444', marginTop: 3 },
+  signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
+  signSpace: { height: 20 },
+  signLineText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', borderTop: '0.5 solid #000', paddingTop: 3, width: 140 },
+
+  hsnSummary: { marginTop: 0, borderBottom: '0.5 solid #000' },
   hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
   
-  footerText: { fontSize: 6, textAlign: 'center', marginTop: 20, marginBottom: 5 },
+  footerText: { fontSize: 6, textAlign: 'center', marginTop: 'auto', paddingTop: 10, paddingBottom: 5 },
 
   statusBadgePaid: { fontSize: 10, fontWeight: 'bold', color: '#166534', backgroundColor: '#dcfce7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
   statusBadgeUnpaid: { fontSize: 10, fontWeight: 'bold', color: '#FFF', backgroundColor: '#000000', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
@@ -113,11 +131,12 @@ const styles = StyleSheet.create({
 });
 
 const formatDate = (dateStr) => {
+  if (!dateStr) return '-';
   const d = new Date(dateStr);
   return d.toLocaleDateString('en-GB', { day: '2-digit', month: '2-digit', year: 'numeric' }).replace(/\//g, '/');
 };
 
-const formatCurrency = (amount) => Number(amount).toFixed(2);
+const formatCurrency = (amount) => Number(amount || 0).toFixed(2);
 
 const titleCase = (str) => {
   return str.toLowerCase().split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
@@ -126,6 +145,7 @@ const titleCase = (str) => {
 const generateTotalInWords = (amount) => {
   try {
     const whole = Math.floor(amount);
+    if (whole === 0) return 'Indian Rupee Zero Only';
     const words = titleCase(toWords(whole));
     return `Indian Rupee ${words} Only`;
   } catch (e) {
@@ -133,7 +153,267 @@ const generateTotalInWords = (amount) => {
   }
 };
 
-const InvoiceTemplate = ({ invoice, settings }) => {
+// ─────────────────────────────────────────────────────────────
+// 1. REGULAR TAXED INVOICE TEMPLATE
+// ─────────────────────────────────────────────────────────────
+const TaxInvoiceTemplate = ({ invoice, settings }) => {
+  const defaults = getBusinessConfig();
+  const rawConfig = { ...defaults, ...settings };
+  
+  const BUSINESS_CONFIG = {
+    companyName: rawConfig.companyName || defaults.companyName,
+    companyAddress: rawConfig.companyAddress || rawConfig.address || defaults.companyAddress,
+    gstin: rawConfig.gstin || rawConfig.gst || defaults.gstin,
+    pan: rawConfig.pan || defaults.pan,
+    email: rawConfig.email || defaults.email,
+    accountName: rawConfig.accountName || rawConfig.bankHolder || defaults.accountName,
+    accountNumber: rawConfig.accountNumber || rawConfig.accountNo || defaults.accountNumber,
+    ifsc: rawConfig.ifsc || defaults.ifsc,
+    branch: rawConfig.branch || defaults.branch
+  };
+
+  const logoPath = path.join(__dirname, '..', 'assets', 'shapio-logo.png');
+  const hasLogo = fs.existsSync(logoPath);
+  let logoDataUri = null;
+  if (hasLogo) {
+    const base64 = fs.readFileSync(logoPath).toString('base64');
+    logoDataUri = `data:image/png;base64,${base64}`;
+  }
+  
+  const client = invoice.client || {};
+  const items = invoice.items || [];
+  
+  const hsnSummary = {};
+  items.forEach(item => {
+    const hsn = item.hsnSac || 'N/A';
+    if (!hsnSummary[hsn]) {
+      hsnSummary[hsn] = { taxable: 0, cgst: 0, sgst: 0, cgstRate: item.cgstRatePct, sgstRate: item.sgstRatePct };
+    }
+    hsnSummary[hsn].taxable += Number(item.amount || 0);
+    hsnSummary[hsn].cgst += Number(item.cgstAmount || 0);
+    hsnSummary[hsn].sgst += Number(item.sgstAmount || 0);
+  });
+
+  return e(Document, null,
+    e(Page, { size: 'A4', style: styles.page },
+      e(View, { style: styles.pageBorder },
+        
+        // Header
+        e(View, { style: styles.headerRow },
+          e(View, { style: styles.headerLeft },
+            e(View, { style: styles.logoBox },
+              hasLogo ? e(Image, { src: logoDataUri, style: styles.logo }) : null
+            ),
+            e(View, { style: styles.companyDetails },
+              e(Text, { style: styles.companyName }, BUSINESS_CONFIG.companyName),
+              e(Text, { style: styles.companyText }, BUSINESS_CONFIG.companyAddress),
+              e(Text, { style: styles.companyText }, `GSTIN: ${BUSINESS_CONFIG.gstin}`),
+              e(Text, { style: styles.companyText }, BUSINESS_CONFIG.email),
+              e(Text, { style: styles.companyText }, `PAN No: ${BUSINESS_CONFIG.pan}`)
+            )
+          ),
+          e(View, { style: styles.headerRight },
+            e(Text, { style: styles.taxInvoiceTitle }, 'Tax Invoice'),
+            invoice.status === 'PAID'
+              ? e(Text, { style: styles.statusBadgePaid }, 'PAID')
+              : invoice.status === 'OVERDUE'
+                ? e(Text, { style: styles.statusBadgeOverdue }, 'OVERDUE')
+                : e(Text, { style: styles.statusBadgeUnpaid }, 'UNPAID')
+          )
+        ),
+        
+        // Meta
+        e(View, { style: styles.metaGrid },
+          e(View, { style: styles.metaLeft },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+          ),
+          e(View, { style: styles.metaRight },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Place Of Supply'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.placeOfSupply || 'Tamil Nadu (33)')),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'PAN No'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, client.panNumber || BUSINESS_CONFIG.pan))
+          )
+        ),
+        
+        // Address
+        e(View, { style: styles.addressGrid },
+          e(View, { style: styles.addressBoxLeft },
+            e(Text, { style: styles.addressTitle }, 'Bill To'),
+            e(Text, { style: styles.addressName }, client.name),
+            e(Text, { style: styles.addressText }, client.billAddress),
+            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null,
+            client.gstNumber ? e(Text, { style: styles.addressText }, `GSTIN: ${client.gstNumber}`) : null
+          ),
+          e(View, { style: styles.addressBoxRight },
+            e(Text, { style: styles.addressTitle }, 'Ship To'),
+            e(Text, { style: styles.addressName }, client.name),
+            e(Text, { style: styles.addressText }, invoice.shipAddress || client.billAddress),
+            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null
+          )
+        ),
+        
+        // Taxed Table Header (with CGST & SGST)
+        e(View, { style: styles.tableHeader },
+          e(Text, { style: [styles.thCell, styles.colNo] }, '#'),
+          e(Text, { style: [styles.thCell, styles.colDesc] }, 'Item & Description'),
+          e(View, { style: [styles.thCell, styles.colHsn] }, e(Text, null, 'HSN'), e(Text, null, '/SAC')),
+          e(Text, { style: [styles.thCell, styles.colQty] }, 'Qty'),
+          e(Text, { style: [styles.thCell, styles.colRate] }, 'Rate'),
+          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
+            e(Text, { style: { padding: 2 } }, 'CGST'),
+            e(View, { style: styles.taxHeaderSplit },
+              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
+              e(Text, { style: styles.taxSubCol }, 'Amt')
+            )
+          ),
+          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
+            e(Text, { style: { padding: 2 } }, 'SGST'),
+            e(View, { style: styles.taxHeaderSplit },
+              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
+              e(Text, { style: styles.taxSubCol }, 'Amt')
+            )
+          ),
+          e(Text, { style: [styles.thCell, styles.colAmount] }, 'Amount')
+        ),
+        
+        // Taxed Items Rows
+        items.map((item, i) => 
+          e(View, { style: styles.tableRow, key: i },
+            e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
+            e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
+            e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
+            e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
+            e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
+            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
+              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
+                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
+              )
+            ),
+            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
+              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
+                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
+              )
+            ),
+            e(Text, { style: [styles.tdCell, styles.colAmount] }, formatCurrency(item.amount))
+          )
+        ),
+        
+        // Bottom Totals Section
+        e(View, { style: styles.bottomSection },
+          e(View, { style: styles.bottomLeft },
+            e(View, { style: styles.wordsBox },
+              e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
+              e(Text, { style: { fontSize: 8, fontStyle: 'italic', fontWeight: 'bold', marginTop: 2 } }, generateTotalInWords(invoice.total))
+            ),
+            e(View, { style: styles.paymentBox },
+              e(Text, { style: styles.paymentTitle }, 'Payment Options'),
+              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `Account Holder Name : ${BUSINESS_CONFIG.accountName}`),
+              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `Account number : ${BUSINESS_CONFIG.accountNumber}`),
+              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `IFSC Code : ${BUSINESS_CONFIG.ifsc}`),
+              e(Text, { style: { fontSize: 8 } }, `Branch : ${BUSINESS_CONFIG.branch}`)
+            )
+          ),
+          e(View, { style: styles.bottomRight },
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.subtotal))),
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'CGST'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.cgstAmount))),
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'SGST'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.sgstAmount))),
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(invoice.total)}`)),
+            invoice.status !== 'PAID' ? e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `₹${formatCurrency(invoice.balanceDue)}`)) : null
+          )
+        ),
+        
+        // HSN Summary (Only for Taxed Invoices)
+        Object.keys(hsnSummary).length > 0 ? e(View, { style: styles.hsnSummary },
+          e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
+          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
+            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
+            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
+            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
+              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
+              e(View, { style: styles.taxHeaderSplit },
+                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
+                e(Text, { style: styles.taxSubCol }, 'Amount')
+              )
+            ),
+            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
+              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
+              e(View, { style: styles.taxHeaderSplit },
+                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
+                e(Text, { style: styles.taxSubCol }, 'Amount')
+              )
+            ),
+            e(View, { style: [styles.thCell, { width: '10%', padding: 0, borderRight: 'none' }] },
+              e(Text, { style: { padding: 2 } }, 'Total Tax'),
+              e(View, { style: styles.taxHeaderSplit },
+                e(Text, { style: [styles.taxSubCol, { width: '100%' }] }, 'Amount')
+              )
+            )
+          ),
+          Object.entries(hsnSummary).map(([hsn, vals], i) => {
+            const totalTax = vals.cgst + vals.sgst;
+            return e(View, { style: styles.tableRow, key: i },
+              e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
+              e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
+              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.cgstRate || 9}%`),
+                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
+                )
+              ),
+              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.sgstRate || 9}%`),
+                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
+                )
+              ),
+              e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
+            );
+          }),
+          e(View, { style: styles.tableRow },
+            e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
+            e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
+            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
+                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
+              )
+            ),
+            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
+                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
+              )
+            ),
+            e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
+          )
+        ) : null,
+
+        // Authorized Sign & Thank You
+        e(View, { style: styles.signoffSection },
+          e(View, { style: styles.signoffLeft },
+            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
+            invoice.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${invoice.notes}`) : null
+          ),
+          e(View, { style: styles.signoffRight },
+            e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
+            e(View, { style: styles.signSpace }),
+            e(Text, { style: styles.signLineText }, 'Authorized Sign')
+          )
+        ),
+        
+        e(Text, { style: styles.footerText }, 'This is a Computer Generated Document')
+      )
+    )
+  );
+};
+
+// ─────────────────────────────────────────────────────────────
+// 2. DEDICATED TAXLESS (STUDENT) INVOICE TEMPLATE
+// ─────────────────────────────────────────────────────────────
+const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
   const defaults = getBusinessConfig();
   const rawConfig = { ...defaults, ...settings };
   
@@ -160,21 +440,186 @@ const InvoiceTemplate = ({ invoice, settings }) => {
   const client = invoice.client || {};
   const items = invoice.items || [];
 
+  return e(Document, null,
+    e(Page, { size: 'A4', style: styles.page },
+      e(View, { style: styles.pageBorder },
+        
+        // Header: says "Invoice", NOT "Tax Invoice"
+        e(View, { style: styles.headerRow },
+          e(View, { style: styles.headerLeft },
+            e(View, { style: styles.logoBox },
+              hasLogo ? e(Image, { src: logoDataUri, style: styles.logo }) : null
+            ),
+            e(View, { style: styles.companyDetails },
+              e(Text, { style: styles.companyName }, BUSINESS_CONFIG.companyName),
+              e(Text, { style: styles.companyText }, BUSINESS_CONFIG.companyAddress),
+              e(Text, { style: styles.companyText }, BUSINESS_CONFIG.email),
+              e(Text, { style: styles.companyText }, `PAN No: ${BUSINESS_CONFIG.pan}`)
+            )
+          ),
+          e(View, { style: styles.headerRight },
+            e(Text, { style: styles.taxInvoiceTitle }, 'Invoice'),
+            invoice.status === 'PAID'
+              ? e(Text, { style: styles.statusBadgePaid }, 'PAID')
+              : invoice.status === 'OVERDUE'
+                ? e(Text, { style: styles.statusBadgeOverdue }, 'OVERDUE')
+                : e(Text, { style: styles.statusBadgeUnpaid }, 'UNPAID')
+          )
+        ),
+        
+        // Meta
+        e(View, { style: styles.metaGrid },
+          e(View, { style: styles.metaLeft },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+          ),
+          e(View, { style: styles.metaRight },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Place Of Supply'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.placeOfSupply || 'Tamil Nadu (33)')),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'PAN No'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, client.panNumber || BUSINESS_CONFIG.pan))
+          )
+        ),
+        
+        // Address
+        e(View, { style: styles.addressGrid },
+          e(View, { style: styles.addressBoxLeft },
+            e(Text, { style: styles.addressTitle }, 'Bill To'),
+            e(Text, { style: styles.addressName }, client.name),
+            e(Text, { style: styles.addressText }, client.billAddress),
+            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null
+          ),
+          e(View, { style: styles.addressBoxRight },
+            e(Text, { style: styles.addressTitle }, 'Ship To'),
+            e(Text, { style: styles.addressName }, client.name),
+            e(Text, { style: styles.addressText }, invoice.shipAddress || client.billAddress),
+            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null
+          )
+        ),
+        
+        // Taxless Table Header (NO CGST! NO SGST!)
+        e(View, { style: styles.tableHeader },
+          e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
+          e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
+          e(View, { style: [styles.thCell, styles.colHsnTaxless] }, e(Text, null, 'HSN/SAC')),
+          e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
+          e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
+          e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
+        ),
+        
+        // Taxless Items Rows
+        items.map((item, i) => 
+          e(View, { style: styles.tableRow, key: i },
+            e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
+            e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
+            e(Text, { style: [styles.tdCell, styles.colHsnTaxless] }, item.hsnSac || '-'),
+            e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
+            e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
+            e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
+          )
+        ),
+        
+        // Bottom Totals (Clean Subtotal + Total, NO CGST/SGST lines)
+        e(View, { style: styles.bottomSection },
+          e(View, { style: styles.bottomLeft },
+            e(View, { style: styles.wordsBox },
+              e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
+              e(Text, { style: { fontSize: 8, fontStyle: 'italic', fontWeight: 'bold', marginTop: 2 } }, generateTotalInWords(invoice.total))
+            ),
+            e(View, { style: styles.paymentBox },
+              e(Text, { style: styles.paymentTitle }, 'Payment Options'),
+              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `Account Holder Name : ${BUSINESS_CONFIG.accountName}`),
+              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `Account number : ${BUSINESS_CONFIG.accountNumber}`),
+              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `IFSC Code : ${BUSINESS_CONFIG.ifsc}`),
+              e(Text, { style: { fontSize: 8 } }, `Branch : ${BUSINESS_CONFIG.branch}`)
+            )
+          ),
+          e(View, { style: styles.bottomRight },
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.subtotal))),
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(invoice.total)}`)),
+            invoice.status !== 'PAID' ? e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `₹${formatCurrency(invoice.balanceDue)}`)) : null
+          )
+        ),
+        
+        // Authorized Sign & Thank You
+        e(View, { style: styles.signoffSection },
+          e(View, { style: styles.signoffLeft },
+            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
+            invoice.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${invoice.notes}`) : null
+          ),
+          e(View, { style: styles.signoffRight },
+            e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
+            e(View, { style: styles.signSpace }),
+            e(Text, { style: styles.signLineText }, 'Authorized Sign')
+          )
+        ),
+        
+        e(Text, { style: styles.footerText }, 'This is a Computer Generated Document')
+      )
+    )
+  );
+};
+
+// Dispatcher for Invoice
+const InvoiceTemplate = ({ invoice, settings }) => {
+  const totalTax = Number(invoice.cgstAmount || 0) + Number(invoice.sgstAmount || 0);
+  const isTaxless = totalTax === 0;
+  if (isTaxless) {
+    return e(TaxlessInvoiceTemplate, { invoice, settings });
+  }
+  return e(TaxInvoiceTemplate, { invoice, settings });
+};
+
+const generateInvoicePdfStream = async (invoice, settings = {}) => {
+  return await renderToStream(e(InvoiceTemplate, { invoice, settings }));
+};
+
+// ─────────────────────────────────────────────────────────────
+// 3. REGULAR TAXED QUOTATION TEMPLATE
+// ─────────────────────────────────────────────────────────────
+const TaxQuotationTemplate = ({ quotation, settings }) => {
+  const defaults = getBusinessConfig();
+  const rawConfig = { ...defaults, ...settings };
+  
+  const BUSINESS_CONFIG = {
+    companyName: rawConfig.companyName || defaults.companyName,
+    companyAddress: rawConfig.companyAddress || rawConfig.address || defaults.companyAddress,
+    gstin: rawConfig.gstin || rawConfig.gst || defaults.gstin,
+    pan: rawConfig.pan || defaults.pan,
+    email: rawConfig.email || defaults.email,
+    accountName: rawConfig.accountName || rawConfig.bankHolder || defaults.accountName,
+    accountNumber: rawConfig.accountNumber || rawConfig.accountNo || defaults.accountNumber,
+    ifsc: rawConfig.ifsc || defaults.ifsc,
+    branch: rawConfig.branch || defaults.branch
+  };
+
+  const logoPath = path.join(__dirname, '..', 'assets', 'shapio-logo.png');
+  const hasLogo = fs.existsSync(logoPath);
+  let logoDataUri = null;
+  if (hasLogo) {
+    const base64 = fs.readFileSync(logoPath).toString('base64');
+    logoDataUri = `data:image/png;base64,${base64}`;
+  }
+  
+  const client = quotation.customer || {};
+  const items = quotation.items || [];
+  
   const hsnSummary = {};
   items.forEach(item => {
     const hsn = item.hsnSac || 'N/A';
     if (!hsnSummary[hsn]) {
-      hsnSummary[hsn] = { taxable: 0, cgst: 0, sgst: 0 };
+      hsnSummary[hsn] = { taxable: 0, cgst: 0, sgst: 0, cgstRate: item.cgstRatePct, sgstRate: item.sgstRatePct };
     }
-    hsnSummary[hsn].taxable += Number(item.amount);
-    hsnSummary[hsn].cgst += Number(item.cgstAmount);
-    hsnSummary[hsn].sgst += Number(item.sgstAmount);
+    hsnSummary[hsn].taxable += Number(item.amount || 0);
+    hsnSummary[hsn].cgst += Number(item.cgstAmount || 0);
+    hsnSummary[hsn].sgst += Number(item.sgstAmount || 0);
   });
 
   return e(Document, null,
     e(Page, { size: 'A4', style: styles.page },
       e(View, { style: styles.pageBorder },
         
+        // Header
         e(View, { style: styles.headerRow },
           e(View, { style: styles.headerLeft },
             e(View, { style: styles.logoBox },
@@ -189,44 +634,38 @@ const InvoiceTemplate = ({ invoice, settings }) => {
             )
           ),
           e(View, { style: styles.headerRight },
-            e(Text, { style: styles.taxInvoiceTitle }, 'Tax Invoice'),
-            invoice.status === 'PAID'
-              ? e(Text, { style: styles.statusBadgePaid }, 'PAID')
-              : invoice.status === 'OVERDUE'
-                ? e(Text, { style: styles.statusBadgeOverdue }, 'OVERDUE')
-                : e(Text, { style: styles.statusBadgeUnpaid }, 'UNPAID')
+            e(Text, { style: styles.taxInvoiceTitle }, 'Quotation')
           )
         ),
         
+        // Meta
         e(View, { style: styles.metaGrid },
           e(View, { style: styles.metaLeft },
-            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, '#'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
-            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
-            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
-            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(quotation.createdAt))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Valid Until'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.validUntil ? formatDate(quotation.validUntil) : '-'))
           ),
           e(View, { style: styles.metaRight },
-            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Place Of Supply'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.placeOfSupply || 'Tamil Nadu (33)')),
             e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'PAN No'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, client.panNumber || BUSINESS_CONFIG.pan))
           )
         ),
         
+        // Address
         e(View, { style: styles.addressGrid },
           e(View, { style: styles.addressBoxLeft },
-            e(Text, { style: styles.addressTitle }, 'Bill To'),
+            e(Text, { style: styles.addressTitle }, 'Quotation For'),
             e(Text, { style: styles.addressName }, client.name),
             e(Text, { style: styles.addressText }, client.billAddress),
             client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null,
             client.gstNumber ? e(Text, { style: styles.addressText }, `GSTIN: ${client.gstNumber}`) : null
           ),
           e(View, { style: styles.addressBoxRight },
-            e(Text, { style: styles.addressTitle }, 'Ship To'),
-            e(Text, { style: styles.addressName }, client.name),
-            e(Text, { style: styles.addressText }, invoice.shipAddress || client.billAddress),
-            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null
+            e(Text, { style: styles.addressTitle }, 'Notes'),
+            e(Text, { style: styles.addressText }, quotation.notes || '')
           )
         ),
         
+        // Taxed Table Header (with CGST & SGST)
         e(View, { style: styles.tableHeader },
           e(Text, { style: [styles.thCell, styles.colNo] }, '#'),
           e(Text, { style: [styles.thCell, styles.colDesc] }, 'Item & Description'),
@@ -250,6 +689,7 @@ const InvoiceTemplate = ({ invoice, settings }) => {
           e(Text, { style: [styles.thCell, styles.colAmount] }, 'Amount')
         ),
         
+        // Taxed Items Rows
         items.map((item, i) => 
           e(View, { style: styles.tableRow, key: i },
             e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
@@ -273,30 +713,24 @@ const InvoiceTemplate = ({ invoice, settings }) => {
           )
         ),
         
+        // Bottom Totals Section
         e(View, { style: styles.bottomSection },
           e(View, { style: styles.bottomLeft },
             e(View, { style: styles.wordsBox },
               e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
-              e(Text, { style: { fontSize: 8, fontStyle: 'italic', fontWeight: 'bold', marginTop: 2 } }, generateTotalInWords(invoice.total))
-            ),
-            e(View, { style: styles.paymentBox },
-              e(Text, { style: styles.paymentTitle }, 'Payment Options'),
-              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `Account Holder Name : ${BUSINESS_CONFIG.accountName}`),
-              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `Account number : ${BUSINESS_CONFIG.accountNumber}`),
-              e(Text, { style: { fontSize: 8, marginBottom: 2 } }, `IFSC Code : ${BUSINESS_CONFIG.ifsc}`),
-              e(Text, { style: { fontSize: 8 } }, `Branch : ${BUSINESS_CONFIG.branch}`)
+              e(Text, { style: { fontSize: 8, fontStyle: 'italic', fontWeight: 'bold', marginTop: 2 } }, generateTotalInWords(quotation.totalAmount))
             )
           ),
           e(View, { style: styles.bottomRight },
-            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.subtotal))),
-            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'CGST'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.cgstAmount))),
-            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'SGST'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.sgstAmount))),
-            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(invoice.total)}`)),
-            e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `₹${formatCurrency(invoice.balanceDue)}`))
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.subtotal))),
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'CGST'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.cgstAmount))),
+            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'SGST'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.sgstAmount))),
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total Quoted'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(quotation.totalAmount)}`))
           )
         ),
 
-        e(View, { style: styles.hsnSummary },
+        // HSN Summary (Only for Taxed Quotations)
+        Object.keys(hsnSummary).length > 0 ? e(View, { style: styles.hsnSummary },
           e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
           e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
@@ -329,13 +763,13 @@ const InvoiceTemplate = ({ invoice, settings }) => {
               e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
                 e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.cgstRate || 9}%`),
                   e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
                 )
               ),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
                 e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.sgstRate || 9}%`),
                   e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
                 )
               ),
@@ -359,6 +793,19 @@ const InvoiceTemplate = ({ invoice, settings }) => {
             ),
             e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
           )
+        ) : null,
+
+        // Authorized Sign & Thank You
+        e(View, { style: styles.signoffSection },
+          e(View, { style: styles.signoffLeft },
+            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
+            quotation.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${quotation.notes}`) : null
+          ),
+          e(View, { style: styles.signoffRight },
+            e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
+            e(View, { style: styles.signSpace }),
+            e(Text, { style: styles.signLineText }, 'Authorized Sign')
+          )
         ),
         
         e(Text, { style: styles.footerText }, 'This is a Computer Generated Document')
@@ -367,11 +814,10 @@ const InvoiceTemplate = ({ invoice, settings }) => {
   );
 };
 
-const generateInvoicePdfStream = async (invoice, settings = {}) => {
-  return await renderToStream(e(InvoiceTemplate, { invoice, settings }));
-};
-
-const QuotationTemplate = ({ quotation, settings }) => {
+// ─────────────────────────────────────────────────────────────
+// 4. DEDICATED TAXLESS (STUDENT) QUOTATION TEMPLATE
+// ─────────────────────────────────────────────────────────────
+const TaxlessQuotationTemplate = ({ quotation, settings }) => {
   const defaults = getBusinessConfig();
   const rawConfig = { ...defaults, ...settings };
   
@@ -398,21 +844,11 @@ const QuotationTemplate = ({ quotation, settings }) => {
   const client = quotation.customer || {};
   const items = quotation.items || [];
 
-  const hsnSummary = {};
-  items.forEach(item => {
-    const hsn = item.hsnSac || 'N/A';
-    if (!hsnSummary[hsn]) {
-      hsnSummary[hsn] = { taxable: 0, cgst: 0, sgst: 0 };
-    }
-    hsnSummary[hsn].taxable += Number(item.amount);
-    hsnSummary[hsn].cgst += Number(item.cgstAmount);
-    hsnSummary[hsn].sgst += Number(item.sgstAmount);
-  });
-
   return e(Document, null,
     e(Page, { size: 'A4', style: styles.page },
       e(View, { style: styles.pageBorder },
         
+        // Header
         e(View, { style: styles.headerRow },
           e(View, { style: styles.headerLeft },
             e(View, { style: styles.logoBox },
@@ -421,7 +857,6 @@ const QuotationTemplate = ({ quotation, settings }) => {
             e(View, { style: styles.companyDetails },
               e(Text, { style: styles.companyName }, BUSINESS_CONFIG.companyName),
               e(Text, { style: styles.companyText }, BUSINESS_CONFIG.companyAddress),
-              e(Text, { style: styles.companyText }, `GSTIN: ${BUSINESS_CONFIG.gstin}`),
               e(Text, { style: styles.companyText }, BUSINESS_CONFIG.email),
               e(Text, { style: styles.companyText }, `PAN No: ${BUSINESS_CONFIG.pan}`)
             )
@@ -431,9 +866,10 @@ const QuotationTemplate = ({ quotation, settings }) => {
           )
         ),
         
+        // Meta
         e(View, { style: styles.metaGrid },
           e(View, { style: styles.metaLeft },
-            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote #'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
             e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(quotation.createdAt))),
             e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Valid Until'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.validUntil ? formatDate(quotation.validUntil) : '-'))
           ),
@@ -442,13 +878,13 @@ const QuotationTemplate = ({ quotation, settings }) => {
           )
         ),
         
+        // Address
         e(View, { style: styles.addressGrid },
           e(View, { style: styles.addressBoxLeft },
             e(Text, { style: styles.addressTitle }, 'Quotation For'),
             e(Text, { style: styles.addressName }, client.name),
             e(Text, { style: styles.addressText }, client.billAddress),
-            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null,
-            client.gstNumber ? e(Text, { style: styles.addressText }, `GSTIN: ${client.gstNumber}`) : null
+            client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null
           ),
           e(View, { style: styles.addressBoxRight },
             e(Text, { style: styles.addressTitle }, 'Notes'),
@@ -456,52 +892,29 @@ const QuotationTemplate = ({ quotation, settings }) => {
           )
         ),
         
+        // Taxless Table Header (NO CGST! NO SGST!)
         e(View, { style: styles.tableHeader },
-          e(Text, { style: [styles.thCell, styles.colNo] }, '#'),
-          e(Text, { style: [styles.thCell, styles.colDesc] }, 'Item & Description'),
-          e(View, { style: [styles.thCell, styles.colHsn] }, e(Text, null, 'HSN'), e(Text, null, '/SAC')),
-          e(Text, { style: [styles.thCell, styles.colQty] }, 'Qty'),
-          e(Text, { style: [styles.thCell, styles.colRate] }, 'Rate'),
-          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
-            e(Text, { style: { padding: 2 } }, 'CGST'),
-            e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
-              e(Text, { style: styles.taxSubCol }, 'Amt')
-            )
-          ),
-          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
-            e(Text, { style: { padding: 2 } }, 'SGST'),
-            e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
-              e(Text, { style: styles.taxSubCol }, 'Amt')
-            )
-          ),
-          e(Text, { style: [styles.thCell, styles.colAmount] }, 'Amount')
+          e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
+          e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
+          e(View, { style: [styles.thCell, styles.colHsnTaxless] }, e(Text, null, 'HSN/SAC')),
+          e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
+          e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
+          e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
         ),
         
+        // Taxless Items Rows
         items.map((item, i) => 
           e(View, { style: styles.tableRow, key: i },
-            e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
-            e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
-            e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
-            e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
-            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
-              )
-            ),
-            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
-              )
-            ),
-            e(Text, { style: [styles.tdCell, styles.colAmount] }, formatCurrency(item.amount))
+            e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
+            e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
+            e(Text, { style: [styles.tdCell, styles.colHsnTaxless] }, item.hsnSac || '-'),
+            e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
+            e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
+            e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
           )
         ),
         
+        // Bottom Totals Section (Clean Subtotal + Total, NO CGST/SGST lines)
         e(View, { style: styles.bottomSection },
           e(View, { style: styles.bottomLeft },
             e(View, { style: styles.wordsBox },
@@ -511,74 +924,20 @@ const QuotationTemplate = ({ quotation, settings }) => {
           ),
           e(View, { style: styles.bottomRight },
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.subtotal))),
-            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'CGST'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.cgstAmount))),
-            e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'SGST'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.sgstAmount))),
             e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total Quoted'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(quotation.totalAmount)}`))
           )
         ),
 
-        e(View, { style: styles.hsnSummary },
-          e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
-          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
-            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
-            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
-            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
-                e(Text, { style: styles.taxSubCol }, 'Amount')
-              )
-            ),
-            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
-                e(Text, { style: styles.taxSubCol }, 'Amount')
-              )
-            ),
-            e(View, { style: [styles.thCell, { width: '10%', padding: 0, borderRight: 'none' }] },
-              e(Text, { style: { padding: 2 } }, 'Total Tax'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { width: '100%' }] }, 'Amount')
-              )
-            )
+        // Authorized Sign & Thank You
+        e(View, { style: styles.signoffSection },
+          e(View, { style: styles.signoffLeft },
+            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
+            quotation.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${quotation.notes}`) : null
           ),
-          Object.entries(hsnSummary).map(([hsn, vals], i) => {
-            const totalTax = vals.cgst + vals.sgst;
-            return e(View, { style: styles.tableRow, key: i },
-              e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
-              e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
-              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
-                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
-                )
-              ),
-              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, '9%'),
-                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
-                )
-              ),
-              e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
-            );
-          }),
-          e(View, { style: styles.tableRow },
-            e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
-            e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
-            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
-              )
-            ),
-            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
-              )
-            ),
-            e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
+          e(View, { style: styles.signoffRight },
+            e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
+            e(View, { style: styles.signSpace }),
+            e(Text, { style: styles.signLineText }, 'Authorized Sign')
           )
         ),
         
@@ -586,6 +945,16 @@ const QuotationTemplate = ({ quotation, settings }) => {
       )
     )
   );
+};
+
+// Dispatcher for Quotation
+const QuotationTemplate = ({ quotation, settings }) => {
+  const totalTax = Number(quotation.cgstAmount || 0) + Number(quotation.sgstAmount || 0);
+  const isTaxless = totalTax === 0;
+  if (isTaxless) {
+    return e(TaxlessQuotationTemplate, { quotation, settings });
+  }
+  return e(TaxQuotationTemplate, { quotation, settings });
 };
 
 const generateQuotationPdfStream = async (quotation, settings = {}) => {

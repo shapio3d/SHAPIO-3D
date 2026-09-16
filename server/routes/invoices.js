@@ -1,3 +1,8 @@
+const safeTaxRate = (val, defaultVal = 9) => {
+  if (val === undefined || val === null || val === '') return defaultVal;
+  const num = parseFloat(val);
+  return isNaN(num) ? defaultVal : num;
+};
 const express = require('express');
 const router = express.Router();
 const { generateInvoicePdfStream } = require('../lib/pdfTemplate');
@@ -110,8 +115,8 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
       const quantity = parseFloat(item.quantity) || 0;
       const rate = parseFloat(item.rate) || 0;
       const amount = quantity * rate;
-      const cgstRatePct = parseFloat(item.cgstRatePct) || 9;
-      const sgstRatePct = parseFloat(item.sgstRatePct) || 9;
+      const cgstRatePct = safeTaxRate(item.cgstRatePct, 9);
+      const sgstRatePct = safeTaxRate(item.sgstRatePct, 9);
       
       const itemCgst = amount * (cgstRatePct / 100);
       const itemSgst = amount * (sgstRatePct / 100);
@@ -221,8 +226,8 @@ router.put('/:id', requireSupabaseAuth, async (req, res) => {
       const quantity = parseFloat(item.quantity) || 0;
       const rate = parseFloat(item.rate) || 0;
       const amount = quantity * rate;
-      const cgstRatePct = parseFloat(item.cgstRatePct) || 9;
-      const sgstRatePct = parseFloat(item.sgstRatePct) || 9;
+      const cgstRatePct = safeTaxRate(item.cgstRatePct, 9);
+      const sgstRatePct = safeTaxRate(item.sgstRatePct, 9);
       
       const itemCgst = amount * (cgstRatePct / 100);
       const itemSgst = amount * (sgstRatePct / 100);
@@ -237,6 +242,8 @@ router.put('/:id', requireSupabaseAuth, async (req, res) => {
         quantity,
         unitPrice: rate,
         total: amount,
+        cgstRatePct,
+        sgstRatePct,
       };
     });
 
@@ -333,8 +340,8 @@ router.post('/preview', requireSupabaseAuth, async (req, res) => {
       const quantity = parseFloat(item.quantity) || 0;
       const rate = parseFloat(item.rate) || 0;
       const amount = quantity * rate;
-      const cgstRatePct = parseFloat(item.cgstRatePct) || 9;
-      const sgstRatePct = parseFloat(item.sgstRatePct) || 9;
+      const cgstRatePct = safeTaxRate(item.cgstRatePct, 9);
+      const sgstRatePct = safeTaxRate(item.sgstRatePct, 9);
       
       const itemCgst = amount * (cgstRatePct / 100);
       const itemSgst = amount * (sgstRatePct / 100);
@@ -423,15 +430,20 @@ router.get('/:invoiceId/pdf', requireSupabaseAuth, async (req, res) => {
         billAddress: inv.customer.address,
         panNo: inv.customer.panNumber
       },
-      items: inv.items.map(i => ({
-        ...i,
-        rate: Number(i.unitPrice),
-        amount: Number(i.total),
-        cgstRatePct: 9, // Fallback since Prisma schema doesn't store this per item
-        sgstRatePct: 9,
-        cgstAmount: Number(i.total) * 0.09,
-        sgstAmount: Number(i.total) * 0.09
-      }))
+      items: inv.items.map(i => {
+        const amt = Number(i.total);
+        const cgstRate = safeTaxRate(i.cgstRatePct, 0);
+        const sgstRate = safeTaxRate(i.sgstRatePct, 0);
+        return {
+          ...i,
+          rate: Number(i.unitPrice),
+          amount: amt,
+          cgstRatePct: cgstRate,
+          sgstRatePct: sgstRate,
+          cgstAmount: amt * (cgstRate / 100),
+          sgstAmount: amt * (sgstRate / 100)
+        };
+      })
     };
 
     // Fetch settings

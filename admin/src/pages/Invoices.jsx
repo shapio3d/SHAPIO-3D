@@ -31,6 +31,23 @@ const getFinancialYearString = () => {
   }
 };
 
+const getNextInvoiceNumber = (invoicesList) => {
+  const currentFY = getFinancialYearString();
+  let maxSeq = 0;
+  (invoicesList || []).forEach(inv => {
+    const raw = String(inv.invoiceNumber || inv.invoiceNo || '').trim();
+    const match = raw.match(/(\d+)(?:\D*)$/);
+    if (match) {
+      const num = parseInt(match[1], 10);
+      if (!isNaN(num) && num > maxSeq) {
+        maxSeq = num;
+      }
+    }
+  });
+  const nextSeq = maxSeq + 1;
+  return `SHP3D/${currentFY}/${String(nextSeq).padStart(3, '0')}`;
+};
+
 function numberToWords(num) {
   if (num === 0) return 'Zero';
   const a = ['', 'One ', 'Two ', 'Three ', 'Four ', 'Five ', 'Six ', 'Seven ', 'Eight ', 'Nine ', 'Ten ', 'Eleven ', 'Twelve ', 'Thirteen ', 'Fourteen ', 'Fifteen ', 'Sixteen ', 'Seventeen ', 'Eighteen ', 'Nineteen '];
@@ -60,6 +77,19 @@ export default function Invoices() {
   const [editing, setEditing] = useState(null)
   const [pdfUrl, setPdfUrl] = useState(null)
   const [selectedQuotationId, setSelectedQuotationId] = useState('')
+  const [invoiceType, setInvoiceType] = useState('taxed') // 'taxed' | 'taxless'
+
+  const handleToggleInvoiceType = (type) => {
+    setInvoiceType(type)
+    setForm(f => ({
+      ...f,
+      items: f.items.map(item => ({
+        ...item,
+        cgstRatePct: type === 'taxless' ? 0 : 9,
+        sgstRatePct: type === 'taxless' ? 0 : 9
+      }))
+    }))
+  }
   
   const { data: invoices = [], isLoading: isLoadingInvoices, isError: isErrorInvoices } = useQuery({
     queryKey: ['invoices'],
@@ -200,10 +230,11 @@ export default function Invoices() {
     setEditing(null)
     setSelectedQuotationId('')
     setIsManualClient(false)
+    setInvoiceType('taxed')
     setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
     setForm({
       clientId: '',
-      invoiceNumber: `SHP3D/${getFinancialYearString()}/${String(invoices.length + 1).padStart(3, '0')}`,
+      invoiceNumber: getNextInvoiceNumber(invoices),
       issueDate: new Date().toISOString().split('T')[0],
       dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       terms: 'Due on Receipt',
@@ -240,6 +271,8 @@ export default function Invoices() {
         : f.items,
       notes: qt.notes || f.notes,
     }))
+    const isQuoteTaxless = qt.items?.length > 0 && qt.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0)
+    setInvoiceType(isQuoteTaxless ? 'taxless' : 'taxed')
   }
 
   const openEdit = (invoice) => {
@@ -266,10 +299,12 @@ export default function Invoices() {
       status: invoice.status || 'UNPAID', 
       notes: invoice.notes || '' 
     })
+    const isInvTaxless = invoice.items?.length > 0 && invoice.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0)
+    setInvoiceType(isInvTaxless ? 'taxless' : 'taxed')
     setActiveTab('edit')
   }
 
-  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }] }))
+  const addItem = () => setForm(f => ({ ...f, items: [...f.items, { description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: invoiceType === 'taxless' ? 0 : 9, sgstRatePct: invoiceType === 'taxless' ? 0 : 9 }] }))
   const removeItem = (i) => setForm(f => ({ ...f, items: f.items.filter((_, idx) => idx !== i) }))
   const updateItem = (i, field, val) => {
     setForm(f => ({
@@ -465,11 +500,46 @@ export default function Invoices() {
             </div>
           )}
 
+          {/* Invoice Type Switcher: Standard vs Taxless */}
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200">
+            <div>
+              <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Invoice Type</span>
+              <p className="text-sm font-semibold text-slate-900 mt-0.5">
+                {invoiceType === 'taxless' ? '📋 Taxless Invoice (0% GST)' : '🏢 Standard Invoice (18% GST)'}
+              </p>
+            </div>
+            <div className="inline-flex p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
+              <button
+                type="button"
+                onClick={() => handleToggleInvoiceType('taxed')}
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                  invoiceType === 'taxed'
+                    ? 'bg-blue-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                Standard (18% GST)
+              </button>
+              <button
+                type="button"
+                onClick={() => handleToggleInvoiceType('taxless')}
+                className={`px-4 py-2 text-xs font-bold rounded-lg transition-all flex items-center gap-1.5 ${
+                  invoiceType === 'taxless'
+                    ? 'bg-emerald-600 text-white shadow-sm'
+                    : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'
+                }`}
+              >
+                <span className={`w-2 h-2 rounded-full ${invoiceType === 'taxless' ? 'bg-white animate-pulse' : 'bg-emerald-500'}`}></span>
+                Taxless (0% GST)
+              </button>
+            </div>
+          </div>
+
           {/* Top Meta */}
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
-                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Invoice #</label>
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Invoice No.</label>
                 <input placeholder="e.g. INV-001" value={form.invoiceNumber} onChange={e => setForm({...form, invoiceNumber: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
               <div>
@@ -581,12 +651,16 @@ export default function Invoices() {
               <div className="w-full">
                 {/* Headers */}
                 <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] text-slate-500 font-bold uppercase tracking-wider">
-                  <div className="col-span-3">Description</div>
+                  <div className={invoiceType === 'taxless' ? "col-span-5" : "col-span-3"}>Description</div>
                   <div className="col-span-2">HSN/SAC</div>
                   <div className="col-span-1 text-center">Qty</div>
                   <div className="col-span-2 text-right">Rate (₹)</div>
-                  <div className="col-span-1 text-center">CGST %</div>
-                  <div className="col-span-1 text-center">SGST %</div>
+                  {invoiceType !== 'taxless' && (
+                    <>
+                      <div className="col-span-1 text-center">CGST %</div>
+                      <div className="col-span-1 text-center">SGST %</div>
+                    </>
+                  )}
                   <div className="col-span-2 text-right pr-10">Amount (₹)</div>
                 </div>
                 {form.items.map((item, i) => (
@@ -605,10 +679,12 @@ export default function Invoices() {
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
-                        <div><label className="text-[10px] font-bold text-slate-500 uppercase">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
-                        <div><label className="text-[10px] font-bold text-slate-500 uppercase">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
-                      </div>
+                      {invoiceType !== 'taxless' && (
+                        <div className="grid grid-cols-2 gap-2">
+                          <div><label className="text-[10px] font-bold text-slate-500 uppercase">CGST %</label><input type="number" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
+                          <div><label className="text-[10px] font-bold text-slate-500 uppercase">SGST %</label><input type="number" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
+                        </div>
+                      )}
                       <div className="flex justify-between items-center pt-2 mt-2 border-t border-gray-200">
                         <span className="text-xs font-bold text-slate-500 uppercase">Amount</span>
                         <span className="text-sm font-semibold text-gray-900">₹{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
@@ -616,12 +692,16 @@ export default function Invoices() {
                     </div>
                     {/* Desktop grid row */}
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center">
-                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="col-span-3 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${invoiceType === 'taxless' ? 'col-span-5' : 'col-span-3'} px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500`} />
                       <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                      <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                      <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      {invoiceType !== 'taxless' && (
+                        <>
+                          <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                          <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                        </>
+                      )}
                       <div className="col-span-2 flex items-center justify-end pr-10 relative">
                         <span className="text-base font-semibold text-gray-900">{(item.quantity * item.rate).toLocaleString('en-IN')}</span>
                         {form.items.length > 1 && (
@@ -650,14 +730,18 @@ export default function Invoices() {
                   <span className="text-gray-700 font-medium">Subtotal</span>
                   <span className="text-gray-900">₹{subtotal.toLocaleString('en-IN')}</span>
                 </div>
-                <div className="flex justify-between text-base">
-                  <span className="text-gray-700 font-medium">CGST Total</span>
-                  <span className="text-gray-900">₹{totalCgst.toLocaleString('en-IN')}</span>
-                </div>
-                <div className="flex justify-between text-base">
-                  <span className="text-gray-700 font-medium">SGST Total</span>
-                  <span className="text-gray-900">₹{totalSgst.toLocaleString('en-IN')}</span>
-                </div>
+                {invoiceType !== 'taxless' && (
+                  <>
+                    <div className="flex justify-between text-base">
+                      <span className="text-gray-700 font-medium">CGST Total</span>
+                      <span className="text-gray-900">₹{totalCgst.toLocaleString('en-IN')}</span>
+                    </div>
+                    <div className="flex justify-between text-base">
+                      <span className="text-gray-700 font-medium">SGST Total</span>
+                      <span className="text-gray-900">₹{totalSgst.toLocaleString('en-IN')}</span>
+                    </div>
+                  </>
+                )}
                 <div className="flex justify-between text-2xl font-bold border-t border-gray-200 pt-4 mt-2">
                   <span className="text-gray-900">Total</span>
                   <span className="text-blue-600">₹{total.toLocaleString('en-IN')}</span>
@@ -738,7 +822,7 @@ export default function Invoices() {
           <Search size={16} className="absolute top-3.5 left-4 text-gray-400" />
           <input
             type="text"
-            placeholder="Search by invoice #..."
+            placeholder="Search by invoice no..."
             value={search}
             onChange={e => setSearch(e.target.value)}
             className="w-full pl-11 pr-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
@@ -752,7 +836,7 @@ export default function Invoices() {
           <table className="w-full">
             <thead>
               <tr className="border-b border-gray-200 bg-gray-50/50">
-                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Invoice #</th>
+                <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Invoice No.</th>
                 <th className="text-left px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Customer</th>
                 <th className="text-right px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Amount</th>
                 <th className="text-center px-6 py-4 text-xs font-bold text-gray-900 uppercase tracking-wider">Status</th>

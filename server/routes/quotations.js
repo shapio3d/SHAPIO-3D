@@ -1,3 +1,8 @@
+const safeTaxRate = (val, defaultVal = 9) => {
+  if (val === undefined || val === null || val === '') return defaultVal;
+  const num = parseFloat(val);
+  return isNaN(num) ? defaultVal : num;
+};
 const express = require('express');
 const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
@@ -34,8 +39,8 @@ router.post('/', requireSupabaseAuth, async (req, res, next) => {
       const quantity = parseFloat(item.quantity) || 0;
       const rate = parseFloat(item.rate) || 0;
       const amount = quantity * rate;
-      const cgstRatePct = parseFloat(item.cgstRatePct) || 9;
-      const sgstRatePct = parseFloat(item.sgstRatePct) || 9;
+      const cgstRatePct = safeTaxRate(item.cgstRatePct, 9);
+      const sgstRatePct = safeTaxRate(item.sgstRatePct, 9);
       
       const cgstAmount = amount * (cgstRatePct / 100);
       const sgstAmount = amount * (sgstRatePct / 100);
@@ -91,8 +96,8 @@ router.put('/:id', requireSupabaseAuth, async (req, res, next) => {
       const quantity = parseFloat(item.quantity) || 0;
       const rate = parseFloat(item.rate) || 0;
       const amount = quantity * rate;
-      const cgstRatePct = parseFloat(item.cgstRatePct) || 9;
-      const sgstRatePct = parseFloat(item.sgstRatePct) || 9;
+      const cgstRatePct = safeTaxRate(item.cgstRatePct, 9);
+      const sgstRatePct = safeTaxRate(item.sgstRatePct, 9);
       
       const cgstAmount = amount * (cgstRatePct / 100);
       const sgstAmount = amount * (sgstRatePct / 100);
