@@ -141,7 +141,7 @@ export default function ServicesPage() {
 
 
         {/* Top tiny label (Centered) */}
-        <div className="absolute top-36 md:top-28 left-1/2 -translate-x-1/2 text-xs font-body text-white/50 uppercase tracking-[0.2em] whitespace-nowrap z-20">
+        <div className="absolute top-36 md:top-28 left-1/2 -translate-x-1/2 text-xs font-sub font-medium text-white/50 uppercase tracking-[0.25em] whitespace-nowrap z-20">
           What We Offer
         </div>
 
@@ -150,9 +150,12 @@ export default function ServicesPage() {
           <div className="w-full lg:w-[60%] xl:w-[65%] relative text-center lg:text-left mt-12 md:mt-0">
 
             {/* Main Headline */}
-            <h1 className="flex flex-col items-center lg:items-start justify-center lg:justify-start text-[11vw] lg:text-[7rem] xl:text-[8rem] font-body font-medium leading-[0.9] text-white tracking-tighter uppercase w-full">
+            <h1 
+              className="flex flex-col items-center lg:items-start justify-center lg:justify-start text-[8.5vw] sm:text-[6.5vw] md:text-[5vw] lg:text-[4.2rem] xl:text-[5.2rem] 2xl:text-[6rem] font-sub font-orbitron font-bold leading-[1.08] text-white tracking-tight uppercase w-full"
+              style={{ fontFamily: "'Orbitron', sans-serif" }}
+            >
               <span>CUSTOM 3D</span>
-              <span>PRODUCTS <span className="font-sub font-light italic lowercase text-[1.1em] tracking-normal text-white">&</span></span>
+              <span>PRODUCTS &amp;</span>
               <span>APPLICATIONS</span>
             </h1>
           </div>

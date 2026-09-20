@@ -17,7 +17,6 @@ const WhatsAppIcon = ({ size = 20, className = '' }) => (
 
 const HeroSection = ({ videoName, imageName, overlay = 'light', isMobile, videoScale = 1, videoChildren, detailsNode }) => {
   const videoSrc = videoName ? `/videos/hero/${videoName}-${isMobile ? 'mobile' : 'desktop'}.mp4` : null
-  const imageSrc = imageName ? `/images/hero/${imageName}-${isMobile ? 'mobile' : 'desktop'}.png` : null
   const videoRef = useRef(null)
 
   // Synchronous callback ref: sets defaultMuted, muted, and playsInline the exact millisecond WebKit creates the DOM node
@@ -115,15 +114,38 @@ const HeroSection = ({ videoName, imageName, overlay = 'light', isMobile, videoS
               style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
               className="absolute inset-0 w-full h-full object-cover"
             />
-          ) : imageSrc ? (
-            <img
-              src={imageSrc}
-              alt="Advanced 3D Printing & Additive Manufacturing"
-              loading="eager"
-              fetchPriority="high"
-              style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
-              className="absolute inset-0 w-full h-full object-cover select-none"
-            />
+          ) : imageName ? (
+            <picture className="absolute inset-0 w-full h-full pointer-events-none select-none">
+              <source
+                media="(max-width: 767px)"
+                srcSet={`/images/hero/${imageName}-mobile.webp`}
+                type="image/webp"
+              />
+              <source
+                media="(max-width: 767px)"
+                srcSet={`/images/hero/${imageName}-mobile.png`}
+                type="image/png"
+              />
+              <source
+                media="(min-width: 768px)"
+                srcSet={`/images/hero/${imageName}-desktop.webp`}
+                type="image/webp"
+              />
+              <source
+                media="(min-width: 768px)"
+                srcSet={`/images/hero/${imageName}-desktop.png`}
+                type="image/png"
+              />
+              <img
+                src={isMobile ? `/images/hero/${imageName}-mobile.webp` : `/images/hero/${imageName}-desktop.webp`}
+                alt="Advanced 3D Printing & Additive Manufacturing"
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
+                className="absolute inset-0 w-full h-full object-cover select-none"
+              />
+            </picture>
           ) : (
             <div className="absolute inset-0 bg-[#06150D] overflow-hidden pointer-events-none">
               {/* Futuristic ambient lighting & tech grid pattern */}

@@ -12,6 +12,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Orbitron:wght@400;500;600;700;800;900&family=Bebas+Neue&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=DM+Sans:wght@400;500;700&family=Outfit:wght@400;500;600;700;800;900&family=Poppins:wght@400;500;600;700;800;900&family=Onest:wght@100..900&family=Playfair+Display:ital,wght@0,400;0,600;1,400;1,600&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet" />
     
+    <!-- Preload critical Hero LCP images with responsive media queries -->
+    <link rel="preload" as="image" href="/images/hero/hero-desktop.webp" type="image/webp" media="(min-width: 768px)" fetchpriority="high" />
+    <link rel="preload" as="image" href="/images/hero/hero-mobile.webp" type="image/webp" media="(max-width: 767px)" fetchpriority="high" />
+    
     <!-- Open Graph / Social Media -->
     <meta property="og:title" content="Shapio 3D Technologies" />
     <meta property="og:description" content="Premium 3D Printing Services. Custom prototypes, production parts, repair & rebuild." />
