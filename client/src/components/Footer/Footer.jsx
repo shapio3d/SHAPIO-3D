@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom'
 import { Printer, Globe, Share2, Link2, Mail, ArrowUpRight, Phone, Clock, ShieldCheck, CreditCard, MapPin } from 'lucide-react'
-import logoUrl from '../../assets/logo.png'
 
 const InstagramIcon = ({ size = 20, className = '' }) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
@@ -52,7 +51,18 @@ export default function Footer() {
           {/* Brand & Info */}
           <div className="lg:col-span-4 flex flex-col">
             <Link to="/" className="flex items-center gap-3 mb-6">
-              <img src={logoUrl} alt="Shapio 3D Logo" className="w-10 h-10 object-contain drop-shadow-lg" />
+              <picture>
+                <source srcSet="/images/logo/logo.webp" type="image/webp" />
+                <img 
+                  src="/images/logo/logo.png" 
+                  alt="Shapio 3D Logo" 
+                  width="40"
+                  height="40"
+                  loading="lazy"
+                  decoding="async"
+                  className="w-10 h-10 object-contain drop-shadow-lg" 
+                />
+              </picture>
               <span style={{ fontFamily: "'Orbitron', sans-serif" }} className="font-bold text-xl tracking-widest text-white">
                 SHAPIO <span className="text-emerald-400">3D</span>
               </span>

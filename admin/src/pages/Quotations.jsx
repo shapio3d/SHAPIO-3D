@@ -52,7 +52,8 @@ export default function Quotations() {
       items: f.items.map(item => ({
         ...item,
         cgstRatePct: type === 'taxless' ? 0 : 9,
-        sgstRatePct: type === 'taxless' ? 0 : 9
+        sgstRatePct: type === 'taxless' ? 0 : 9,
+        hsnSac: type === 'taxless' ? '' : item.hsnSac
       }))
     }))
   }
@@ -433,9 +434,9 @@ export default function Quotations() {
               <div className="w-full">
                 {/* Headers */}
                 <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-                  <div className={quoteType === 'taxless' ? "col-span-5" : "col-span-3"}>Item & Description</div>
-                  <div className="col-span-2">HSN/SAC</div>
-                  <div className="col-span-1 text-center">Qty</div>
+                  <div className={quoteType === 'taxless' ? "col-span-6" : "col-span-3"}>Item & Description</div>
+                  {quoteType !== 'taxless' && <div className="col-span-2">HSN/SAC</div>}
+                  <div className="col-span-2 text-center">Qty</div>
                   <div className="col-span-2 text-right">Rate (₹)</div>
                   {quoteType !== 'taxless' && (
                     <>
@@ -456,7 +457,7 @@ export default function Quotations() {
                         )}
                       </div>
                       <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      {quoteType !== 'taxless' && <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />}
                       <div className="grid grid-cols-2 gap-3">
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase mb-1 block">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
@@ -474,9 +475,9 @@ export default function Quotations() {
                     </div>
                     {/* Desktop grid row */}
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center group">
-                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${quoteType === 'taxless' ? 'col-span-5' : 'col-span-3'} px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors`} />
-                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
-                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${quoteType === 'taxless' ? 'col-span-6' : 'col-span-3'} px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors`} />
+                      {quoteType !== 'taxless' && <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />}
+                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
                       <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-right focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
                       {quoteType !== 'taxless' && (
                         <>

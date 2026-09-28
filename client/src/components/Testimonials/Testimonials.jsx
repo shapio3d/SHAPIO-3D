@@ -4,31 +4,31 @@ import { Quote, ChevronLeft, ChevronRight, Star } from 'lucide-react'
 const TESTIMONIALS = [
   {
     name: 'Rahul Sharma',
-    company: 'TechBuild Labs',
+    role: 'Client',
     text: 'Shapio 3D Technologies delivered our prototype in 48 hours with incredible precision. The surface finish was better than we expected from any FDM print.',
     rating: 5,
   },
   {
     name: 'Priya Nair',
-    company: 'ArchiVision Studio',
+    role: 'Customer',
     text: 'Their architectural models are stunning. The attention to detail at 0.1mm layer height made our client presentation a huge success.',
     rating: 5,
   },
   {
     name: 'Vikram Patel',
-    company: 'RoboWorks India',
+    role: 'Client',
     text: 'We\'ve been using Shapio 3D Technologies for all our robot housing needs. Fast turnaround, consistent quality, and the Nylon parts are incredibly durable.',
     rating: 5,
   },
   {
     name: 'Ananya Desai',
-    company: 'MediTech Solutions',
+    role: 'Customer',
     text: 'Custom medical device housings printed to exact specifications. Their design consultation saved us weeks of iteration time.',
     rating: 4,
   },
   {
     name: 'Karthik Reddy',
-    company: 'DroneForce',
+    role: 'Client',
     text: 'Lightweight carbon-nylon drone frames with perfect dimensional accuracy. Shapio 3D Technologies is our go-to for all aerospace-grade prototyping.',
     rating: 5,
   },
@@ -95,7 +95,7 @@ export default function Testimonials() {
               <p className="font-sub text-sm font-semibold text-white tracking-wide">
                 {TESTIMONIALS[current].name}
               </p>
-              <p className="text-xs text-k-silver-dim mt-1">{TESTIMONIALS[current].company}</p>
+              <p className="text-xs text-k-silver-dim mt-1 font-body">{TESTIMONIALS[current].role || 'Client'}</p>
             </div>
 
             {/* Background geometric accent */}

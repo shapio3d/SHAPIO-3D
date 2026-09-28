@@ -31,21 +31,48 @@ const getFinancialYearString = () => {
   }
 };
 
-const getNextInvoiceNumber = (invoicesList) => {
+const isInvoiceTaxless = (inv) => {
+  const invNo = String(inv.invoiceNumber || inv.invoiceNo || '');
+  if (invNo.includes('-TL/') || invNo.includes('/TL/') || invNo.startsWith('TL-') || invNo.startsWith('TL/')) {
+    return true;
+  }
+  const cgst = Number(inv.cgstAmount || 0);
+  const sgst = Number(inv.sgstAmount || 0);
+  const total = Number(inv.total || inv.totalAmount || 0);
+  if (cgst === 0 && sgst === 0 && total > 0) return true;
+  if (inv.items && inv.items.length > 0) {
+    return inv.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0);
+  }
+  return false;
+};
+
+const getNextInvoiceNumber = (invoicesList, type = 'taxed') => {
   const currentFY = getFinancialYearString();
   let maxSeq = 0;
+  
   (invoicesList || []).forEach(inv => {
     const raw = String(inv.invoiceNumber || inv.invoiceNo || '').trim();
-    const match = raw.match(/(\d+)(?:\D*)$/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (!isNaN(num) && num > maxSeq) {
-        maxSeq = num;
+    const hasTLPrefix = raw.includes('-TL/');
+    
+    // Only count invoices that match the requested series by prefix
+    if ((type === 'taxless' && hasTLPrefix) || (type === 'taxed' && !hasTLPrefix)) {
+      const match = raw.match(/(\d+)(?:\D*)$/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (!isNaN(num) && num > maxSeq) {
+          maxSeq = num;
+        }
       }
     }
   });
+
   const nextSeq = maxSeq + 1;
-  return `SHP3D/${currentFY}/${String(nextSeq).padStart(3, '0')}`;
+  const seqStr = String(nextSeq).padStart(3, '0');
+  
+  if (type === 'taxless') {
+    return `SHP3D-TL/${currentFY}/${seqStr}`;
+  }
+  return `SHP3D/${currentFY}/${seqStr}`;
 };
 
 function numberToWords(num) {
@@ -83,10 +110,12 @@ export default function Invoices() {
     setInvoiceType(type)
     setForm(f => ({
       ...f,
+      invoiceNumber: getNextInvoiceNumber(invoices, type),
       items: f.items.map(item => ({
         ...item,
         cgstRatePct: type === 'taxless' ? 0 : 9,
-        sgstRatePct: type === 'taxless' ? 0 : 9
+        sgstRatePct: type === 'taxless' ? 0 : 9,
+        hsnSac: type === 'taxless' ? '' : item.hsnSac
       }))
     }))
   }
@@ -234,7 +263,7 @@ export default function Invoices() {
     setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
     setForm({
       clientId: '',
-      invoiceNumber: getNextInvoiceNumber(invoices),
+      invoiceNumber: getNextInvoiceNumber(invoices, 'taxed'),
       issueDate: new Date().toISOString().split('T')[0],
       dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       terms: 'Due on Receipt',
@@ -651,9 +680,9 @@ export default function Invoices() {
               <div className="w-full">
                 {/* Headers */}
                 <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] text-slate-500 font-bold uppercase tracking-wider">
-                  <div className={invoiceType === 'taxless' ? "col-span-5" : "col-span-3"}>Description</div>
-                  <div className="col-span-2">HSN/SAC</div>
-                  <div className="col-span-1 text-center">Qty</div>
+                  <div className={invoiceType === 'taxless' ? "col-span-6" : "col-span-3"}>Description</div>
+                  {invoiceType !== 'taxless' && <div className="col-span-2">HSN/SAC</div>}
+                  <div className="col-span-2 text-center">Qty</div>
                   <div className="col-span-2 text-right">Rate (₹)</div>
                   {invoiceType !== 'taxless' && (
                     <>
@@ -674,7 +703,7 @@ export default function Invoices() {
                         )}
                       </div>
                       <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      {invoiceType !== 'taxless' && <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />}
                       <div className="grid grid-cols-2 gap-2">
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase">Qty</label><input type="number" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
                         <div><label className="text-[10px] font-bold text-slate-500 uppercase">Rate (₹)</label><input type="number" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="w-full px-3 py-2 bg-white border border-gray-200 rounded-lg text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" /></div>
@@ -692,9 +721,9 @@ export default function Invoices() {
                     </div>
                     {/* Desktop grid row */}
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center">
-                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${invoiceType === 'taxless' ? 'col-span-5' : 'col-span-3'} px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500`} />
-                      <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${invoiceType === 'taxless' ? 'col-span-6' : 'col-span-3'} px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500`} />
+                      {invoiceType !== 'taxless' && <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />}
+                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       {invoiceType !== 'taxless' && (
                         <>

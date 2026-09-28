@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link, useLocation, useNavigate } from 'react-router-dom'
 import { Menu, X } from 'lucide-react'
 
-import logoUrl from '../../assets/logo.png'
 
 const NAV_LINKS = [
   { label: 'Home', path: '/' },
@@ -56,11 +55,19 @@ export default function Navbar() {
         
         {/* Left: Image Logo (+ Mobile Brand Text) */}
         <Link to="/" className="flex items-center gap-2 sm:gap-2.5 group">
-          <img
-            src={logoUrl}
-            alt="Logo"
-            className="h-8 sm:h-10 object-contain transition-transform duration-300 group-hover:scale-105"
-          />
+          <picture>
+            <source srcSet="/images/logo/logo.webp" type="image/webp" />
+            <img
+              src="/images/logo/logo.png"
+              alt="Shapio 3D Logo"
+              width="40"
+              height="40"
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="h-8 w-8 sm:h-10 sm:w-10 object-contain transition-transform duration-300 group-hover:scale-105"
+            />
+          </picture>
           <span 
             className="md:hidden font-bold text-base sm:text-lg tracking-wider sm:tracking-widest text-white transition-opacity group-hover:opacity-80 whitespace-nowrap" 
             style={{ fontFamily: "'Orbitron', sans-serif" }}

@@ -81,13 +81,12 @@ const styles = StyleSheet.create({
   colTax: { width: '14%', textAlign: 'center' },
   colAmount: { width: '12%', textAlign: 'right', borderRight: 'none' },
 
-  // Taxless Table Columns (No CGST/SGST columns!)
+  // Taxless Table Columns (No HSN, No CGST/SGST columns!)
   colNoTaxless: { width: '5%' },
-  colDescTaxless: { width: '51%', textAlign: 'left' },
-  colHsnTaxless: { width: '14%', textAlign: 'center' },
-  colQtyTaxless: { width: '8%', textAlign: 'center' },
-  colRateTaxless: { width: '11%', textAlign: 'right' },
-  colAmountTaxless: { width: '11%', textAlign: 'right', borderRight: 'none' },
+  colDescTaxless: { width: '55%', textAlign: 'left' },
+  colQtyTaxless: { width: '12%', textAlign: 'center' },
+  colRateTaxless: { width: '14%', textAlign: 'right' },
+  colAmountTaxless: { width: '14%', textAlign: 'right', borderRight: 'none' },
 
   taxHeaderSplit: { flexDirection: 'row', borderTop: '0.5 solid #000', marginTop: 2, paddingTop: 2 },
   taxSubCol: { width: '50%', fontSize: 7, textAlign: 'center' },
@@ -320,8 +319,8 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.subtotal))),
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'CGST'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.cgstAmount))),
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'SGST'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.sgstAmount))),
-            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(invoice.total)}`)),
-            invoice.status !== 'PAID' ? e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `₹${formatCurrency(invoice.balanceDue)}`)) : null
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `Rs. ${formatCurrency(invoice.total)}`)),
+            invoice.status !== 'PAID' ? e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `Rs. ${formatCurrency(invoice.balanceDue)}`)) : null
           )
         ),
         
@@ -497,11 +496,10 @@ const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
           )
         ),
         
-        // Taxless Table Header (NO CGST! NO SGST!)
+        // Taxless Table Header (NO HSN! NO CGST! NO SGST!)
         e(View, { style: styles.tableHeader },
           e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
           e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
-          e(View, { style: [styles.thCell, styles.colHsnTaxless] }, e(Text, null, 'HSN/SAC')),
           e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
           e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
           e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
@@ -512,7 +510,6 @@ const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
           e(View, { style: styles.tableRow, key: i },
             e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
             e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colHsnTaxless] }, item.hsnSac || '-'),
             e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
             e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
             e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
@@ -536,8 +533,8 @@ const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
           ),
           e(View, { style: styles.bottomRight },
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(invoice.subtotal))),
-            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(invoice.total)}`)),
-            invoice.status !== 'PAID' ? e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `₹${formatCurrency(invoice.balanceDue)}`)) : null
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total'), e(Text, { style: styles.finalTotalValue }, `Rs. ${formatCurrency(invoice.total)}`)),
+            invoice.status !== 'PAID' ? e(View, { style: styles.balanceRow }, e(Text, { style: styles.totalsLabel }, 'Balance Due'), e(Text, { style: styles.totalsValue }, `Rs. ${formatCurrency(invoice.balanceDue)}`)) : null
           )
         ),
         
@@ -725,7 +722,7 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.subtotal))),
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'CGST'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.cgstAmount))),
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'SGST'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.sgstAmount))),
-            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total Quoted'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(quotation.totalAmount)}`))
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total Quoted'), e(Text, { style: styles.finalTotalValue }, `Rs. ${formatCurrency(quotation.totalAmount)}`))
           )
         ),
 
@@ -892,11 +889,10 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
           )
         ),
         
-        // Taxless Table Header (NO CGST! NO SGST!)
+        // Taxless Table Header (NO HSN! NO CGST! NO SGST!)
         e(View, { style: styles.tableHeader },
           e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
           e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
-          e(View, { style: [styles.thCell, styles.colHsnTaxless] }, e(Text, null, 'HSN/SAC')),
           e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
           e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
           e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
@@ -907,7 +903,6 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
           e(View, { style: styles.tableRow, key: i },
             e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
             e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colHsnTaxless] }, item.hsnSac || '-'),
             e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
             e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
             e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
@@ -924,7 +919,7 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
           ),
           e(View, { style: styles.bottomRight },
             e(View, { style: styles.totalsRow }, e(Text, { style: styles.totalsLabel }, 'Sub Total'), e(Text, { style: styles.totalsValue }, formatCurrency(quotation.subtotal))),
-            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total Quoted'), e(Text, { style: styles.finalTotalValue }, `₹${formatCurrency(quotation.totalAmount)}`))
+            e(View, { style: styles.finalTotalRow }, e(Text, { style: styles.finalTotalLabel }, 'Total Quoted'), e(Text, { style: styles.finalTotalValue }, `Rs. ${formatCurrency(quotation.totalAmount)}`))
           )
         ),
 
