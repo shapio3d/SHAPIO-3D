@@ -12,21 +12,33 @@ const STATUS_COLORS = {
 
 const API_URL = import.meta.env.VITE_API_URL || 'https://server.shapio3d.com/api';
 
-const getNextQuoteNumber = (quoteList) => {
+const getNextQuoteNumber = (quoteList, type = 'taxed') => {
   const year = new Date().getFullYear();
   let maxSeq = 0;
+  
   (quoteList || []).forEach(qt => {
     const raw = String(qt.quoteNo || '').trim();
-    const match = raw.match(/(\d+)(?:\D*)$/);
-    if (match) {
-      const num = parseInt(match[1], 10);
-      if (!isNaN(num) && num > maxSeq) {
-        maxSeq = num;
+    const hasTLPrefix = raw.includes('-TL-') || raw.startsWith('QT-TL');
+    
+    // Only count quotations that match the requested series by prefix
+    if ((type === 'taxless' && hasTLPrefix) || (type === 'taxed' && !hasTLPrefix)) {
+      const match = raw.match(/(\d+)(?:\D*)$/);
+      if (match) {
+        const num = parseInt(match[1], 10);
+        if (!isNaN(num) && num > maxSeq) {
+          maxSeq = num;
+        }
       }
     }
   });
+
   const nextSeq = maxSeq + 1;
-  return `QT-${year}-${String(nextSeq).padStart(3, '0')}`;
+  const seqStr = String(nextSeq).padStart(3, '0');
+  
+  if (type === 'taxless') {
+    return `QT-TL-${year}-${seqStr}`;
+  }
+  return `QT-${year}-${seqStr}`;
 };
 
 const getAuthHeader = async () => {
@@ -49,6 +61,7 @@ export default function Quotations() {
     setQuoteType(type)
     setForm(f => ({
       ...f,
+      quoteNo: getNextQuoteNumber(quotations, type),
       items: f.items.map(item => ({
         ...item,
         cgstRatePct: type === 'taxless' ? 0 : 9,
@@ -167,7 +180,7 @@ export default function Quotations() {
     setEditingId(null)
     setQuoteType('taxed')
     setForm({
-      quoteNo: getNextQuoteNumber(quotations),
+      quoteNo: getNextQuoteNumber(quotations, 'taxed'),
       customerId: clients[0]?.id || '', 
       items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: 'DRAFT',
@@ -187,14 +200,15 @@ export default function Quotations() {
         hsnSac: i.hsnSac || '',
         quantity: i.quantity,
         rate: i.rate,
-        cgstRatePct: i.cgstRatePct || 9,
-        sgstRatePct: i.sgstRatePct || 9
+        cgstRatePct: i.cgstRatePct ?? 9,
+        sgstRatePct: i.sgstRatePct ?? 9
       })) : [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: quote.status || 'DRAFT',
       validUntil: quote.validUntil ? quote.validUntil.split('T')[0] : '',
       notes: quote.notes || ''
     })
-    const isQuoteTaxless = quote.items?.length > 0 && quote.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0)
+    const isQuoteTaxless = (quote.quoteNo && (quote.quoteNo.includes('-TL-') || quote.quoteNo.startsWith('QT-TL'))) ||
+      (quote.items?.length > 0 && quote.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0))
     setQuoteType(isQuoteTaxless ? 'taxless' : 'taxed')
     setActiveTab('edit')
   }

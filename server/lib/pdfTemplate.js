@@ -944,8 +944,10 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
 
 // Dispatcher for Quotation
 const QuotationTemplate = ({ quotation, settings }) => {
+  const quoteNo = String(quotation.quoteNo || '');
+  const hasTLPrefix = quoteNo.includes('-TL-') || quoteNo.startsWith('QT-TL') || quoteNo.includes('/TL/');
   const totalTax = Number(quotation.cgstAmount || 0) + Number(quotation.sgstAmount || 0);
-  const isTaxless = totalTax === 0;
+  const isTaxless = hasTLPrefix || totalTax === 0;
   if (isTaxless) {
     return e(TaxlessQuotationTemplate, { quotation, settings });
   }

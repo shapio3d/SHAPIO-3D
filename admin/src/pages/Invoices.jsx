@@ -300,8 +300,18 @@ export default function Invoices() {
         : f.items,
       notes: qt.notes || f.notes,
     }))
-    const isQuoteTaxless = qt.items?.length > 0 && qt.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0)
-    setInvoiceType(isQuoteTaxless ? 'taxless' : 'taxed')
+    const isQuoteTaxless = (qt.quoteNo && (qt.quoteNo.includes('-TL-') || qt.quoteNo.startsWith('QT-TL'))) ||
+      (qt.items?.length > 0 && qt.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0));
+    const targetType = isQuoteTaxless ? 'taxless' : 'taxed';
+    setInvoiceType(targetType);
+    setForm(f => ({
+      ...f,
+      invoiceNumber: getNextInvoiceNumber(invoices, targetType),
+      items: f.items.map(item => ({
+        ...item,
+        hsnSac: targetType === 'taxless' ? '' : item.hsnSac
+      }))
+    }));
   }
 
   const openEdit = (invoice) => {
