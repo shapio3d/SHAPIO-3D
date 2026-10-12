@@ -81,6 +81,7 @@ model Invoice {
   totalAmount   Decimal       @default(0)
   status        InvoiceStatus @default(UNPAID)
   notes         String?
+  thankYouNote  String?
   shipAddress   String?
   placeOfSupply String?
   dueDate       DateTime?
@@ -113,6 +114,7 @@ model Quotation {
   status      String          @default("DRAFT") // DRAFT, SENT, ACCEPTED, REJECTED
   validUntil  DateTime?
   notes       String?
+  thankYouNote String?
   createdAt   DateTime        @default(now())
   updatedAt   DateTime        @updatedAt
 }

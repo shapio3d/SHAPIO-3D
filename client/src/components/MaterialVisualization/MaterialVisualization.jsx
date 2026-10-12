@@ -175,6 +175,8 @@ export default function MaterialVisualization({
           <img 
             src={displayedMaterial.image} 
             alt={`${displayedMaterial.name} Gear`} 
+            loading="lazy"
+            decoding="async"
             className={`absolute inset-0 w-full h-full object-cover transition-all duration-700 ${isAnimating ? 'blur-md scale-105 opacity-40' : 'blur-0 scale-100 opacity-100'}`}
           />
           

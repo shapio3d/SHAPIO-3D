@@ -280,7 +280,7 @@ export default function ContactSubmissions() {
  {/* Try to show image preview if it's an image, else provide a link */}
  {sub.file_url.match(/\.(jpeg|jpg|gif|png|webp)/i) ? (
  <div className="relative aspect-video w-full">
- <img src={sub.file_url} alt="Attachment" className="w-full h-full object-cover" />
+ <img src={sub.file_url} alt="Attachment" loading="lazy" decoding="async" className="w-full h-full object-cover" />
  <a href={sub.file_url} target="_blank" rel="noopener noreferrer" className="absolute inset-0 bg-gray-900/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white font-semibold text-sm ">
  Open Full Size
  </a>

@@ -103,7 +103,13 @@ export default function HowItWorks() {
                 {/* Visual Card / Image */}
                 <div className="step-image w-full lg:w-1/2 flex justify-center mt-10 lg:mt-0">
                   <div className="w-full aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl border border-white/10 relative group bg-k-card flex items-center justify-center">
-                    <img src={step.image} alt={step.title} className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                    <img 
+                      src={step.image} 
+                      alt={step.title} 
+                      loading="lazy" 
+                      decoding="async" 
+                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105" 
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
                   </div>
                 </div>

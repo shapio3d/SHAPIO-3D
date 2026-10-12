@@ -209,7 +209,13 @@ export default function ServicesPage() {
                          backgroundImage: 'linear-gradient(rgba(192,192,192,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(192,192,192,0.15) 1px, transparent 1px)',
                          backgroundSize: '30px 30px'
                        }} />
-                  <img src={service.image} alt={service.title} className="w-full h-[320px] object-cover rounded-lg relative z-10 opacity-90 hover:opacity-100 transition-opacity duration-300" />
+                  <img 
+                    src={service.image} 
+                    alt={service.title} 
+                    loading="lazy" 
+                    decoding="async" 
+                    className="w-full h-[320px] object-cover rounded-lg relative z-10 opacity-90 hover:opacity-100 transition-opacity duration-300" 
+                  />
                   {/* Corner accents */}
                   <div className="absolute top-4 left-4 w-8 h-8 border-t border-l border-k-silver/20" />
                   <div className="absolute bottom-4 right-4 w-8 h-8 border-b border-r border-k-silver/20" />

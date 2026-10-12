@@ -28,7 +28,7 @@ export default function Sidebar({ mobileMenuOpen, setMobileMenuOpen }) {
  {/* Logo */}
  <div className="h-16 flex items-center justify-start shrink-0 px-6 mt-4">
  <div className="flex items-center gap-3">
-   <img src={logoUrl} alt="Shapio Logo" className="h-8 w-auto object-contain drop-shadow-lg shrink-0" />
+   <img src={logoUrl} alt="Shapio Logo" loading="lazy" decoding="async" className="h-8 w-auto object-contain drop-shadow-lg shrink-0" />
    <span style={{ fontFamily: "'Orbitron', sans-serif" }} className="font-bold text-xl tracking-widest text-gray-900">
     SHAPIO<span className="text-emerald-500"> 3D</span>
     </span>

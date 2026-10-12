@@ -164,7 +164,8 @@ export default function Invoices() {
     shipAddress: '',
     items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
     status: 'UNPAID', 
-    notes: ''
+    notes: '',
+    thankYouNote: 'Thank you for your business!'
   })
 
   const saveMutation = useMutation({
@@ -272,7 +273,8 @@ export default function Invoices() {
       shipAddress: '',
       items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: 'UNPAID', 
-      notes: ''
+      notes: '',
+      thankYouNote: 'Thank you for your business!'
     })
     setActiveTab('create')
   }
@@ -299,6 +301,7 @@ export default function Invoices() {
           }))
         : f.items,
       notes: qt.notes || f.notes,
+      thankYouNote: qt.thankYouNote || f.thankYouNote || 'Thank you for your business!'
     }))
     const isQuoteTaxless = (qt.quoteNo && (qt.quoteNo.includes('-TL-') || qt.quoteNo.startsWith('QT-TL'))) ||
       (qt.items?.length > 0 && qt.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0));
@@ -336,7 +339,8 @@ export default function Invoices() {
         sgstRatePct: i.sgstRatePct
       })) : [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }],
       status: invoice.status || 'UNPAID', 
-      notes: invoice.notes || '' 
+      notes: invoice.notes || '',
+      thankYouNote: invoice.thankYouNote || 'Thank you for your business!'
     })
     const isInvTaxless = invoice.items?.length > 0 && invoice.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0)
     setInvoiceType(isInvTaxless ? 'taxless' : 'taxed')
@@ -692,7 +696,7 @@ export default function Invoices() {
                 <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] text-slate-500 font-bold uppercase tracking-wider">
                   <div className={invoiceType === 'taxless' ? "col-span-6" : "col-span-3"}>Description</div>
                   {invoiceType !== 'taxless' && <div className="col-span-2">HSN/SAC</div>}
-                  <div className="col-span-2 text-center">Qty</div>
+                  <div className={invoiceType === 'taxless' ? "col-span-2 text-center" : "col-span-1 text-center"}>Qty</div>
                   <div className="col-span-2 text-right">Rate (₹)</div>
                   {invoiceType !== 'taxless' && (
                     <>
@@ -733,12 +737,12 @@ export default function Invoices() {
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center">
                       <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${invoiceType === 'taxless' ? 'col-span-6' : 'col-span-3'} px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500`} />
                       {invoiceType !== 'taxless' && <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />}
-                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className={`${invoiceType === 'taxless' ? 'col-span-2 px-4' : 'col-span-1 px-2'} py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500`} />
                       <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-right focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                       {invoiceType !== 'taxless' && (
                         <>
-                          <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
-                          <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                          <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-2 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
+                          <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-2 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 text-center focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
                         </>
                       )}
                       <div className="col-span-2 flex items-center justify-end pr-10 relative">
@@ -791,8 +795,8 @@ export default function Invoices() {
 
           {/* Status & Notes */}
           <div className="space-y-4 pt-4 border-t border-gray-200">
-            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest pb-2">Status & Notes</h3>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <h3 className="text-sm font-bold text-gray-900 uppercase tracking-widest pb-2">Status, Notes & Compliments</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               <div>
                 <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Status</label>
                 <select value={form.status} onChange={e => setForm({...form, status: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 appearance-none">
@@ -804,7 +808,11 @@ export default function Invoices() {
               </div>
               <div>
                 <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Notes</label>
-                <textarea placeholder="e.g. Thank you for your business!" value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-14" />
+                <textarea placeholder="e.g. Terms and conditions..." value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-14" />
+              </div>
+              <div>
+                <label className="block text-xs font-bold text-gray-900 uppercase tracking-wider mb-2">Compliments / Thank You Note</label>
+                <textarea placeholder="e.g. Thank you for your business!" value={form.thankYouNote || ''} onChange={e => setForm({...form, thankYouNote: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-14" />
               </div>
             </div>
           </div>
@@ -833,7 +841,7 @@ export default function Invoices() {
           </button>
         </div>
         <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-2xl">
-          <iframe src={pdfUrl} className="w-full h-full border-0" title="PDF Preview" />
+          <iframe src={pdfUrl} loading="lazy" className="w-full h-full border-0" title="PDF Preview" />
         </div>
       </div>
     );

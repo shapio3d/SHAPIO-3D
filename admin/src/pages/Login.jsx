@@ -47,7 +47,13 @@ export default function Login() {
           {/* Logo & Branding */}
           <div className="flex flex-col items-center mb-8">
             <div className="w-16 h-16 rounded-2xl bg-white border border-slate-300/90 flex items-center justify-center mb-4 p-2.5 shadow-sm">
-              <img src={logoUrl} alt="Shapio 3D" className="w-full h-full object-contain drop-shadow-sm" />
+              <img 
+                src={logoUrl} 
+                alt="Shapio 3D" 
+                loading="lazy" 
+                decoding="async" 
+                className="w-full h-full object-contain drop-shadow-sm" 
+              />
             </div>
             <h1 style={{ fontFamily: "'Orbitron', sans-serif" }} className="text-2xl tracking-widest uppercase font-bold text-gray-900">
               SHAPIO <span className="text-emerald-500">3D</span>

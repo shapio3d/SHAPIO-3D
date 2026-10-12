@@ -40,20 +40,20 @@ const styles = StyleSheet.create({
   page: { padding: 30, fontFamily: 'Roboto', fontSize: 9, color: '#000', flexDirection: 'column', flex: 1 },
   pageBorder: { border: '0.5 solid #000', flex: 1, padding: 0 },
   
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 10, borderBottom: '0.5 solid #000' },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 8, borderBottom: '0.5 solid #000' },
   headerLeft: { flexDirection: 'row', width: '60%' },
-  logoBox: { width: 280, height: 110, marginRight: 15, justifyContent: 'center', alignItems: 'flex-start' },
+  logoBox: { width: 260, height: 85, marginRight: 15, justifyContent: 'center', alignItems: 'flex-start' },
   logo: { width: '100%', height: '100%', objectFit: 'contain' },
   companyDetails: { justifyContent: 'center' },
-  companyName: { fontSize: 14, fontWeight: 'bold' },
-  companyText: { fontSize: 8, marginTop: 2 },
+  companyName: { fontSize: 13, fontWeight: 'bold' },
+  companyText: { fontSize: 7.5, marginTop: 1.5 },
   
   headerRight: { width: '40%', alignItems: 'flex-end', justifyContent: 'flex-end' },
   taxInvoiceTitle: { fontSize: 18, fontWeight: 'bold' },
 
   metaGrid: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
-  metaLeft: { width: '50%', padding: 5, borderRight: '0.5 solid #000' },
-  metaRight: { width: '50%', padding: 5 },
+  metaLeft: { width: '50%', padding: 4, borderRight: '0.5 solid #000' },
+  metaRight: { width: '50%', padding: 4 },
   metaRow: { flexDirection: 'row', marginBottom: 2 },
   metaLabel: { width: 70, fontSize: 8 },
   metaColon: { width: 10, fontSize: 8 },
@@ -62,15 +62,15 @@ const styles = StyleSheet.create({
   addressGrid: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
   addressBoxLeft: { width: '50%', padding: 5 },
   addressBoxRight: { width: '50%', padding: 5 },
-  addressTitle: { fontSize: 8, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF', padding: 4, marginBottom: 4 },
+  addressTitle: { fontSize: 8, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF', padding: 3, marginBottom: 3 },
   addressName: { fontSize: 8, fontWeight: 'bold', marginBottom: 2 },
-  addressText: { fontSize: 8, marginBottom: 1 },
+  addressText: { fontSize: 7.8, marginBottom: 1 },
 
   tableHeader: { flexDirection: 'row', borderBottom: '0.5 solid #000', backgroundColor: '#334F39', color: '#FFF' },
-  thCell: { padding: 4, fontSize: 8, fontWeight: 'bold', borderRight: '0.5 solid #000', textAlign: 'center' },
+  thCell: { padding: 3, fontSize: 8, fontWeight: 'bold', borderRight: '0.5 solid #000', textAlign: 'center' },
   
   tableRow: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
-  tdCell: { padding: 4, fontSize: 8, borderRight: '0.5 solid #000' },
+  tdCell: { padding: 3, fontSize: 8, borderRight: '0.5 solid #000' },
   
   // Taxed Table Columns
   colNo: { width: '4%' },
@@ -98,36 +98,119 @@ const styles = StyleSheet.create({
   bottomLeft: { width: '60%', borderRight: '0.5 solid #000' },
   bottomRight: { width: '40%' },
 
-  wordsBox: { padding: 5, borderBottom: '0.5 solid #000' },
-  paymentBox: { padding: 5 },
-  paymentTitle: { fontSize: 8, marginBottom: 4 },
+  wordsBox: { padding: 4, borderBottom: '0.5 solid #000' },
+  paymentBox: { padding: 4 },
+  paymentTitle: { fontSize: 8, marginBottom: 3 },
   
-  totalsRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4 },
+  totalsRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 3 },
   totalsLabel: { fontSize: 8 },
   totalsValue: { fontSize: 8, fontWeight: 'bold' },
-  finalTotalRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4, borderTop: '0.5 solid #000', borderBottom: '0.5 solid #000' },
-  finalTotalLabel: { fontSize: 9, fontWeight: 'bold' },
-  finalTotalValue: { fontSize: 9, fontWeight: 'bold' },
-  balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 4 },
+  finalTotalRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 3, borderTop: '0.5 solid #000', borderBottom: '0.5 solid #000' },
+  finalTotalLabel: { fontSize: 8.5, fontWeight: 'bold' },
+  finalTotalValue: { fontSize: 8.5, fontWeight: 'bold' },
+  balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 3 },
 
-  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', minHeight: 55 },
-  signoffLeft: { width: '55%', padding: 8, justifyContent: 'center', borderRight: '0.5 solid #000' },
-  signoffRight: { width: '45%', padding: 8, alignItems: 'center', justifyContent: 'flex-end' },
+  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', minHeight: 46 },
+  signoffLeft: { width: '55%', padding: 6, justifyContent: 'center', borderRight: '0.5 solid #000' },
+  signoffRight: { width: '45%', padding: 6, alignItems: 'center', justifyContent: 'flex-end' },
   thankYouMessage: { fontSize: 9, fontWeight: 'bold', color: '#334F39', fontStyle: 'italic' },
-  termsNoteText: { fontSize: 7, color: '#444', marginTop: 3 },
-  signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', marginBottom: 20 },
-  signSpace: { height: 20 },
-  signLineText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', borderTop: '0.5 solid #000', paddingTop: 3, width: 140 },
+  termsNoteText: { fontSize: 7, color: '#444', marginTop: 2 },
+  signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
+  signSpace: { height: 12 },
+  signLineText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', borderTop: '0.5 solid #000', paddingTop: 2, width: 140 },
 
   hsnSummary: { marginTop: 0, borderBottom: '0.5 solid #000' },
-  hsnSummaryTitle: { fontSize: 8, padding: 4, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
+  hsnSummaryTitle: { fontSize: 8, padding: 3, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
   
-  footerText: { fontSize: 6, textAlign: 'center', marginTop: 'auto', paddingTop: 10, paddingBottom: 5 },
+  footerText: { fontSize: 6, textAlign: 'center', marginTop: 'auto', paddingTop: 8, paddingBottom: 4 },
 
   statusBadgePaid: { fontSize: 10, fontWeight: 'bold', color: '#166534', backgroundColor: '#dcfce7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
   statusBadgeUnpaid: { fontSize: 10, fontWeight: 'bold', color: '#FFF', backgroundColor: '#000000', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
   statusBadgeOverdue: { fontSize: 10, fontWeight: 'bold', color: '#92400e', backgroundColor: '#fef3c7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
+
+  // Quotation multi-page layout & auto-adjusting notes styles
+  quotePage: { padding: 20, paddingBottom: 28, fontFamily: 'Roboto', fontSize: 9, color: '#000' },
+  pageBorderFrame: {
+    position: 'absolute',
+    top: 14,
+    left: 14,
+    right: 14,
+    bottom: 14,
+    border: '0.5 solid #000',
+  },
+  fixedFooter: {
+    position: 'absolute',
+    bottom: 14,
+    left: 14,
+    right: 14,
+    height: 16,
+    borderTop: '0.5 solid #000',
+    paddingHorizontal: 8,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+  },
+  fixedFooterText: {
+    fontSize: 7,
+    color: '#555',
+  },
+  notesContentText: {
+    color: '#111',
+  },
+  bottomSegment: {
+    borderTop: '0.5 solid #000',
+    marginTop: -0.5,
+  },
 });
+
+// Helper: auto-calculate dynamic width & length styling for notes tab
+const getAddressNotesLayout = (notesText) => {
+  const trimmed = (notesText || '').trim();
+  if (!trimmed) {
+    return {
+      hasNotes: false,
+      leftWidth: '100%',
+      rightWidth: '0%',
+      notesFontSize: 7.5,
+      notesLineHeight: 1.3
+    };
+  }
+
+  const lines = trimmed.split('\n').filter(l => l.trim().length > 0);
+  const totalChars = trimmed.length;
+  const lineCount = lines.length;
+
+  // Auto-adjust width based on notes volume:
+  // If notes are heavy (many lines or many characters), widen the notes box to 62%
+  // so long clauses don't wrap unnecessarily, saving vertical space.
+  if (lineCount >= 5 || totalChars > 220) {
+    return {
+      hasNotes: true,
+      leftWidth: '38%',
+      rightWidth: '62%',
+      notesFontSize: 7.2,
+      notesLineHeight: 1.3
+    };
+  } else if (lineCount >= 3 || totalChars > 110) {
+    return {
+      hasNotes: true,
+      leftWidth: '44%',
+      rightWidth: '56%',
+      notesFontSize: 7.5,
+      notesLineHeight: 1.35
+    };
+  } else {
+    // Short notes (1-2 lines)
+    return {
+      hasNotes: true,
+      leftWidth: '50%',
+      rightWidth: '50%',
+      notesFontSize: 8,
+      notesLineHeight: 1.35
+    };
+  }
+};
 
 const formatDate = (dateStr) => {
   if (!dateStr) return '-';
@@ -151,6 +234,37 @@ const generateTotalInWords = (amount) => {
     return '';
   }
 };
+
+const renderTaxedTableHeader = () => e(View, { style: styles.tableHeader },
+  e(Text, { style: [styles.thCell, styles.colNo] }, '#'),
+  e(Text, { style: [styles.thCell, styles.colDesc] }, 'Item & Description'),
+  e(View, { style: [styles.thCell, styles.colHsn] }, e(Text, null, 'HSN'), e(Text, null, '/SAC')),
+  e(Text, { style: [styles.thCell, styles.colQty] }, 'Qty'),
+  e(Text, { style: [styles.thCell, styles.colRate] }, 'Rate'),
+  e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
+    e(Text, { style: { padding: 2 } }, 'CGST'),
+    e(View, { style: styles.taxHeaderSplit },
+      e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
+      e(Text, { style: styles.taxSubCol }, 'Amt')
+    )
+  ),
+  e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
+    e(Text, { style: { padding: 2 } }, 'SGST'),
+    e(View, { style: styles.taxHeaderSplit },
+      e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
+      e(Text, { style: styles.taxSubCol }, 'Amt')
+    )
+  ),
+  e(Text, { style: [styles.thCell, styles.colAmount] }, 'Amount')
+);
+
+const renderTaxlessTableHeader = () => e(View, { style: styles.tableHeader },
+  e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
+  e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
+  e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
+  e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
+  e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
+);
 
 // ─────────────────────────────────────────────────────────────
 // 1. REGULAR TAXED INVOICE TEMPLATE
@@ -253,55 +367,32 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
         ),
         
         // Taxed Table Header (with CGST & SGST)
-        e(View, { style: styles.tableHeader },
-          e(Text, { style: [styles.thCell, styles.colNo] }, '#'),
-          e(Text, { style: [styles.thCell, styles.colDesc] }, 'Item & Description'),
-          e(View, { style: [styles.thCell, styles.colHsn] }, e(Text, null, 'HSN'), e(Text, null, '/SAC')),
-          e(Text, { style: [styles.thCell, styles.colQty] }, 'Qty'),
-          e(Text, { style: [styles.thCell, styles.colRate] }, 'Rate'),
-          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
-            e(Text, { style: { padding: 2 } }, 'CGST'),
-            e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
-              e(Text, { style: styles.taxSubCol }, 'Amt')
-            )
-          ),
-          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
-            e(Text, { style: { padding: 2 } }, 'SGST'),
-            e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
-              e(Text, { style: styles.taxSubCol }, 'Amt')
-            )
-          ),
-          e(Text, { style: [styles.thCell, styles.colAmount] }, 'Amount')
-        ),
+        renderTaxedTableHeader(),
         
         // Taxed Items Rows
-        items.map((item, i) => 
-          e(View, { style: styles.tableRow, key: i },
-            e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
-            e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
-            e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
-            e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
-            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
-              )
-            ),
-            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
-              )
-            ),
-            e(Text, { style: [styles.tdCell, styles.colAmount] }, formatCurrency(item.amount))
-          )
-        ),
+        items.map((item, i) => e(View, { wrap: false, style: styles.tableRow, key: i },
+          e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
+          e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
+          e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
+          e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
+          e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
+          e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
+            e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+              e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
+              e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
+            )
+          ),
+          e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
+            e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+              e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
+              e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
+            )
+          ),
+          e(Text, { style: [styles.tdCell, styles.colAmount] }, formatCurrency(item.amount))
+        )),
         
         // Bottom Totals Section
-        e(View, { style: styles.bottomSection },
+        e(View, { wrap: false, style: styles.bottomSection },
           e(View, { style: styles.bottomLeft },
             e(View, { style: styles.wordsBox },
               e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
@@ -325,7 +416,7 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
         ),
         
         // HSN Summary (Only for Taxed Invoices)
-        Object.keys(hsnSummary).length > 0 ? e(View, { style: styles.hsnSummary },
+        Object.keys(hsnSummary).length > 0 ? e(View, { wrap: false, style: styles.hsnSummary },
           e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
           e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
@@ -353,7 +444,7 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
           ),
           Object.entries(hsnSummary).map(([hsn, vals], i) => {
             const totalTax = vals.cgst + vals.sgst;
-            return e(View, { style: styles.tableRow, key: i },
+            return e(View, { wrap: false, style: styles.tableRow, key: i },
               e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
               e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
@@ -371,7 +462,7 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
               e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
             );
           }),
-          e(View, { style: styles.tableRow },
+          e(View, { wrap: false, style: styles.tableRow },
             e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
             e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
             e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
@@ -391,9 +482,9 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
         ) : null,
 
         // Authorized Sign & Thank You
-        e(View, { style: styles.signoffSection },
+        e(View, { wrap: false, style: styles.signoffSection },
           e(View, { style: styles.signoffLeft },
-            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
+            e(Text, { style: styles.thankYouMessage }, invoice.thankYouNote || 'Thank you for your business!'),
             invoice.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${invoice.notes}`) : null
           ),
           e(View, { style: styles.signoffRight },
@@ -497,27 +588,19 @@ const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
         ),
         
         // Taxless Table Header (NO HSN! NO CGST! NO SGST!)
-        e(View, { style: styles.tableHeader },
-          e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
-          e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
-          e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
-          e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
-          e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
-        ),
+        renderTaxlessTableHeader(),
         
         // Taxless Items Rows
-        items.map((item, i) => 
-          e(View, { style: styles.tableRow, key: i },
-            e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
-            e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
-            e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
-            e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
-          )
-        ),
+        items.map((item, i) => e(View, { wrap: false, style: styles.tableRow, key: i },
+          e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
+          e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
+          e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
+          e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
+          e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
+        )),
         
         // Bottom Totals (Clean Subtotal + Total, NO CGST/SGST lines)
-        e(View, { style: styles.bottomSection },
+        e(View, { wrap: false, style: styles.bottomSection },
           e(View, { style: styles.bottomLeft },
             e(View, { style: styles.wordsBox },
               e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
@@ -539,9 +622,9 @@ const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
         ),
         
         // Authorized Sign & Thank You
-        e(View, { style: styles.signoffSection },
+        e(View, { wrap: false, style: styles.signoffSection },
           e(View, { style: styles.signoffLeft },
-            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
+            e(Text, { style: styles.thankYouMessage }, invoice.thankYouNote || 'Thank you for your business!'),
             invoice.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${invoice.notes}`) : null
           ),
           e(View, { style: styles.signoffRight },
@@ -612,10 +695,21 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
     hsnSummary[hsn].sgst += Number(item.sgstAmount || 0);
   });
 
+  const layout = getAddressNotesLayout(quotation.notes);
+
   return e(Document, null,
-    e(Page, { size: 'A4', style: styles.page },
-      e(View, { style: styles.pageBorder },
-        
+    e(Page, { size: 'A4', style: styles.quotePage },
+      // Repeating border and footer on every page
+      e(View, { fixed: true, style: styles.pageBorderFrame }),
+      e(View, { fixed: true, style: styles.fixedFooter },
+        e(Text, { style: styles.fixedFooterText }, 'This is a Computer Generated Document'),
+        e(Text, { 
+          style: styles.fixedFooterText, 
+          render: ({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}` 
+        })
+      ),
+
+      e(View, null,
         // Header
         e(View, { style: styles.headerRow },
           e(View, { style: styles.headerLeft },
@@ -647,71 +741,69 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
           )
         ),
         
-        // Address
+        // Auto-Adjusting Address & Notes Row (Width & Length!)
         e(View, { style: styles.addressGrid },
-          e(View, { style: styles.addressBoxLeft },
+          e(View, { 
+            style: [
+              styles.addressBoxLeft, 
+              { 
+                width: layout.leftWidth, 
+                borderRight: layout.hasNotes ? '0.5 solid #000' : 'none' 
+              }
+            ] 
+          },
             e(Text, { style: styles.addressTitle }, 'Quotation For'),
             e(Text, { style: styles.addressName }, client.name),
             e(Text, { style: styles.addressText }, client.billAddress),
             client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null,
             client.gstNumber ? e(Text, { style: styles.addressText }, `GSTIN: ${client.gstNumber}`) : null
           ),
-          e(View, { style: styles.addressBoxRight },
+          layout.hasNotes ? e(View, { 
+            style: [
+              styles.addressBoxRight, 
+              { width: layout.rightWidth }
+            ] 
+          },
             e(Text, { style: styles.addressTitle }, 'Notes'),
-            e(Text, { style: styles.addressText }, quotation.notes || '')
-          )
+            e(Text, { 
+              style: [
+                styles.notesContentText, 
+                { 
+                  fontSize: layout.notesFontSize, 
+                  lineHeight: layout.notesLineHeight 
+                }
+              ] 
+            }, quotation.notes)
+          ) : null
         ),
         
         // Taxed Table Header (with CGST & SGST)
-        e(View, { style: styles.tableHeader },
-          e(Text, { style: [styles.thCell, styles.colNo] }, '#'),
-          e(Text, { style: [styles.thCell, styles.colDesc] }, 'Item & Description'),
-          e(View, { style: [styles.thCell, styles.colHsn] }, e(Text, null, 'HSN'), e(Text, null, '/SAC')),
-          e(Text, { style: [styles.thCell, styles.colQty] }, 'Qty'),
-          e(Text, { style: [styles.thCell, styles.colRate] }, 'Rate'),
-          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
-            e(Text, { style: { padding: 2 } }, 'CGST'),
-            e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
-              e(Text, { style: styles.taxSubCol }, 'Amt')
-            )
-          ),
-          e(View, { style: [styles.thCell, styles.colTax, { padding: 0 }] },
-            e(Text, { style: { padding: 2 } }, 'SGST'),
-            e(View, { style: styles.taxHeaderSplit },
-              e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, '%'),
-              e(Text, { style: styles.taxSubCol }, 'Amt')
-            )
-          ),
-          e(Text, { style: [styles.thCell, styles.colAmount] }, 'Amount')
-        ),
+        renderTaxedTableHeader(),
         
         // Taxed Items Rows
-        items.map((item, i) => 
-          e(View, { style: styles.tableRow, key: i },
-            e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
-            e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
-            e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
-            e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
-            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
-              )
-            ),
-            e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
-              )
-            ),
-            e(Text, { style: [styles.tdCell, styles.colAmount] }, formatCurrency(item.amount))
-          )
-        ),
+        items.map((item, i) => e(View, { wrap: false, style: styles.tableRow, key: i },
+          e(Text, { style: [styles.tdCell, styles.colNo, { textAlign: 'center' }] }, i + 1),
+          e(Text, { style: [styles.tdCell, styles.colDesc] }, item.description),
+          e(Text, { style: [styles.tdCell, styles.colHsn] }, item.hsnSac || '-'),
+          e(Text, { style: [styles.tdCell, styles.colQty] }, Number(item.quantity).toString()),
+          e(Text, { style: [styles.tdCell, styles.colRate] }, formatCurrency(item.rate)),
+          e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
+            e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+              e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.cgstRatePct}%`),
+              e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.cgstAmount))
+            )
+          ),
+          e(View, { style: [styles.tdCell, styles.colTax, { padding: 0 }] },
+            e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+              e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${item.sgstRatePct}%`),
+              e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(item.sgstAmount))
+            )
+          ),
+          e(Text, { style: [styles.tdCell, styles.colAmount] }, formatCurrency(item.amount))
+        )),
         
         // Bottom Totals Section
-        e(View, { style: styles.bottomSection },
+        e(View, { wrap: false, style: styles.bottomSection },
           e(View, { style: styles.bottomLeft },
             e(View, { style: styles.wordsBox },
               e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
@@ -727,7 +819,7 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
         ),
 
         // HSN Summary (Only for Taxed Quotations)
-        Object.keys(hsnSummary).length > 0 ? e(View, { style: styles.hsnSummary },
+        Object.keys(hsnSummary).length > 0 ? e(View, { wrap: false, style: styles.hsnSummary },
           e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
           e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
             e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
@@ -755,7 +847,7 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
           ),
           Object.entries(hsnSummary).map(([hsn, vals], i) => {
             const totalTax = vals.cgst + vals.sgst;
-            return e(View, { style: styles.tableRow, key: i },
+            return e(View, { wrap: false, style: styles.tableRow, key: i },
               e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
               e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
               e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
@@ -773,7 +865,7 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
               e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
             );
           }),
-          e(View, { style: styles.tableRow },
+          e(View, { wrap: false, style: styles.tableRow },
             e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
             e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
             e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
@@ -792,20 +884,17 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
           )
         ) : null,
 
-        // Authorized Sign & Thank You
-        e(View, { style: styles.signoffSection },
+        // Authorized Sign & Thank You (Clean - No duplicated notes!)
+        e(View, { wrap: false, style: styles.signoffSection },
           e(View, { style: styles.signoffLeft },
-            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
-            quotation.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${quotation.notes}`) : null
+            e(Text, { style: styles.thankYouMessage }, quotation.thankYouNote || 'Thank you for your business!')
           ),
           e(View, { style: styles.signoffRight },
             e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
             e(View, { style: styles.signSpace }),
             e(Text, { style: styles.signLineText }, 'Authorized Sign')
           )
-        ),
-        
-        e(Text, { style: styles.footerText }, 'This is a Computer Generated Document')
+        )
       )
     )
   );
@@ -841,10 +930,21 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
   const client = quotation.customer || {};
   const items = quotation.items || [];
 
+  const layout = getAddressNotesLayout(quotation.notes);
+
   return e(Document, null,
-    e(Page, { size: 'A4', style: styles.page },
-      e(View, { style: styles.pageBorder },
-        
+    e(Page, { size: 'A4', style: styles.quotePage },
+      // Repeating border and footer on every page
+      e(View, { fixed: true, style: styles.pageBorderFrame }),
+      e(View, { fixed: true, style: styles.fixedFooter },
+        e(Text, { style: styles.fixedFooterText }, 'This is a Computer Generated Document'),
+        e(Text, { 
+          style: styles.fixedFooterText, 
+          render: ({ pageNumber, totalPages }) => `Page ${pageNumber} of ${totalPages}` 
+        })
+      ),
+
+      e(View, null,
         // Header
         e(View, { style: styles.headerRow },
           e(View, { style: styles.headerLeft },
@@ -875,42 +975,55 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
           )
         ),
         
-        // Address
+        // Auto-Adjusting Address & Notes Row (Width & Length!)
         e(View, { style: styles.addressGrid },
-          e(View, { style: styles.addressBoxLeft },
+          e(View, { 
+            style: [
+              styles.addressBoxLeft, 
+              { 
+                width: layout.leftWidth, 
+                borderRight: layout.hasNotes ? '0.5 solid #000' : 'none' 
+              }
+            ] 
+          },
             e(Text, { style: styles.addressTitle }, 'Quotation For'),
             e(Text, { style: styles.addressName }, client.name),
             e(Text, { style: styles.addressText }, client.billAddress),
             client.phone ? e(Text, { style: [styles.addressText, { marginTop: 4 }] }, `Ph No: ${client.phone}`) : null
           ),
-          e(View, { style: styles.addressBoxRight },
+          layout.hasNotes ? e(View, { 
+            style: [
+              styles.addressBoxRight, 
+              { width: layout.rightWidth }
+            ] 
+          },
             e(Text, { style: styles.addressTitle }, 'Notes'),
-            e(Text, { style: styles.addressText }, quotation.notes || '')
-          )
+            e(Text, { 
+              style: [
+                styles.notesContentText, 
+                { 
+                  fontSize: layout.notesFontSize, 
+                  lineHeight: layout.notesLineHeight 
+                }
+              ] 
+            }, quotation.notes)
+          ) : null
         ),
         
         // Taxless Table Header (NO HSN! NO CGST! NO SGST!)
-        e(View, { style: styles.tableHeader },
-          e(Text, { style: [styles.thCell, styles.colNoTaxless] }, '#'),
-          e(Text, { style: [styles.thCell, styles.colDescTaxless] }, 'Item & Description'),
-          e(Text, { style: [styles.thCell, styles.colQtyTaxless] }, 'Qty'),
-          e(Text, { style: [styles.thCell, styles.colRateTaxless] }, 'Rate'),
-          e(Text, { style: [styles.thCell, styles.colAmountTaxless] }, 'Amount')
-        ),
+        renderTaxlessTableHeader(),
         
         // Taxless Items Rows
-        items.map((item, i) => 
-          e(View, { style: styles.tableRow, key: i },
-            e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
-            e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
-            e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
-            e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
-            e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
-          )
-        ),
+        items.map((item, i) => e(View, { wrap: false, style: styles.tableRow, key: i },
+          e(Text, { style: [styles.tdCell, styles.colNoTaxless, { textAlign: 'center' }] }, i + 1),
+          e(Text, { style: [styles.tdCell, styles.colDescTaxless] }, item.description),
+          e(Text, { style: [styles.tdCell, styles.colQtyTaxless] }, Number(item.quantity).toString()),
+          e(Text, { style: [styles.tdCell, styles.colRateTaxless] }, formatCurrency(item.rate)),
+          e(Text, { style: [styles.tdCell, styles.colAmountTaxless] }, formatCurrency(item.amount))
+        )),
         
         // Bottom Totals Section (Clean Subtotal + Total, NO CGST/SGST lines)
-        e(View, { style: styles.bottomSection },
+        e(View, { wrap: false, style: styles.bottomSection },
           e(View, { style: styles.bottomLeft },
             e(View, { style: styles.wordsBox },
               e(Text, { style: { fontSize: 8 } }, 'Total In Words'),
@@ -923,20 +1036,17 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
           )
         ),
 
-        // Authorized Sign & Thank You
-        e(View, { style: styles.signoffSection },
+        // Authorized Sign & Thank You (Clean - No duplicated notes!)
+        e(View, { wrap: false, style: styles.signoffSection },
           e(View, { style: styles.signoffLeft },
-            e(Text, { style: styles.thankYouMessage }, 'Thank you for your business!'),
-            quotation.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${quotation.notes}`) : null
+            e(Text, { style: styles.thankYouMessage }, quotation.thankYouNote || 'Thank you for your business!')
           ),
           e(View, { style: styles.signoffRight },
             e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
             e(View, { style: styles.signSpace }),
             e(Text, { style: styles.signLineText }, 'Authorized Sign')
           )
-        ),
-        
-        e(Text, { style: styles.footerText }, 'This is a Computer Generated Document')
+        )
       )
     )
   );

@@ -110,7 +110,7 @@ const HeroSection = ({ videoName, imageName, overlay = 'light', isMobile, videoS
               controls={false}
               disablePictureInPicture
               disableRemotePlayback
-              preload="auto"
+              preload="metadata"
               style={{ transform: `scale(${videoScale})`, pointerEvents: 'none' }}
               className="absolute inset-0 w-full h-full object-cover"
             />
@@ -313,6 +313,8 @@ const ImageCarousel = ({ tabs, scrollDirection = 'left' }) => {
             <img
               src={tab.image}
               alt={tab.title}
+              loading="lazy"
+              decoding="async"
               className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-gradient-to-t from-black/95 via-black/40 to-transparent pointer-events-none" />

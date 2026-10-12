@@ -42,8 +42,13 @@ export default function Gallery() {
               {/* Image with geometric design fallback */}
               <div className="w-full h-full relative flex items-center justify-center"
                    style={{ background: `linear-gradient(135deg, ${item.color}, #0a0a0a)` }}>
-                {/* Image */}
-                <img src={item.image} alt={item.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" />
+                <img 
+                  src={item.image} 
+                  alt={item.title} 
+                  loading="lazy" 
+                  decoding="async" 
+                  className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500" 
+                />
                 
                 {/* Grid pattern overlay */}
                 <div className="absolute inset-0 opacity-20"
@@ -78,7 +83,13 @@ export default function Gallery() {
             </button>
             <div className="w-full h-48 sm:h-64 md:h-80 rounded-xl mb-6 flex items-center justify-center relative overflow-hidden"
                  style={{ background: `linear-gradient(135deg, ${lightbox.color}, #0a0a0a)` }}>
-              <img src={lightbox.image} alt={lightbox.title} className="absolute inset-0 w-full h-full object-cover" />
+              <img 
+                src={lightbox.image} 
+                alt={lightbox.title} 
+                loading="lazy" 
+                decoding="async" 
+                className="absolute inset-0 w-full h-full object-cover" 
+              />
             </div>
             <span className="text-xs text-k-silver-dim uppercase tracking-[0.2em]">{lightbox.category}</span>
             <h3 className="font-sub text-xl font-bold text-white mt-2">{lightbox.title}</h3>

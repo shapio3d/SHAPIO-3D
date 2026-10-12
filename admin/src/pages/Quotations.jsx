@@ -97,7 +97,8 @@ export default function Quotations() {
     items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
     status: 'DRAFT', 
     validUntil: '',
-    notes: ''
+    notes: '',
+    thankYouNote: 'Thank you for your business!'
   };
   const [form, setForm] = useState(initialForm);
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -185,7 +186,8 @@ export default function Quotations() {
       items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: 'DRAFT',
       validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-      notes: ''
+      notes: '',
+      thankYouNote: 'Thank you for your business!'
     })
     setActiveTab('create')
   }
@@ -205,7 +207,8 @@ export default function Quotations() {
       })) : [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: quote.status || 'DRAFT',
       validUntil: quote.validUntil ? quote.validUntil.split('T')[0] : '',
-      notes: quote.notes || ''
+      notes: quote.notes || '',
+      thankYouNote: quote.thankYouNote || 'Thank you for your business!'
     })
     const isQuoteTaxless = (quote.quoteNo && (quote.quoteNo.includes('-TL-') || quote.quoteNo.startsWith('QT-TL'))) ||
       (quote.items?.length > 0 && quote.items.every(i => Number(i.cgstRatePct ?? 9) === 0 && Number(i.sgstRatePct ?? 9) === 0))
@@ -360,7 +363,7 @@ export default function Quotations() {
           </button>
         </div>
         <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
-          <iframe src={pdfUrl} className="w-full h-full border-0" title="PDF Preview" />
+          <iframe src={pdfUrl} loading="lazy" className="w-full h-full border-0" title="PDF Preview" />
         </div>
       </div>
     );
@@ -450,7 +453,7 @@ export default function Quotations() {
                 <div className="hidden md:grid grid-cols-12 gap-3 mb-2 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
                   <div className={quoteType === 'taxless' ? "col-span-6" : "col-span-3"}>Item & Description</div>
                   {quoteType !== 'taxless' && <div className="col-span-2">HSN/SAC</div>}
-                  <div className="col-span-2 text-center">Qty</div>
+                  <div className={quoteType === 'taxless' ? "col-span-2 text-center" : "col-span-1 text-center"}>Qty</div>
                   <div className="col-span-2 text-right">Rate (₹)</div>
                   {quoteType !== 'taxless' && (
                     <>
@@ -491,12 +494,12 @@ export default function Quotations() {
                     <div className="hidden md:grid grid-cols-12 gap-3 mb-3 items-center group">
                       <input placeholder="Description" value={item.description} onChange={e => updateItem(i, 'description', e.target.value)} className={`${quoteType === 'taxless' ? 'col-span-6' : 'col-span-3'} px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors`} />
                       {quoteType !== 'taxless' && <input placeholder="HSN/SAC" value={item.hsnSac} onChange={e => updateItem(i, 'hsnSac', e.target.value)} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />}
-                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                      <input type="number" placeholder="Qty" value={item.quantity === '' ? '' : item.quantity} onChange={e => updateItem(i, 'quantity', e.target.value.replace(/^0+(?=\d)/, ''))} className={`${quoteType === 'taxless' ? 'col-span-2 px-4' : 'col-span-1 px-2'} py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors`} />
                       <input type="number" placeholder="Rate" value={item.rate === '' ? '' : item.rate} onChange={e => updateItem(i, 'rate', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-2 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-right focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
                       {quoteType !== 'taxless' && (
                         <>
-                          <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
-                          <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                          <input type="number" placeholder="CGST %" value={item.cgstRatePct === '' ? '' : item.cgstRatePct} onChange={e => updateItem(i, 'cgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-2 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+                          <input type="number" placeholder="SGST %" value={item.sgstRatePct === '' ? '' : item.sgstRatePct} onChange={e => updateItem(i, 'sgstRatePct', e.target.value.replace(/^0+(?=\d)/, ''))} className="col-span-1 px-2 py-2.5 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 text-center focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
                         </>
                       )}
                       <div className="col-span-2 flex items-center justify-between">
@@ -516,9 +519,15 @@ export default function Quotations() {
           </div>
 
           <div className="flex flex-col md:flex-row justify-between gap-8 pt-4 border-t border-gray-200">
-            <div className="flex-1">
-              <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Notes</label>
-              <textarea placeholder="Any special instructions or terms..." value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} rows={4} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-32 transition-colors" />
+            <div className="flex-1 space-y-4">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Notes</label>
+                <textarea placeholder="Any special instructions or terms..." value={form.notes} onChange={e => setForm({...form, notes: e.target.value})} rows={3} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 resize-none h-24 transition-colors" />
+              </div>
+              <div>
+                <label className="block text-[11px] font-bold text-slate-500 uppercase tracking-wider mb-2">Compliments / Thank You Note</label>
+                <input type="text" placeholder="e.g. Thank you for your business!" value={form.thankYouNote || ''} onChange={e => setForm({...form, thankYouNote: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:bg-white focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors" />
+              </div>
             </div>
 
             {/* Totals */}

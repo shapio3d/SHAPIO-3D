@@ -151,6 +151,8 @@ export default function TrackProcess() {
                     <img 
                       src={processData.fileUrl} 
                       alt="Reference attachment" 
+                      loading="lazy"
+                      decoding="async"
                       className="w-full max-h-[300px] object-contain bg-black/50"
                       onError={(e) => {
                         e.target.style.display = 'none'

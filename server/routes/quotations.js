@@ -31,7 +31,7 @@ router.get('/', requireSupabaseAuth, async (req, res, next) => {
 // POST /api/quotations
 router.post('/', requireSupabaseAuth, async (req, res, next) => {
   try {
-    const { quoteNo, customerId, items, status, validUntil, notes } = req.body;
+    const { quoteNo, customerId, items, status, validUntil, notes, thankYouNote } = req.body;
 
     let totalAmount = 0;
     
@@ -68,6 +68,7 @@ router.post('/', requireSupabaseAuth, async (req, res, next) => {
         status: status || 'DRAFT',
         validUntil: validUntil ? new Date(validUntil) : null,
         notes,
+        thankYouNote: thankYouNote || null,
         items: {
           create: mappedItems
         }
@@ -88,7 +89,7 @@ router.post('/', requireSupabaseAuth, async (req, res, next) => {
 router.put('/:id', requireSupabaseAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { quoteNo, customerId, items, status, validUntil, notes } = req.body;
+    const { quoteNo, customerId, items, status, validUntil, notes, thankYouNote } = req.body;
 
     let totalAmount = 0;
     
@@ -132,6 +133,7 @@ router.put('/:id', requireSupabaseAuth, async (req, res, next) => {
         status,
         validUntil: validUntil ? new Date(validUntil) : null,
         notes,
+        thankYouNote: thankYouNote || null,
         items: {
           create: mappedItems
         }
@@ -238,6 +240,88 @@ router.get('/:id/pdf', requireSupabaseAuth, async (req, res, next) => {
 
   } catch (error) {
     console.error('PDF Generation Error:', error);
+    next(error);
+  }
+});
+
+// POST /api/quotations/preview
+router.post('/preview', requireSupabaseAuth, async (req, res, next) => {
+  try {
+    const payload = req.body;
+    let customer = {};
+    if (payload.customerId) {
+      const dbCust = await prisma.customer.findUnique({ where: { id: payload.customerId } });
+      if (dbCust) customer = dbCust;
+    }
+
+    let subtotal = 0;
+    let cgstAmount = 0;
+    let sgstAmount = 0;
+
+    const items = (payload.items || []).map(item => {
+      const quantity = parseFloat(item.quantity) || 0;
+      const rate = parseFloat(item.rate) || 0;
+      const amount = quantity * rate;
+      const cgstRatePct = safeTaxRate(item.cgstRatePct, 9);
+      const sgstRatePct = safeTaxRate(item.sgstRatePct, 9);
+      const itemCgst = amount * (cgstRatePct / 100);
+      const itemSgst = amount * (sgstRatePct / 100);
+
+      subtotal += amount;
+      cgstAmount += itemCgst;
+      sgstAmount += itemSgst;
+
+      return {
+        ...item,
+        quantity,
+        rate,
+        amount,
+        cgstRatePct,
+        cgstAmount: itemCgst,
+        sgstRatePct,
+        sgstAmount: itemSgst
+      };
+    });
+
+    const totalAmount = subtotal + cgstAmount + sgstAmount;
+
+    const quotationObj = {
+      quoteNo: payload.quoteNo || 'PREVIEW',
+      createdAt: payload.createdAt || new Date(),
+      validUntil: payload.validUntil ? new Date(payload.validUntil) : null,
+      notes: payload.notes || '',
+      thankYouNote: payload.thankYouNote || 'Thank you for your business!',
+      status: payload.status || 'DRAFT',
+      customer,
+      items,
+      subtotal,
+      cgstAmount,
+      sgstAmount,
+      totalAmount
+    };
+
+    let settings = {};
+    const settingsPath = path.join(__dirname, '..', 'data', 'settings.json');
+    if (fs.existsSync(settingsPath)) {
+      settings = JSON.parse(fs.readFileSync(settingsPath, 'utf8'));
+    }
+
+    const stream = await generateQuotationPdfStream(quotationObj, settings);
+    const chunks = [];
+    stream.on('data', chunk => chunks.push(chunk));
+    stream.on('end', () => {
+      const result = Buffer.concat(chunks);
+      res.json({
+        success: true,
+        pdf: result.toString('base64'),
+        filename: `Quotation_${quotationObj.quoteNo}.pdf`
+      });
+    });
+    stream.on('error', err => {
+      throw err;
+    });
+  } catch (error) {
+    console.error('Quotation Preview Error:', error);
     next(error);
   }
 });
