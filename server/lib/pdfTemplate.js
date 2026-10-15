@@ -37,12 +37,12 @@ Font.register({
 const e = React.createElement;
 
 const styles = StyleSheet.create({
-  page: { padding: 30, fontFamily: 'Roboto', fontSize: 9, color: '#000', flexDirection: 'column', flex: 1 },
+  page: { padding: 22, fontFamily: 'Roboto', fontSize: 9, color: '#000', flexDirection: 'column', flex: 1 },
   pageBorder: { border: '0.5 solid #000', flex: 1, padding: 0 },
   
-  headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 8, borderBottom: '0.5 solid #000' },
+  headerRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 6, borderBottom: '0.5 solid #000' },
   headerLeft: { flexDirection: 'row', width: '60%' },
-  logoBox: { width: 260, height: 85, marginRight: 15, justifyContent: 'center', alignItems: 'flex-start' },
+  logoBox: { width: 240, height: 70, marginRight: 15, justifyContent: 'center', alignItems: 'flex-start' },
   logo: { width: '100%', height: '100%', objectFit: 'contain' },
   companyDetails: { justifyContent: 'center' },
   companyName: { fontSize: 13, fontWeight: 'bold' },
@@ -110,19 +110,19 @@ const styles = StyleSheet.create({
   finalTotalValue: { fontSize: 8.5, fontWeight: 'bold' },
   balanceRow: { flexDirection: 'row', justifyContent: 'space-between', padding: 3 },
 
-  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', minHeight: 46 },
+  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', flex: 1, minHeight: 65 },
   signoffLeft: { width: '55%', padding: 6, justifyContent: 'center', borderRight: '0.5 solid #000' },
-  signoffRight: { width: '45%', padding: 6, alignItems: 'center', justifyContent: 'flex-end' },
-  thankYouMessage: { fontSize: 9, fontWeight: 'bold', color: '#334F39', fontStyle: 'italic' },
+  signoffRight: { width: '45%', padding: 6, alignItems: 'center', justifyContent: 'space-between' },
+  thankYouMessage: { fontSize: 8.5, fontWeight: 'bold', color: '#334F39', fontStyle: 'italic' },
   termsNoteText: { fontSize: 7, color: '#444', marginTop: 2 },
-  signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', marginBottom: 10 },
-  signSpace: { height: 12 },
+  signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center' },
+  signSpace: { flex: 1, minHeight: 40 },
   signLineText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center', borderTop: '0.5 solid #000', paddingTop: 2, width: 140 },
 
   hsnSummary: { marginTop: 0, borderBottom: '0.5 solid #000' },
   hsnSummaryTitle: { fontSize: 8, padding: 3, fontWeight: 'bold', backgroundColor: '#334F39', color: '#FFF' },
   
-  footerText: { fontSize: 6, textAlign: 'center', marginTop: 'auto', paddingTop: 8, paddingBottom: 4 },
+  footerText: { fontSize: 6, textAlign: 'center', padding: '4 0' },
 
   statusBadgePaid: { fontSize: 10, fontWeight: 'bold', color: '#166534', backgroundColor: '#dcfce7', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
   statusBadgeUnpaid: { fontSize: 10, fontWeight: 'bold', color: '#FFF', backgroundColor: '#000000', padding: '3 8', borderRadius: 3, marginTop: 6, textAlign: 'center' },
@@ -415,82 +415,84 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
           )
         ),
         
-        // HSN Summary (Only for Taxed Invoices)
-        Object.keys(hsnSummary).length > 0 ? e(View, { wrap: false, style: styles.hsnSummary },
-          e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
-          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
-            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
-            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
-            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
-                e(Text, { style: styles.taxSubCol }, 'Amount')
+        // Combined HSN Summary & Signoff (Kept together on the same page, expanding to footer)
+        e(View, { wrap: false, style: { flex: 1, flexDirection: 'column' } },
+          Object.keys(hsnSummary).length > 0 ? e(View, { style: styles.hsnSummary },
+            e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
+            e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
+              e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
+              e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
+              e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
+                e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
+                e(View, { style: styles.taxHeaderSplit },
+                  e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
+                  e(Text, { style: styles.taxSubCol }, 'Amount')
+                )
+              ),
+              e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
+                e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
+                e(View, { style: styles.taxHeaderSplit },
+                  e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
+                  e(Text, { style: styles.taxSubCol }, 'Amount')
+                )
+              ),
+              e(View, { style: [styles.thCell, { width: '10%', padding: 0, borderRight: 'none' }] },
+                e(Text, { style: { padding: 2 } }, 'Total Tax'),
+                e(View, { style: styles.taxHeaderSplit },
+                  e(Text, { style: [styles.taxSubCol, { width: '100%' }] }, 'Amount')
+                )
               )
             ),
-            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
-                e(Text, { style: styles.taxSubCol }, 'Amount')
-              )
-            ),
-            e(View, { style: [styles.thCell, { width: '10%', padding: 0, borderRight: 'none' }] },
-              e(Text, { style: { padding: 2 } }, 'Total Tax'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { width: '100%' }] }, 'Amount')
-              )
+            Object.entries(hsnSummary).map(([hsn, vals], i) => {
+              const totalTax = vals.cgst + vals.sgst;
+              return e(View, { wrap: false, style: styles.tableRow, key: i },
+                e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
+                e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
+                e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                  e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                    e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.cgstRate || 9}%`),
+                    e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
+                  )
+                ),
+                e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                  e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                    e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.sgstRate || 9}%`),
+                    e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
+                  )
+                ),
+                e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
+              );
+            }),
+            e(View, { wrap: false, style: styles.tableRow },
+              e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
+              e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
+              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
+                  e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
+                )
+              ),
+              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
+                  e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
+                )
+              ),
+              e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
             )
-          ),
-          Object.entries(hsnSummary).map(([hsn, vals], i) => {
-            const totalTax = vals.cgst + vals.sgst;
-            return e(View, { wrap: false, style: styles.tableRow, key: i },
-              e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
-              e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
-              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.cgstRate || 9}%`),
-                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
-                )
-              ),
-              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.sgstRate || 9}%`),
-                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
-                )
-              ),
-              e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
-            );
-          }),
-          e(View, { wrap: false, style: styles.tableRow },
-            e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
-            e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
-            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
-              )
-            ),
-            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
-              )
-            ),
-            e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
-          )
-        ) : null,
+          ) : null,
 
-        // Authorized Sign & Thank You
-        e(View, { wrap: false, style: styles.signoffSection },
-          e(View, { style: styles.signoffLeft },
-            e(Text, { style: styles.thankYouMessage }, invoice.thankYouNote || 'Thank you for your business!'),
-            invoice.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${invoice.notes}`) : null
-          ),
-          e(View, { style: styles.signoffRight },
-            e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
-            e(View, { style: styles.signSpace }),
-            e(Text, { style: styles.signLineText }, 'Authorized Sign')
+          // Authorized Sign & Thank You
+          e(View, { style: styles.signoffSection },
+            e(View, { style: styles.signoffLeft },
+              e(Text, { style: styles.thankYouMessage }, invoice.thankYouNote || 'Thank you for your business!'),
+              invoice.notes ? e(Text, { style: styles.termsNoteText }, `Notes: ${invoice.notes}`) : null
+            ),
+            e(View, { style: styles.signoffRight },
+              e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
+              e(View, { style: styles.signSpace }),
+              e(Text, { style: styles.signLineText }, 'Authorized Sign')
+            )
           )
         ),
         
@@ -818,81 +820,83 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
           )
         ),
 
-        // HSN Summary (Only for Taxed Quotations)
-        Object.keys(hsnSummary).length > 0 ? e(View, { wrap: false, style: styles.hsnSummary },
-          e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
-          e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
-            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
-            e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
-            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
-                e(Text, { style: styles.taxSubCol }, 'Amount')
+        // Combined HSN Summary & Signoff (Kept together on the same page, expanding to footer)
+        e(View, { wrap: false, style: { flex: 1, flexDirection: 'column' } },
+          Object.keys(hsnSummary).length > 0 ? e(View, { style: styles.hsnSummary },
+            e(Text, { style: styles.hsnSummaryTitle }, 'HSN/SAC Summary:'),
+            e(View, { style: [styles.tableHeader, { backgroundColor: '#fff', color: '#000', borderTop: '0.5 solid #000' }] },
+              e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'left' }] }, 'HSN/SAC'),
+              e(Text, { style: [styles.thCell, { width: '20%', textAlign: 'right' }] }, 'Taxable Amount'),
+              e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
+                e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'CGST'),
+                e(View, { style: styles.taxHeaderSplit },
+                  e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
+                  e(Text, { style: styles.taxSubCol }, 'Amount')
+                )
+              ),
+              e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
+                e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
+                e(View, { style: styles.taxHeaderSplit },
+                  e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
+                  e(Text, { style: styles.taxSubCol }, 'Amount')
+                )
+              ),
+              e(View, { style: [styles.thCell, { width: '10%', padding: 0, borderRight: 'none' }] },
+                e(Text, { style: { padding: 2 } }, 'Total Tax'),
+                e(View, { style: styles.taxHeaderSplit },
+                  e(Text, { style: [styles.taxSubCol, { width: '100%' }] }, 'Amount')
+                )
               )
             ),
-            e(View, { style: [styles.thCell, { width: '25%', padding: 0 }] },
-              e(Text, { style: { padding: 2, borderBottom: '0.5 solid #000' } }, 'SGST'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { borderRight: '0.5 solid #000' }] }, 'Rate'),
-                e(Text, { style: styles.taxSubCol }, 'Amount')
-              )
-            ),
-            e(View, { style: [styles.thCell, { width: '10%', padding: 0, borderRight: 'none' }] },
-              e(Text, { style: { padding: 2 } }, 'Total Tax'),
-              e(View, { style: styles.taxHeaderSplit },
-                e(Text, { style: [styles.taxSubCol, { width: '100%' }] }, 'Amount')
-              )
+            Object.entries(hsnSummary).map(([hsn, vals], i) => {
+              const totalTax = vals.cgst + vals.sgst;
+              return e(View, { wrap: false, style: styles.tableRow, key: i },
+                e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
+                e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
+                e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                  e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                    e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.cgstRate || 9}%`),
+                    e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
+                  )
+                ),
+                e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                  e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                    e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.sgstRate || 9}%`),
+                    e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
+                  )
+                ),
+                e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
+              );
+            }),
+            e(View, { wrap: false, style: styles.tableRow },
+              e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
+              e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
+              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
+                  e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
+                )
+              ),
+              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
+                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
+                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
+                  e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
+                )
+              ),
+              e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
             )
-          ),
-          Object.entries(hsnSummary).map(([hsn, vals], i) => {
-            const totalTax = vals.cgst + vals.sgst;
-            return e(View, { wrap: false, style: styles.tableRow, key: i },
-              e(Text, { style: [styles.tdCell, { width: '20%' }] }, hsn),
-              e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right' }] }, formatCurrency(vals.taxable)),
-              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.cgstRate || 9}%`),
-                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.cgst))
-                )
-              ),
-              e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-                e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                  e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, `${vals.sgstRate || 9}%`),
-                  e(Text, { style: [styles.taxDataSubCol, { padding: 4 }] }, formatCurrency(vals.sgst))
-                )
-              ),
-              e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none' }] }, formatCurrency(totalTax))
-            );
-          }),
-          e(View, { wrap: false, style: styles.tableRow },
-            e(Text, { style: [styles.tdCell, { width: '20%', fontWeight: 'bold' }] }, 'Total'),
-            e(Text, { style: [styles.tdCell, { width: '20%', textAlign: 'right', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.taxable, 0))),
-            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst, 0)))
-              )
-            ),
-            e(View, { style: [styles.tdCell, { width: '25%', padding: 0 }] },
-              e(View, { style: [styles.taxDataSplit, { flex: 1, alignItems: 'center' }] },
-                e(Text, { style: [styles.taxDataSubCol, { borderRight: '0.5 solid #000', height: '100%', padding: 4 }] }, ''),
-                e(Text, { style: [styles.taxDataSubCol, { padding: 4, fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.sgst, 0)))
-              )
-            ),
-            e(Text, { style: [styles.tdCell, { width: '10%', textAlign: 'right', borderRight: 'none', fontWeight: 'bold' }] }, formatCurrency(Object.values(hsnSummary).reduce((a, b) => a + b.cgst + b.sgst, 0)))
-          )
-        ) : null,
+          ) : null,
 
-        // Authorized Sign & Thank You (Clean - No duplicated notes!)
-        e(View, { wrap: false, style: styles.signoffSection },
-          e(View, { style: styles.signoffLeft },
-            e(Text, { style: styles.thankYouMessage }, quotation.thankYouNote || 'Thank you for your business!')
-          ),
-          e(View, { style: styles.signoffRight },
-            e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
-            e(View, { style: styles.signSpace }),
-            e(Text, { style: styles.signLineText }, 'Authorized Sign')
+          // Authorized Sign & Thank You (Clean - No duplicated notes!)
+          e(View, { style: styles.signoffSection },
+            e(View, { style: styles.signoffLeft },
+              e(Text, { style: styles.thankYouMessage }, quotation.thankYouNote || 'Thank you for your business!')
+            ),
+            e(View, { style: styles.signoffRight },
+              e(Text, { style: styles.signCompanyText }, `For ${BUSINESS_CONFIG.companyName}`),
+              e(View, { style: styles.signSpace }),
+              e(Text, { style: styles.signLineText }, 'Authorized Sign')
+            )
           )
         )
       )
