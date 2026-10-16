@@ -250,7 +250,9 @@ export default function PdfViewer({
       {/* Main Scrollable Canvas */}
       <div
         ref={containerRef}
-        className="flex-1 min-h-0 bg-slate-900/95 overflow-auto p-4 sm:p-6 md:p-8 flex justify-center items-start custom-pdf-scroll"
+        className={`flex-1 min-h-0 bg-slate-900/95 overflow-auto p-3 sm:p-6 md:p-8 flex justify-center custom-pdf-scroll ${
+          isFitWidth ? 'items-stretch' : 'items-start'
+        }`}
         style={{
           scrollbarGutter: 'stable',
           WebkitOverflowScrolling: 'touch'
@@ -260,18 +262,46 @@ export default function PdfViewer({
           style={{
             width: isFitWidth ? '100%' : `${currentWidth}px`,
             maxWidth: isFitWidth ? '100%' : 'none',
-            height: isFitWidth ? '100%' : `${Math.round(1150 * (zoom / 100))}px`,
-            minHeight: isFitWidth ? '100%' : `${Math.round(1150 * (zoom / 100))}px`,
+            minHeight: isFitWidth ? '100%' : `${Math.max(650, Math.round(1150 * (zoom / 100)))}px`,
+            height: isFitWidth ? '100%' : `${Math.max(650, Math.round(1150 * (zoom / 100)))}px`,
             transition: 'width 0.15s ease-out, height 0.15s ease-out'
           }}
-          className="bg-white shadow-2xl rounded-xl overflow-hidden border border-slate-700/60 relative flex flex-col"
+          className="bg-white shadow-2xl rounded-xl overflow-hidden border border-slate-700/60 relative flex flex-col min-h-[550px] w-full"
         >
-          <iframe
-            key={`${pdfUrl}-${isFitWidth ? 'fit' : zoom}`}
-            src={`${pdfUrl}#toolbar=1&navpanes=0&view=${isFitWidth ? 'FitH' : 'Fit'}`}
-            className="w-full h-full border-0 block flex-1"
+          <object
+            key={pdfUrl}
+            data={pdfUrl}
+            type="application/pdf"
+            className="w-full h-full border-0 block flex-1 min-h-[550px]"
             title={title}
-          />
+          >
+            {/* Fallback iframe for browsers where object tag doesn't display PDF */}
+            <iframe
+              src={pdfUrl}
+              className="w-full h-full border-0 block flex-1 min-h-[550px]"
+              title={title}
+            >
+              <div className="p-8 text-center bg-gray-50 flex flex-col items-center justify-center h-full">
+                <p className="text-gray-700 font-medium mb-3">
+                  Your browser does not support embedded PDF viewing.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={handleOpenNewTab}
+                    className="px-4 py-2 bg-emerald-600 text-white font-medium rounded-lg shadow-sm hover:bg-emerald-700 transition-all text-sm"
+                  >
+                    Open in New Tab
+                  </button>
+                  <button
+                    onClick={handleDownloadClick}
+                    className="px-4 py-2 bg-gray-200 text-gray-800 font-medium rounded-lg hover:bg-gray-300 transition-all text-sm"
+                  >
+                    Download PDF
+                  </button>
+                </div>
+              </div>
+            </iframe>
+          </object>
         </div>
       </div>
     </div>
