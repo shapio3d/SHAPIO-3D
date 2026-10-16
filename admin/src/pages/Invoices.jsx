@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
 import { Search, Plus, FileDown, Upload, Edit3, Trash2, Download, X, Filter, AlertCircle, ArrowLeft, Eye } from 'lucide-react'
+import PdfViewer from '../components/PdfViewer'
 
 const STATUS_COLORS = {
   PAID: 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200',
@@ -103,6 +104,7 @@ export default function Invoices() {
   const [filterStatus, setFilterStatus] = useState('')
   const [editing, setEditing] = useState(null)
   const [pdfUrl, setPdfUrl] = useState(null)
+  const [pdfDocInfo, setPdfDocInfo] = useState(null)
   const [selectedQuotationId, setSelectedQuotationId] = useState('')
   const [invoiceType, setInvoiceType] = useState('taxed') // 'taxed' | 'taxless'
 
@@ -414,6 +416,12 @@ export default function Invoices() {
       for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
       const blob = new Blob([bytes], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
+      const cleanNum = (form.invoiceNumber || '').trim().replace(/[/\\?%*:|"<>]/g, '-');
+      setPdfDocInfo({
+        title: 'Invoice Draft Preview',
+        documentNumber: form.invoiceNumber || '',
+        filename: cleanNum ? `Invoice-${cleanNum}.pdf` : 'Invoice-Draft.pdf'
+      });
       setPdfUrl(url);
     } catch (err) {
       alert(err.message);
@@ -425,7 +433,7 @@ export default function Invoices() {
     deleteMutation.mutate(id)
   }
 
-  const handleViewPdf = async (id) => {
+  const handleViewPdf = async (id, invoiceNumber) => {
     try {
       const headers = await getAuthHeader();
       delete headers['Content-Type'];
@@ -451,6 +459,17 @@ export default function Invoices() {
       const blob = new Blob([bytes], { type: 'application/pdf' });
       
       const url = window.URL.createObjectURL(blob);
+      const cleanNum = (invoiceNumber || '').trim().replace(/[/\\?%*:|"<>]/g, '-');
+      const fallbackName = cleanNum
+        ? (cleanNum.toLowerCase().startsWith('inv') ? `${cleanNum}.pdf` : `Invoice-${cleanNum}.pdf`)
+        : 'Invoice.pdf';
+      const filename = data.filename || fallbackName;
+      setPdfDocInfo({
+        title: 'Invoice Preview',
+        documentNumber: invoiceNumber || '',
+        filename,
+        id
+      });
       setPdfUrl(url);
     } catch (e) {
       console.error(e);
@@ -501,6 +520,44 @@ export default function Invoices() {
       console.error(e);
       alert("An error occurred while downloading PDF: " + (e.message || String(e)));
     }
+  }
+
+  const handleCloseViewer = () => {
+    if (pdfUrl) {
+      try {
+        window.URL.revokeObjectURL(pdfUrl);
+      } catch (e) {}
+    }
+    setPdfUrl(null);
+    setPdfDocInfo(null);
+  };
+
+  const handleDownloadViewerPdf = () => {
+    if (pdfDocInfo?.id) {
+      handleDownloadPdf(pdfDocInfo.id, pdfDocInfo.documentNumber);
+    } else if (pdfUrl) {
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = pdfDocInfo?.filename || 'Invoice.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  };
+
+  if (pdfUrl) {
+    return (
+      <div className="w-full pb-8">
+        <PdfViewer
+          pdfUrl={pdfUrl}
+          title={pdfDocInfo?.title || 'Invoice Preview'}
+          documentNumber={pdfDocInfo?.documentNumber}
+          filename={pdfDocInfo?.filename || 'Invoice.pdf'}
+          onClose={handleCloseViewer}
+          onDownload={handleDownloadViewerPdf}
+        />
+      </div>
+    );
   }
 
   if (activeTab === 'create' || activeTab === 'edit') {
@@ -819,8 +876,11 @@ export default function Invoices() {
 
           {/* Action Buttons */}
           <div className="flex flex-col sm:flex-row justify-end gap-4 mt-12 pt-8 border-t border-gray-200">
-            <button onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-gray-700 bg-white border border-gray-300 shadow-sm rounded-xl hover:bg-gray-50 transition-all">
+            <button type="button" onClick={() => setActiveTab('list')} className="px-8 py-4 text-base font-semibold text-gray-700 bg-white border border-gray-300 shadow-sm rounded-xl hover:bg-gray-50 transition-all">
               Cancel
+            </button>
+            <button type="button" onClick={handlePreview} className="px-8 py-4 text-base font-semibold text-gray-700 bg-white border border-gray-300 shadow-sm rounded-xl hover:bg-gray-50 transition-all flex items-center justify-center gap-2">
+              <Eye size={18} /> Preview Invoice
             </button>
             <button disabled={saveMutation.isPending} onClick={handleSave} className="px-8 py-4 text-base font-semibold text-white bg-blue-600 rounded-xl shadow-sm hover:bg-blue-700 transition-all disabled:opacity-50">
               {editing ? 'Save Invoice Changes' : 'Generate invoice'}
@@ -829,22 +889,6 @@ export default function Invoices() {
         </div>
       </div>
     )
-  }
-
-  if (pdfUrl) {
-    return (
-      <div className="flex-1 flex flex-col p-8 bg-black">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-bold text-white tracking-tight">PDF Viewer</h1>
-          <button onClick={() => setPdfUrl(null)} className="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-xl transition-all">
-            Back
-          </button>
-        </div>
-        <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-2xl">
-          <iframe src={pdfUrl} loading="lazy" className="w-full h-full border-0" title="PDF Preview" />
-        </div>
-      </div>
-    );
   }
 
   // LIST TAB
@@ -948,6 +992,9 @@ export default function Invoices() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => handleViewPdf(inv.id, inv.invoiceNumber || inv.invoiceNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="View PDF">
+                            <Eye size={16} />
+                          </button>
                           <button onClick={() => handleDownloadPdf(inv.id, inv.invoiceNumber || inv.invoiceNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Download PDF">
                             <Download size={16} />
                           </button>
@@ -1023,6 +1070,9 @@ export default function Invoices() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-200">
+                  <button onClick={() => handleViewPdf(inv.id, inv.invoiceNumber || inv.invoiceNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
+                    <Eye size={16} /> <span className="hidden sm:inline">Preview</span>
+                  </button>
                   <button onClick={() => handleDownloadPdf(inv.id, inv.invoiceNumber || inv.invoiceNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
                     <Download size={16} /> <span className="hidden sm:inline">PDF</span>
                   </button>

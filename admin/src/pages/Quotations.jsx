@@ -1,7 +1,8 @@
 import { useState } from 'react'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { supabase } from '../supabaseClient'
-import { Search, Plus, Edit3, Trash2, Download, X, Filter, AlertCircle, ArrowLeft } from 'lucide-react'
+import { Search, Plus, Edit3, Trash2, Download, X, Filter, AlertCircle, ArrowLeft, Eye } from 'lucide-react'
+import PdfViewer from '../components/PdfViewer'
 
 const STATUS_COLORS = {
   ACCEPTED: 'text-emerald-700 bg-emerald-50 ring-1 ring-emerald-200',
@@ -102,6 +103,7 @@ export default function Quotations() {
   };
   const [form, setForm] = useState(initialForm);
   const [pdfUrl, setPdfUrl] = useState(null);
+  const [pdfDocInfo, setPdfDocInfo] = useState(null);
 
   const saveMutation = useMutation({
     mutationFn: async (payload) => {
@@ -269,6 +271,12 @@ export default function Quotations() {
       for (let i = 0; i < binaryString.length; i++) bytes[i] = binaryString.charCodeAt(i);
       const blob = new Blob([bytes], { type: 'application/pdf' });
       const url = window.URL.createObjectURL(blob);
+      const cleanNum = (form.quoteNo || '').trim().replace(/[/\\?%*:|"<>]/g, '-');
+      setPdfDocInfo({
+        title: 'Quotation Draft Preview',
+        documentNumber: form.quoteNo || '',
+        filename: cleanNum ? `Quotation-${cleanNum}.pdf` : 'Quotation-Draft.pdf'
+      });
       setPdfUrl(url);
     } catch (err) {
       alert(err.message);
@@ -306,6 +314,14 @@ export default function Quotations() {
       const blob = new Blob([bytes], { type: 'application/pdf' });
       
       const url = window.URL.createObjectURL(blob);
+      const cleanNum = (quoteNo || '').trim().replace(/[/\\?%*:|"<>]/g, '-');
+      const filename = data.filename || (cleanNum ? `Quotation-${cleanNum}.pdf` : 'Quotation.pdf');
+      setPdfDocInfo({
+        title: 'Quotation Preview',
+        documentNumber: quoteNo || '',
+        filename,
+        id
+      });
       setPdfUrl(url);
     } catch (e) {
       console.error(e);
@@ -353,18 +369,40 @@ export default function Quotations() {
   }
 
 
+  const handleCloseViewer = () => {
+    if (pdfUrl) {
+      try {
+        window.URL.revokeObjectURL(pdfUrl);
+      } catch (e) {}
+    }
+    setPdfUrl(null);
+    setPdfDocInfo(null);
+  };
+
+  const handleDownloadViewerPdf = () => {
+    if (pdfDocInfo?.id) {
+      handleDownloadPdf(pdfDocInfo.id, pdfDocInfo.documentNumber);
+    } else if (pdfUrl) {
+      const a = document.createElement('a');
+      a.href = pdfUrl;
+      a.download = pdfDocInfo?.filename || 'Quotation.pdf';
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+    }
+  };
+
   if (pdfUrl) {
     return (
-      <div className="flex-1 flex flex-col p-8 bg-gray-50">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">PDF Viewer</h1>
-          <button onClick={() => setPdfUrl(null)} className="px-6 py-3 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 hover:border-gray-300 text-gray-700 font-medium rounded-xl transition-all">
-            Back
-          </button>
-        </div>
-        <div className="flex-1 bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-200">
-          <iframe src={pdfUrl} loading="lazy" className="w-full h-full border-0" title="PDF Preview" />
-        </div>
+      <div className="w-full pb-8">
+        <PdfViewer
+          pdfUrl={pdfUrl}
+          title={pdfDocInfo?.title || 'Quotation Preview'}
+          documentNumber={pdfDocInfo?.documentNumber}
+          filename={pdfDocInfo?.filename || 'Quotation.pdf'}
+          onClose={handleCloseViewer}
+          onDownload={handleDownloadViewerPdf}
+        />
       </div>
     );
   }
@@ -687,6 +725,9 @@ export default function Quotations() {
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex items-center justify-end gap-1">
+                          <button onClick={() => handleViewPdf(qt.id, qt.quoteNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="View PDF">
+                            <Eye size={16} />
+                          </button>
                           <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="w-8 h-8 rounded-lg flex items-center justify-center text-gray-400 hover:text-blue-600 hover:bg-blue-50 transition-all" title="Download PDF">
                             <Download size={16} />
                           </button>
@@ -762,6 +803,9 @@ export default function Quotations() {
                 </div>
 
                 <div className="flex items-center justify-end gap-2 pt-4 border-t border-gray-200">
+                  <button onClick={() => handleViewPdf(qt.id, qt.quoteNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
+                    <Eye size={16} /> <span className="hidden sm:inline">Preview</span>
+                  </button>
                   <button onClick={() => handleDownloadPdf(qt.id, qt.quoteNo)} className="flex-1 py-2 rounded-lg flex items-center justify-center gap-2 bg-gray-50 text-gray-600 hover:text-blue-600 hover:bg-blue-50 transition-all text-sm font-medium">
                     <Download size={16} /> <span className="hidden sm:inline">PDF</span>
                   </button>
