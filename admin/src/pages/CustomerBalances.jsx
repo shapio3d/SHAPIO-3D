@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useMemo } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
@@ -24,7 +24,7 @@ export default function CustomerBalances() {
   const [search, setSearch] = useState('')
   const [statusFilter, setStatusFilter] = useState('ALL') // 'ALL' | 'PENDING' | 'SETTLED'
 
-  const { data: customers = [], isLoading, isError } = useQuery({
+  const { data: rawCustomers = [], isLoading: isLoadingCustomers, isError: isErrorCustomers } = useQuery({
     queryKey: ['customers'],
     queryFn: async () => {
       const headers = await getAuthHeader();
@@ -34,8 +34,60 @@ export default function CustomerBalances() {
     }
   })
 
-  const totalPaid = customers.reduce((sum, c) => sum + (Number(c.paidAmount) || 0), 0);
-  const totalPending = customers.reduce((sum, c) => sum + (Number(c.pendingAmount) || 0), 0);
+  const { data: invoices = [], isLoading: isLoadingInvoices } = useQuery({
+    queryKey: ['invoices'],
+    queryFn: async () => {
+      const headers = await getAuthHeader();
+      const res = await fetch(`${API_URL}/invoices`, { headers });
+      if (!res.ok) return [];
+      return res.json();
+    }
+  })
+
+  const round2 = (val) => Math.round((Number(val) || 0) * 100) / 100;
+
+  // Merge customer data with invoices so balances are 100% accurate regardless of backend server state
+  const customers = useMemo(() => {
+    return (rawCustomers || []).map(cust => {
+      // If backend already returned enriched data with invoices array and numeric balances
+      if (typeof cust.paidAmount === 'number' && typeof cust.pendingAmount === 'number' && Array.isArray(cust.invoices) && cust.invoices.length > 0) {
+        return cust;
+      }
+
+      // Compute client-side from invoices directly
+      let paid = 0;
+      let pending = 0;
+      let paidCount = 0;
+      let pendingCount = 0;
+
+      const custInvoices = (invoices || []).filter(inv => inv.customerId === cust.id || inv.clientId === cust.id);
+
+      custInvoices.forEach(inv => {
+        const amt = Number(inv.totalAmount || inv.total) || 0;
+        if (inv.status === 'PAID') {
+          paid += amt;
+          paidCount++;
+        } else if (inv.status === 'UNPAID' || inv.status === 'OVERDUE') {
+          pending += amt;
+          pendingCount++;
+        }
+      });
+
+      return {
+        ...cust,
+        paidAmount: round2(paid),
+        pendingAmount: round2(pending),
+        totalAmount: round2(paid + pending),
+        invoicesCount: custInvoices.length,
+        paidInvoicesCount: paidCount,
+        pendingInvoicesCount: pendingCount,
+        invoices: custInvoices
+      };
+    });
+  }, [rawCustomers, invoices]);
+
+  const totalPaid = round2(customers.reduce((sum, c) => sum + (Number(c.paidAmount) || 0), 0));
+  const totalPending = round2(customers.reduce((sum, c) => sum + (Number(c.pendingAmount) || 0), 0));
   const pendingCount = customers.filter(c => (Number(c.pendingAmount) || 0) > 0).length;
   const settledCount = customers.length - pendingCount;
 
@@ -51,6 +103,9 @@ export default function CustomerBalances() {
     if (statusFilter === 'SETTLED') return pending <= 0;
     return true;
   })
+
+  const isLoading = isLoadingCustomers || (isLoadingInvoices && rawCustomers.length > 0 && invoices.length === 0);
+  const isError = isErrorCustomers;
 
   if (isLoading) {
     return (
