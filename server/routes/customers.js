@@ -39,14 +39,69 @@ const requireSupabaseAuth = async (req, res, next) => {
 router.get('/', requireSupabaseAuth, async (req, res) => {
   try {
     const customers = await prisma.customer.findMany({
-      orderBy: { createdAt: 'desc' }
+      orderBy: { createdAt: 'desc' },
+      include: {
+        invoices: {
+          select: {
+            id: true,
+            invoiceNo: true,
+            totalAmount: true,
+            status: true,
+            issueDate: true,
+            dueDate: true,
+            createdAt: true
+          },
+          orderBy: { createdAt: 'desc' }
+        }
+      }
     });
-    // Map address to billAddress and panNumber to panNo to maintain compatibility with frontend
-    const mapped = customers.map(c => ({
-      ...c,
-      billAddress: c.address,
-      panNo: c.panNumber
-    }));
+
+    const round2 = (val) => Math.round((Number(val) || 0) * 100) / 100;
+
+    // Map address to billAddress and panNumber to panNo to maintain compatibility with frontend,
+    // and compute precise financial totals based on customer's invoices
+    const mapped = customers.map(c => {
+      let paidAmount = 0;
+      let pendingAmount = 0;
+      let paidCount = 0;
+      let pendingCount = 0;
+
+      (c.invoices || []).forEach(inv => {
+        const amt = Number(inv.totalAmount) || 0;
+        if (inv.status === 'PAID') {
+          paidAmount += amt;
+          paidCount++;
+        } else if (inv.status === 'UNPAID' || inv.status === 'OVERDUE') {
+          pendingAmount += amt;
+          pendingCount++;
+        }
+      });
+
+      paidAmount = round2(paidAmount);
+      pendingAmount = round2(pendingAmount);
+
+      return {
+        ...c,
+        billAddress: c.address,
+        panNo: c.panNumber,
+        totalAmount: round2(paidAmount + pendingAmount),
+        paidAmount,
+        pendingAmount,
+        invoicesCount: (c.invoices || []).length,
+        paidInvoicesCount: paidCount,
+        pendingInvoicesCount: pendingCount,
+        invoices: (c.invoices || []).map(i => ({
+          id: i.id,
+          invoiceNo: i.invoiceNo,
+          totalAmount: round2(i.totalAmount),
+          status: i.status,
+          issueDate: i.issueDate,
+          dueDate: i.dueDate,
+          createdAt: i.createdAt
+        }))
+      };
+    });
+
     res.json(mapped);
   } catch (error) {
     console.error('Fetch Customers Error:', error);
