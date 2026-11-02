@@ -107,6 +107,7 @@ export default function Invoices() {
   const [pdfDocInfo, setPdfDocInfo] = useState(null)
   const [selectedQuotationId, setSelectedQuotationId] = useState('')
   const [invoiceType, setInvoiceType] = useState('taxed') // 'taxed' | 'taxless'
+  const [showPoDetails, setShowPoDetails] = useState(false)
 
   const handleToggleInvoiceType = (type) => {
     setInvoiceType(type)
@@ -157,7 +158,9 @@ export default function Invoices() {
 
   const [form, setForm] = useState({
     clientId: '',
-    invoiceNumber: '', 
+    invoiceNumber: '',
+    poNumber: '',
+    poDate: '', 
     issueDate: new Date().toISOString().split('T')[0],
     dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
     terms: 'Due on Receipt',
@@ -253,7 +256,8 @@ export default function Invoices() {
 
   const filtered = invoices.filter(inv => {
     const matchSearch = (inv.invoiceNumber || '').toLowerCase().includes(search.toLowerCase()) ||
-      (inv.client?.name || '').toLowerCase().includes(search.toLowerCase())
+      (inv.client?.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (inv.poNumber || '').toLowerCase().includes(search.toLowerCase())
     const matchStatus = !filterStatus || inv.status === filterStatus
     return matchSearch && matchStatus
   })
@@ -262,11 +266,14 @@ export default function Invoices() {
     setEditing(null)
     setSelectedQuotationId('')
     setIsManualClient(false)
+    setShowPoDetails(false)
     setInvoiceType('taxed')
     setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
     setForm({
       clientId: '',
       invoiceNumber: getNextInvoiceNumber(invoices, 'taxed'),
+      poNumber: '',
+      poDate: '',
       issueDate: new Date().toISOString().split('T')[0],
       dueDate: new Date(Date.now() + 15 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
       terms: 'Due on Receipt',
@@ -288,10 +295,14 @@ export default function Invoices() {
     if (!qt) return
     const client = clients.find(c => c.id === qt.customerId)
     setIsManualClient(false)
+    const hasPo = Boolean(qt.poNumber || qt.poDate);
+    setShowPoDetails(hasPo);
     setForm(f => ({
       ...f,
       clientId: qt.customerId || '',
       panNo: client?.panNo || f.panNo,
+      poNumber: qt.poNumber || '',
+      poDate: qt.poDate ? qt.poDate.split('T')[0] : '',
       items: qt.items?.length > 0
         ? qt.items.map(i => ({
             description: i.description || '',
@@ -323,9 +334,13 @@ export default function Invoices() {
     setEditing(invoice)
     setIsManualClient(false)
     setManualClient({ name: '', address: '', phone: '', panNumber: '', gstNumber: '' })
+    const hasPo = Boolean(invoice.poNumber || invoice.poDate);
+    setShowPoDetails(hasPo);
     setForm({ 
       clientId: invoice.clientId || '',
       invoiceNumber: invoice.invoiceNumber || '',
+      poNumber: invoice.poNumber || '',
+      poDate: invoice.poDate ? invoice.poDate.split('T')[0] : '',
       issueDate: invoice.issueDate ? invoice.issueDate.split('T')[0] : '',
       dueDate: invoice.dueDate ? invoice.dueDate.split('T')[0] : '',
       terms: invoice.terms || 'Due on Receipt',
@@ -374,6 +389,8 @@ export default function Invoices() {
   const buildPayload = () => {
     return {
       ...form,
+      poNumber: showPoDetails && form.poNumber && form.poNumber.trim() ? form.poNumber.trim() : null,
+      poDate: showPoDetails && form.poDate ? form.poDate : null,
       clientId: isManualClient ? 'MANUAL' : form.clientId,
       manualClient: isManualClient ? manualClient : undefined
     };
@@ -663,6 +680,61 @@ export default function Invoices() {
                 <input placeholder="e.g. ABCDE1234F" value={form.panNo} onChange={e => setForm({...form, panNo: e.target.value})} className="w-full px-4 py-3 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500" />
               </div>
             </div>
+
+            {/* PO Details Section */}
+            {!showPoDetails ? (
+              <div className="pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPoDetails(true);
+                    setForm(f => ({ ...f, poDate: f.poDate || new Date().toISOString().split('T')[0] }));
+                  }}
+                  className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all shadow-sm"
+                >
+                  <Plus size={14} />
+                  Add PO Number
+                </button>
+              </div>
+            ) : (
+              <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                    Purchase Order (PO) Details
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPoDetails(false);
+                      setForm(f => ({ ...f, poNumber: '', poDate: '' }));
+                    }}
+                    className="text-xs text-red-600 hover:text-red-700 font-medium inline-flex items-center gap-1 transition-all"
+                  >
+                    <X size={13} /> Remove PO
+                  </button>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">PO Number</label>
+                    <input
+                      placeholder="e.g. PO-2026-0042"
+                      value={form.poNumber || ''}
+                      onChange={e => setForm({ ...form, poNumber: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">PO Date</label>
+                    <input
+                      type="date"
+                      value={form.poDate || ''}
+                      onChange={e => setForm({ ...form, poDate: e.target.value })}
+                      className="w-full px-4 py-2.5 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-normal text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* Client Details */}
@@ -966,6 +1038,9 @@ export default function Invoices() {
                     >
                       <td className="px-6 py-4">
                         <span className="text-sm font-medium text-gray-900">{inv.invoiceNumber}</span>
+                        {inv.poNumber && (
+                          <span className="block text-[11px] text-slate-500 font-normal">PO: {inv.poNumber}</span>
+                        )}
                       </td>
                       <td className="px-6 py-4">
                         <p className="text-sm text-gray-600">{inv.client?.name}</p>
@@ -1042,6 +1117,9 @@ export default function Invoices() {
                 <div className="flex justify-between items-start">
                   <div>
                     <span className="text-sm font-semibold text-gray-900 tracking-wide">{inv.invoiceNumber}</span>
+                    {inv.poNumber && (
+                      <span className="block text-[11px] text-slate-500 font-medium mt-0.5">PO: {inv.poNumber}</span>
+                    )}
                     <p className="text-sm text-gray-500 mt-1">{inv.client?.name}</p>
                   </div>
                   <select

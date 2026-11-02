@@ -80,6 +80,8 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
       thankYouNote,
       status,
       items,
+      poNumber,
+      poDate,
     } = req.body;
 
     if (!clientId) {
@@ -151,6 +153,8 @@ router.post('/', requireSupabaseAuth, async (req, res) => {
         shipAddress,
         notes,
         thankYouNote: thankYouNote || null,
+        poNumber: poNumber && String(poNumber).trim() ? String(poNumber).trim() : null,
+        poDate: poDate ? new Date(poDate) : null,
         subtotal,
         cgstAmount: cgstAmountTotal,
         sgstAmount: sgstAmountTotal,
@@ -196,7 +200,9 @@ router.put('/:id', requireSupabaseAuth, async (req, res) => {
       notes,
       thankYouNote,
       status,
-    items,
+      items,
+      poNumber,
+      poDate,
     } = req.body;
 
     if (!clientId) {
@@ -271,6 +277,8 @@ router.put('/:id', requireSupabaseAuth, async (req, res) => {
         shipAddress,
         notes,
         thankYouNote: thankYouNote || null,
+        poNumber: poNumber && String(poNumber).trim() ? String(poNumber).trim() : null,
+        poDate: poDate ? new Date(poDate) : null,
         status,
         subtotal,
         cgstAmount: cgstAmountTotal,
@@ -374,6 +382,8 @@ router.post('/preview', requireSupabaseAuth, async (req, res) => {
       shipAddress: payload.shipAddress || client.billAddress,
       notes: payload.notes || '',
       thankYouNote: payload.thankYouNote || 'Thank you for your business!',
+      poNumber: payload.poNumber && String(payload.poNumber).trim() ? String(payload.poNumber).trim() : null,
+      poDate: payload.poDate ? new Date(payload.poDate) : null,
       subtotal,
       cgstAmount: cgstAmountTotal,
       sgstAmount: sgstAmountTotal,

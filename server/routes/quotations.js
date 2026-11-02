@@ -31,7 +31,7 @@ router.get('/', requireSupabaseAuth, async (req, res, next) => {
 // POST /api/quotations
 router.post('/', requireSupabaseAuth, async (req, res, next) => {
   try {
-    const { quoteNo, customerId, items, status, validUntil, notes, thankYouNote } = req.body;
+    const { quoteNo, customerId, items, status, validUntil, notes, thankYouNote, poNumber, poDate } = req.body;
 
     let totalAmount = 0;
     
@@ -69,6 +69,8 @@ router.post('/', requireSupabaseAuth, async (req, res, next) => {
         validUntil: validUntil ? new Date(validUntil) : null,
         notes,
         thankYouNote: thankYouNote || null,
+        poNumber: poNumber && String(poNumber).trim() ? String(poNumber).trim() : null,
+        poDate: poDate ? new Date(poDate) : null,
         items: {
           create: mappedItems
         }
@@ -89,7 +91,7 @@ router.post('/', requireSupabaseAuth, async (req, res, next) => {
 router.put('/:id', requireSupabaseAuth, async (req, res, next) => {
   try {
     const { id } = req.params;
-    const { quoteNo, customerId, items, status, validUntil, notes, thankYouNote } = req.body;
+    const { quoteNo, customerId, items, status, validUntil, notes, thankYouNote, poNumber, poDate } = req.body;
 
     let totalAmount = 0;
     
@@ -134,6 +136,8 @@ router.put('/:id', requireSupabaseAuth, async (req, res, next) => {
         validUntil: validUntil ? new Date(validUntil) : null,
         notes,
         thankYouNote: thankYouNote || null,
+        poNumber: poNumber && String(poNumber).trim() ? String(poNumber).trim() : null,
+        poDate: poDate ? new Date(poDate) : null,
         items: {
           create: mappedItems
         }
@@ -291,6 +295,8 @@ router.post('/preview', requireSupabaseAuth, async (req, res, next) => {
       validUntil: payload.validUntil ? new Date(payload.validUntil) : null,
       notes: payload.notes || '',
       thankYouNote: payload.thankYouNote || 'Thank you for your business!',
+      poNumber: payload.poNumber && String(payload.poNumber).trim() ? String(payload.poNumber).trim() : null,
+      poDate: payload.poDate ? new Date(payload.poDate) : null,
       status: payload.status || 'DRAFT',
       customer,
       items,

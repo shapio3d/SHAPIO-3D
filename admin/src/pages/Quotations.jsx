@@ -57,6 +57,7 @@ export default function Quotations() {
   const [filterStatus, setFilterStatus] = useState('')
   const [editingId, setEditingId] = useState(null)
   const [quoteType, setQuoteType] = useState('taxed') // 'taxed' | 'taxless'
+  const [showPoDetails, setShowPoDetails] = useState(false)
 
   const handleToggleQuoteType = (type) => {
     setQuoteType(type)
@@ -94,7 +95,9 @@ export default function Quotations() {
 
   const initialForm = {
     quoteNo: '', 
-    customerId: '', 
+    customerId: '',
+    poNumber: '',
+    poDate: '', 
     items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
     status: 'DRAFT', 
     validUntil: '',
@@ -174,17 +177,21 @@ export default function Quotations() {
 
   const filtered = quotations.filter(qt => {
     const matchSearch = (qt.quoteNo || '').toLowerCase().includes(search.toLowerCase()) ||
-      (qt.customer?.name || '').toLowerCase().includes(search.toLowerCase())
+      (qt.customer?.name || '').toLowerCase().includes(search.toLowerCase()) ||
+      (qt.poNumber || '').toLowerCase().includes(search.toLowerCase())
     const matchStatus = !filterStatus || qt.status === filterStatus
     return matchSearch && matchStatus
   })
 
   const handleNew = () => {
     setEditingId(null)
+    setShowPoDetails(false)
     setQuoteType('taxed')
     setForm({
       quoteNo: getNextQuoteNumber(quotations, 'taxed'),
-      customerId: clients[0]?.id || '', 
+      customerId: clients[0]?.id || '',
+      poNumber: '',
+      poDate: '', 
       items: [{ description: '', hsnSac: '', quantity: 1, rate: '', cgstRatePct: 9, sgstRatePct: 9 }], 
       status: 'DRAFT',
       validUntil: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
@@ -196,9 +203,13 @@ export default function Quotations() {
 
   const handleEdit = (quote) => {
     setEditingId(quote.id)
+    const hasPo = Boolean(quote.poNumber || quote.poDate);
+    setShowPoDetails(hasPo);
     setForm({ 
       quoteNo: quote.quoteNo || '',
-      customerId: quote.customerId || '', 
+      customerId: quote.customerId || '',
+      poNumber: quote.poNumber || '',
+      poDate: quote.poDate ? quote.poDate.split('T')[0] : '', 
       items: quote.items?.length > 0 ? quote.items.map(i => ({
         description: i.description,
         hsnSac: i.hsnSac || '',
@@ -242,13 +253,19 @@ export default function Quotations() {
   });
   const total = subtotal + totalCgst + totalSgst;
 
+  const buildPayload = () => ({
+    ...form,
+    poNumber: showPoDetails && form.poNumber && form.poNumber.trim() ? form.poNumber.trim() : null,
+    poDate: showPoDetails && form.poDate ? form.poDate : null,
+  });
+
   const handleSave = () => {
     if (!form.customerId || !form.quoteNo) {
       alert("Please select a client and provide a quote number.");
       return;
     }
     
-    saveMutation.mutate(form)
+    saveMutation.mutate(buildPayload())
   }
 
   const handlePreview = async () => {
@@ -257,7 +274,7 @@ export default function Quotations() {
       const res = await fetch(`${API_URL}/quotations/preview`, {
         method: 'POST',
         headers,
-        body: JSON.stringify(form)
+        body: JSON.stringify(buildPayload())
       });
       if (!res.ok) {
         let err;
@@ -481,6 +498,61 @@ export default function Quotations() {
               <input type="date" value={form.validUntil} onChange={e => setForm({...form, validUntil: e.target.value})} className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-all" />
             </div>
           </div>
+
+          {/* PO Details Section */}
+          {!showPoDetails ? (
+            <div>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPoDetails(true);
+                  setForm(f => ({ ...f, poDate: f.poDate || new Date().toISOString().split('T')[0] }));
+                }}
+                className="inline-flex items-center gap-2 px-3.5 py-2 text-xs font-semibold text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all shadow-sm"
+              >
+                <Plus size={14} />
+                Add PO Number
+              </button>
+            </div>
+          ) : (
+            <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Purchase Order (PO) Details
+                </span>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowPoDetails(false);
+                    setForm(f => ({ ...f, poNumber: '', poDate: '' }));
+                  }}
+                  className="text-xs text-red-600 hover:text-red-700 font-medium inline-flex items-center gap-1 transition-all"
+                >
+                  <X size={13} /> Remove PO
+                </button>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">PO Number</label>
+                  <input
+                    placeholder="e.g. PO-2026-0042"
+                    value={form.poNumber || ''}
+                    onChange={e => setForm({ ...form, poNumber: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-semibold text-gray-900 placeholder:text-gray-400 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-700 uppercase tracking-wider mb-1.5">PO Date</label>
+                  <input
+                    type="date"
+                    value={form.poDate || ''}
+                    onChange={e => setForm({ ...form, poDate: e.target.value })}
+                    className="w-full px-4 py-2.5 bg-white border border-gray-200 shadow-sm rounded-xl text-sm font-semibold text-gray-900 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Line Items */}
           <div className="space-y-4 pt-4 border-t border-gray-200">

@@ -78,11 +78,14 @@ const styles = StyleSheet.create({
   taxInvoiceTitle: { fontSize: 18, fontWeight: 'bold' },
 
   metaGrid: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
-  metaLeft: { width: '50%', padding: 4, borderRight: '0.5 solid #000' },
+  metaLeft: { width: '50%', padding: 4, borderRight: '0.5 solid #000', flexDirection: 'row' },
+  metaLeftMain: { flex: 1 },
+  metaPoCol: { width: '45%', paddingLeft: 4 },
+  metaPoLabel: { width: 44, fontSize: 8 },
   metaRight: { width: '50%', padding: 4 },
   metaRow: { flexDirection: 'row', marginBottom: 2 },
-  metaLabel: { width: 70, fontSize: 8 },
-  metaColon: { width: 10, fontSize: 8 },
+  metaLabel: { width: 62, fontSize: 8 },
+  metaColon: { width: 8, fontSize: 8 },
   metaValue: { flex: 1, fontSize: 8, fontWeight: 'bold' },
 
   addressGrid: { flexDirection: 'row', borderBottom: '0.5 solid #000' },
@@ -144,13 +147,13 @@ const styles = StyleSheet.create({
   notesHeader: { fontSize: 7.5, fontWeight: 'bold', color: '#334F39', textTransform: 'uppercase', marginBottom: 3, letterSpacing: 0.5 },
   notesContentText: { fontSize: 7.5, color: '#111', lineHeight: 1.35 },
 
-  // Two-Column Sign-off Section (50:50 ratio with fixed seal and signature spacing)
-  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', height: 145, alignItems: 'stretch' },
-  signoffLeft: { width: '50%', padding: '8 10', borderRight: '0.5 solid #000', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' },
-  signoffRight: { width: '50%', padding: '8 10', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' },
+  // Two-Column Sign-off Section (50:50 ratio with balanced seal and signature spacing)
+  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', minHeight: 65, height: 75, alignItems: 'stretch' },
+  signoffLeft: { width: '50%', padding: '6 10', borderRight: '0.5 solid #000', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' },
+  signoffRight: { width: '50%', padding: '6 10', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' },
   complimentsText: { fontSize: 8.5, fontWeight: 'bold', textAlign: 'center', color: '#000', lineHeight: 1.35 },
   signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center' },
-  sealArea: { height: 105, width: '100%' }, // Explicit fixed 105 pt blank space
+  sealArea: { height: 35, width: '100%' }, // Balanced seal area (clean, natural proportion)
   signLineContainer: { width: '100%', alignItems: 'center' },
   signLine: { width: 140, borderTop: '0.75 solid #000', marginBottom: 3 },
   signLineLabel: { fontSize: 7.5, fontWeight: 'bold', textAlign: 'center', color: '#000' },
@@ -292,6 +295,22 @@ const renderNotesSection = (doc) => {
   );
 };
 
+const renderMetaPO = (doc) => {
+  if (!doc || (!doc.poNumber && !doc.poDate)) return null;
+  return e(View, { style: styles.metaPoCol },
+    doc.poNumber ? e(View, { style: styles.metaRow },
+      e(Text, { style: styles.metaPoLabel }, 'PO No.'),
+      e(Text, { style: styles.metaColon }, ':'),
+      e(Text, { style: styles.metaValue }, String(doc.poNumber))
+    ) : null,
+    doc.poDate ? e(View, { style: styles.metaRow },
+      e(Text, { style: styles.metaPoLabel }, 'PO Date'),
+      e(Text, { style: styles.metaColon }, ':'),
+      e(Text, { style: styles.metaValue }, formatDate(doc.poDate))
+    ) : null
+  );
+};
+
 const renderSignoffSection = (doc, businessConfig) => {
   const complimentMsg = getComplimentText(doc);
 
@@ -392,10 +411,13 @@ const TaxInvoiceTemplate = ({ invoice, settings }) => {
       // Meta
       e(View, { style: styles.metaGrid },
         e(View, { style: styles.metaLeft },
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+          e(View, { style: styles.metaLeftMain },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+          ),
+          renderMetaPO(invoice)
         ),
         e(View, { style: styles.metaRight },
           e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Place Of Supply'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.placeOfSupply || 'Tamil Nadu (33)')),
@@ -622,10 +644,13 @@ const TaxlessInvoiceTemplate = ({ invoice, settings }) => {
       // Meta
       e(View, { style: styles.metaGrid },
         e(View, { style: styles.metaLeft },
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+          e(View, { style: styles.metaLeftMain },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.invoiceNumber)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Invoice Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.issueDate))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Terms'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.terms || 'Due on Receipt')),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Due Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(invoice.dueDate)))
+          ),
+          renderMetaPO(invoice)
         ),
         e(View, { style: styles.metaRight },
           e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Place Of Supply'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, invoice.placeOfSupply || 'Tamil Nadu (33)')),
@@ -781,9 +806,12 @@ const TaxQuotationTemplate = ({ quotation, settings }) => {
       // Meta
       e(View, { style: styles.metaGrid },
         e(View, { style: styles.metaLeft },
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(quotation.createdAt))),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Valid Until'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.validUntil ? formatDate(quotation.validUntil) : '-'))
+          e(View, { style: styles.metaLeftMain },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(quotation.createdAt))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Valid Until'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.validUntil ? formatDate(quotation.validUntil) : '-'))
+          ),
+          renderMetaPO(quotation)
         ),
         e(View, { style: styles.metaRight },
           e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'PAN No'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, client.panNumber || BUSINESS_CONFIG.pan))
@@ -988,9 +1016,12 @@ const TaxlessQuotationTemplate = ({ quotation, settings }) => {
       // Meta
       e(View, { style: styles.metaGrid },
         e(View, { style: styles.metaLeft },
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(quotation.createdAt))),
-          e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Valid Until'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.validUntil ? formatDate(quotation.validUntil) : '-'))
+          e(View, { style: styles.metaLeftMain },
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Quote No.'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.quoteNo)),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Date'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, formatDate(quotation.createdAt))),
+            e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'Valid Until'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, quotation.validUntil ? formatDate(quotation.validUntil) : '-'))
+          ),
+          renderMetaPO(quotation)
         ),
         e(View, { style: styles.metaRight },
           e(View, { style: styles.metaRow }, e(Text, { style: styles.metaLabel }, 'PAN No'), e(Text, { style: styles.metaColon }, ':'), e(Text, { style: styles.metaValue }, client.panNumber || BUSINESS_CONFIG.pan))
