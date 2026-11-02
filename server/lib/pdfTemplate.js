@@ -147,13 +147,13 @@ const styles = StyleSheet.create({
   notesHeader: { fontSize: 7.5, fontWeight: 'bold', color: '#334F39', textTransform: 'uppercase', marginBottom: 3, letterSpacing: 0.5 },
   notesContentText: { fontSize: 7.5, color: '#111', lineHeight: 1.35 },
 
-  // Two-Column Sign-off Section (50:50 ratio with balanced seal and signature spacing)
-  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', minHeight: 65, height: 75, alignItems: 'stretch' },
-  signoffLeft: { width: '50%', padding: '6 10', borderRight: '0.5 solid #000', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' },
-  signoffRight: { width: '50%', padding: '6 10', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' },
+  // Two-Column Sign-off Section (50:50 ratio with dedicated seal and signature spacing)
+  signoffSection: { flexDirection: 'row', borderBottom: '0.5 solid #000', height: 145, alignItems: 'stretch' },
+  signoffLeft: { width: '50%', padding: '8 10', borderRight: '0.5 solid #000', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' },
+  signoffRight: { width: '50%', padding: '8 10', flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-start' },
   complimentsText: { fontSize: 8.5, fontWeight: 'bold', textAlign: 'center', color: '#000', lineHeight: 1.35 },
   signCompanyText: { fontSize: 8, fontWeight: 'bold', textAlign: 'center' },
-  sealArea: { height: 35, width: '100%' }, // Balanced seal area (clean, natural proportion)
+  sealArea: { height: 105, width: '100%' }, // Dedicated fixed 105 pt blank space for physical stamp and seal
   signLineContainer: { width: '100%', alignItems: 'center' },
   signLine: { width: 140, borderTop: '0.75 solid #000', marginBottom: 3 },
   signLineLabel: { fontSize: 7.5, fontWeight: 'bold', textAlign: 'center', color: '#000' },
