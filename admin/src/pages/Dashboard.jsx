@@ -2,7 +2,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import { supabase } from '../supabaseClient'
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts'
-import { IndianRupee, FileText, Users, Package, TrendingUp, Clock, AlertCircle } from 'lucide-react'
+import { IndianRupee, FileText, Users, TrendingUp, Clock, AlertCircle } from 'lucide-react'
 
 const CustomTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
@@ -83,17 +83,17 @@ export default function Dashboard() {
       label: 'Total Customers',
       value: stats.totalCustomers,
       icon: Users,
-      change: 'View Balances →',
+      change: 'All time',
       positive: true,
-      isClickable: true,
-      onClick: () => navigate('/customer-balances'),
     },
     {
-      label: 'Active Products',
-      value: stats.totalProducts,
-      icon: Package,
-      change: 'Available',
-      positive: true,
+      label: 'Outstanding Balance',
+      value: `₹${Number(stats.totalPendingAmount || 0).toLocaleString('en-IN')}`,
+      icon: IndianRupee,
+      change: 'View Balances →',
+      positive: (stats.totalPendingAmount || 0) === 0,
+      isClickable: true,
+      onClick: () => navigate('/customer-balances'),
     },
   ]
 
