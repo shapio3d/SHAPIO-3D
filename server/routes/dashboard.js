@@ -50,9 +50,40 @@ router.get('/', requireSupabaseAuth, async (req, res, next) => {
     if (statusCounts.UNPAID > 0) invoicesByStatus.push({ name: 'Unpaid', value: statusCounts.UNPAID, color: '#f59e0b' });
     if (statusCounts.OVERDUE > 0) invoicesByStatus.push({ name: 'Overdue', value: statusCounts.OVERDUE, color: '#ef4444' });
 
-    // Monthly revenue (current month)
-    const currentMonth = new Date().toLocaleString('default', { month: 'short' });
-    const monthlyRevenue = [{ month: currentMonth, revenue: totalRevenue }];
+    // Monthly revenue — group paid invoices by their issue month, from earliest to now
+    const paidInvoices = invoices.filter(inv => inv.status === 'PAID');
+    const monthlyRevenueMap = {};
+
+    if (paidInvoices.length > 0) {
+      // Find the earliest invoice date
+      const dates = paidInvoices.map(inv => new Date(inv.issueDate || inv.createdAt));
+      const earliest = new Date(Math.min(...dates));
+      const now = new Date();
+
+      // Generate all months from earliest to current
+      const cursor = new Date(earliest.getFullYear(), earliest.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 1);
+
+      while (cursor <= end) {
+        const key = `${cursor.getFullYear()}-${String(cursor.getMonth() + 1).padStart(2, '0')}`;
+        const label = cursor.toLocaleString('default', { month: 'short', year: '2-digit' });
+        monthlyRevenueMap[key] = { month: label, revenue: 0, sortKey: key };
+        cursor.setMonth(cursor.getMonth() + 1);
+      }
+
+      // Sum revenue per month
+      paidInvoices.forEach(inv => {
+        const d = new Date(inv.issueDate || inv.createdAt);
+        const key = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+        if (monthlyRevenueMap[key]) {
+          monthlyRevenueMap[key].revenue += Number(inv.totalAmount) || 0;
+        }
+      });
+    }
+
+    const monthlyRevenue = Object.values(monthlyRevenueMap)
+      .sort((a, b) => a.sortKey.localeCompare(b.sortKey))
+      .map(({ month, revenue }) => ({ month, revenue: round2(revenue) }));
 
     // Recent invoices
     const recentInvoices = invoices.slice(0, 5).map(inv => ({
